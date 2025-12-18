@@ -5,9 +5,18 @@
     <link>https://lekee.cc</link>
     <description>AI 驱动的技术服务与应用开发团队技术动态与更新日志</description>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 18 Dec 2025 13:43:02 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 18 Dec 2025 15:24:39 GMT</lastBuildDate>
     <atom:link href="https://lekee.cc/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[小乐 AI 智能体项目阶段性说明]]></title>
+      <link>https://lekee.cc/news/2025-12-18-xiaole-stage-update</link>
+      <guid>https://lekee.cc/news/2025-12-18-xiaole-stage-update</guid>
+      <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。]]></description>
+      <category>Project</category>
+    </item>
+  
     <item>
       <title><![CDATA[乐教库正在重构中]]></title>
       <link>https://lekee.cc/news/lejiaoku-refactor</link>
