@@ -55,6 +55,29 @@ const Privacy: React.FC = () => {
             <li>邮箱：info@lekee.cc</li>
             <li>地址：天水市秦州区安居小区</li>
           </ul>
+
+          <h3 id="data-deletion">6. 数据删除说明 (Data Deletion Instructions)</h3>
+          <p>
+            根据 Facebook 平台政策，我们为您提供数据删除说明。
+          </p>
+          <p>
+            <strong>本应用（乐可开源 / LekeOpen）目前仅用于内容发布与展示，不提供用户登录功能，也不会在我们的服务器上保存您的 Facebook 个人数据。</strong>
+          </p>
+          <p>
+            如果您希望撤销对本应用的授权（例如用于自动化发布的授权），您可以通过以下步骤操作：
+          </p>
+          <ol>
+            <li>进入您的 Facebook 账号的“设置与隐私” > “设置”。</li>
+            <li>找到“应用和网站” (Apps and Websites)。</li>
+            <li>找到“乐可开源” (LekeOpen) 应用。</li>
+            <li>点击“移除” (Remove) 按钮。</li>
+          </ol>
+          <p>
+            一旦移除，本应用将无法再访问您的相关权限。由于我们要么不保存数据，要么数据仅存在于您的设备或第三方平台（如 Make.com）的临时缓存中，移除应用授权即视为完成了数据清理。
+          </p>
+          <p>
+            如有更多疑问，请联系 info@lekee.cc。
+          </p>
         </div>
       </div>
     </div>
