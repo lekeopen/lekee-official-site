@@ -1,57 +1,224 @@
-# React + TypeScript + Vite
+# 乐可科技官方网站
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> AI 驱动的技术服务与应用开发团队
 
-Currently, two official plugins are available:
+这是乐可科技（Lekee）的企业官方网站，基于内容驱动架构构建，用于展示公司服务、产品项目和技术动态。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 项目概览
 
-## Expanding the ESLint configuration
+本项目是一个现代化的企业官网，采用 React + TypeScript + Vite 技术栈，支持 Markdown 驱动的内容管理，包含以下核心功能：
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🏠 **首页展示** - 核心能力、产品与实验室、公司动态
+- 💼 **服务介绍** - AI 应用开发、定制软件开发、技术咨询
+- 🚀 **产品展示** - 项目详情页面，支持 Markdown 内容渲染
+- 📰 **新闻动态** - 技术更新与里程碑事件
+- 📧 **联系表单** - 集成 EmailJS 的在线联系功能
+- 📡 **RSS 订阅** - 自动生成 RSS feed
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠️ 技术栈
+
+### 核心框架
+- **React 18.3** - UI 框架
+- **TypeScript 5.8** - 类型安全
+- **Vite 6.3** - 构建工具与开发服务器
+
+### 路由与状态
+- **React Router 7.10** - 客户端路由
+- **Zustand 5.0** - 轻量级状态管理
+
+### UI 与样式
+- **Tailwind CSS 3.4** - 原子化 CSS 框架
+- **@tailwindcss/typography** - Markdown 排版支持
+- **Lucide React** - 图标库
+- **clsx / tailwind-merge** - 样式工具
+
+### 内容管理
+- **Front Matter** - Markdown 元数据解析
+- **React Markdown** - Markdown 渲染
+- **RSS 生成** - 自动构建 RSS feed
+
+### 其他工具
+- **EmailJS** - 邮件服务集成
+- **React Helmet Async** - SEO 优化
+- **ESLint** - 代码规范
+- **TypeScript ESLint** - TypeScript 代码检查
+
+## 📁 项目结构
+
+```
+lekee-official-site/
+├── content/                    # Markdown 内容文件
+│   ├── news/                  # 新闻动态
+│   └── projects/              # 项目展示
+├── public/                    # 静态资源
+│   └── rss.xml               # RSS feed
+├── scripts/                   # 构建脚本
+│   └── generate-rss.ts       # RSS 生成脚本
+├── src/
+│   ├── components/           # React 组件
+│   │   ├── common/          # 通用组件（Logo 等）
+│   │   └── layout/          # 布局组件（Header, Footer）
+│   ├── hooks/               # 自定义 Hooks（主题等）
+│   ├── layouts/             # 页面布局
+│   ├── lib/                 # 核心库
+│   │   ├── content.ts       # 内容管理（Markdown 解析）
+│   │   └── utils.ts         # 工具函数
+│   ├── pages/               # 页面组件
+│   ├── utils/               # 辅助工具
+│   ├── App.tsx              # 应用入口
+│   └── main.tsx             # 渲染入口
+├── .env.example             # 环境变量示例
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── tailwind.config.js
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 快速开始
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 环境要求
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Node.js >= 18
+- npm >= 9
+
+### 安装依赖
+
+```bash
+npm install
 ```
+
+### 配置环境变量
+
+复制 `.env.example` 为 `.env`，并填写 EmailJS 相关配置：
+
+```bash
+cp .env.example .env
+```
+
+```env
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+### 开发模式
+
+```bash
+npm run dev
+```
+
+访问 [http://localhost:5173](http://localhost:5173) 查看开发环境。
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+构建产物将生成在 `dist/` 目录，同时会自动生成 RSS feed。
+
+### 预览生产构建
+
+```bash
+npm run preview
+```
+
+### 其他命令
+
+```bash
+# 类型检查
+npm run check
+
+# 代码检查
+npm run lint
+
+# 单独生成 RSS
+npm run generate-rss
+```
+
+## 📝 内容管理
+
+### 添加新闻动态
+
+在 `content/news/` 目录下创建 `.md` 文件：
+
+```markdown
+---
+title: "新闻标题"
+date: "2025-12-19"
+category: "Project"
+summary: "新闻摘要"
+cover: "/path/to/cover.jpg"
+status: "published"
+tags: ["AI", "技术"]
+---
+
+这里是新闻正文内容，支持完整的 Markdown 语法...
+```
+
+### 添加项目展示
+
+在 `content/projects/` 目录下创建 `.md` 文件：
+
+```markdown
+---
+name: "项目名称"
+subtitle: "项目副标题"
+status: "Live"
+publishStatus: "published"
+summary: "项目简介"
+category: "AI Agent"
+tech_stack: ["React", "TypeScript", "FastAPI"]
+image_bg: "bg-gradient-to-br from-blue-500 to-indigo-600"
+cover: "/path/to/cover.jpg"
+links:
+  - label: "GitHub"
+    url: "https://github.com/..."
+---
+
+这里是项目详细介绍，支持完整的 Markdown 语法...
+```
+
+## 🎨 特性说明
+
+### 内容驱动架构
+
+- 所有新闻和项目内容使用 Markdown 管理
+- 支持 Front Matter 元数据
+- 自动解析和渲染内容
+- 基于文件系统的路由映射
+
+### RSS 自动生成
+
+构建时自动扫描 `content/news/` 目录，生成 RSS feed 到 `public/rss.xml`。
+
+### 响应式设计
+
+完全响应式布局，支持桌面端、平板和移动设备。
+
+### SEO 优化
+
+通过 React Helmet Async 实现动态 SEO 优化。
+
+## 📦 部署
+
+构建完成后，将 `dist/` 目录部署到任何静态托管服务：
+
+- Vercel
+- Netlify
+- GitHub Pages
+- Cloudflare Pages
+- 自建服务器（Nginx/Apache）
+
+## 📄 许可证
+
+Copyright © 2025 Lekee Technology
+
+## 🔗 相关链接
+
+- [GitHub Organization](https://github.com/lekeopen)
+- [联系我们](https://www.lekee.com/contact)
+
+---
+
+**Made with ❤️ by Lekee Team**
