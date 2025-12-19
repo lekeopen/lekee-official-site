@@ -67,7 +67,7 @@ const Privacy: React.FC = () => {
             如果您希望撤销对本应用的授权（例如用于自动化发布的授权），您可以通过以下步骤操作：
           </p>
           <ol>
-            <li>进入您的 Facebook 账号的“设置与隐私” > “设置”。</li>
+            <li>进入您的 Facebook 账号的“设置与隐私” &gt; “设置”。</li>
             <li>找到“应用和网站” (Apps and Websites)。</li>
             <li>找到“乐可开源” (LekeOpen) 应用。</li>
             <li>点击“移除” (Remove) 按钮。</li>
