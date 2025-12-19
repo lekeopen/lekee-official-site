@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Brain, Code, Terminal, ChevronRight, Rss, Github, Mail } from 'lucide-react';
 import { getAllNews, getAllProjects } from '../lib/content';
+import SEOMeta from '../components/common/SEOMeta';
 
 const Home: React.FC = () => {
   const newsData = getAllNews();
@@ -9,6 +10,12 @@ const Home: React.FC = () => {
 
   return (
     <div className="space-y-16 pb-16">
+      <SEOMeta
+        title="乐可开源 | AI 与工程实践"
+        description="乐可开源是专注 AI 与工程实践的技术团队，致力于通过前沿的人工智能技术与专业的软件工程能力，为客户解决复杂问题，创造价值。"
+        url="/"
+        type="website"
+      />
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 lg:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">

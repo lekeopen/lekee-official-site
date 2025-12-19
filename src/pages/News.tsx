@@ -1,18 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Tag } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { getAllNews } from '../lib/content';
+import SEOMeta from '../components/common/SEOMeta';
 
 const News: React.FC = () => {
   const newsData = getAllNews();
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
-      <Helmet>
-        <title>公司动态 | 乐可开源</title>
-        <meta name="description" content="乐可开源的技术动态、更新日志与里程碑记录。" />
-      </Helmet>
+      <SEOMeta
+        title="公司动态 | 乐可开源"
+        description="乐可开源的技术动态、更新日志与里程碑记录。"
+        url="/news"
+        type="website"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Header */}
         <header className="mb-12">

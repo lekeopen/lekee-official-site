@@ -1,9 +1,16 @@
 import React from 'react';
 import { Target, Code2, Rocket, Briefcase, Handshake } from 'lucide-react';
+import SEOMeta from '../components/common/SEOMeta';
 
 const About: React.FC = () => {
   return (
     <div className="pb-16 min-h-screen bg-white">
+      <SEOMeta
+        title="关于我们 | 乐可开源"
+        description="乐可开源是一支以工程能力与长期交付为核心的技术团队，由多名具有多年一线开发经验的软件工程师与 AI 技术实践者组成，长期深耕于定制软件开发、系统架构设计与人工智能应用落地领域。"
+        url="/about"
+        type="website"
+      />
       {/* Hero */}
       <div className="bg-blue-600 text-white py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">

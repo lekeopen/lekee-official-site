@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAllProjects } from '../lib/content';
+import SEOMeta from '../components/common/SEOMeta';
 
 const Products: React.FC = () => {
   const products = getAllProjects();
@@ -14,6 +15,12 @@ const Products: React.FC = () => {
 
   return (
     <div className="py-16 min-h-screen bg-white">
+      <SEOMeta
+        title="产品与项目 | 乐可开源"
+        description="展示乐可开源的自研产品、实验性项目与内部工具，通过这些项目展示技术实践能力、工程方法与思考方式。"
+        url="/products"
+        type="website"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* 页面顶部说明 */}
         <div className="mb-16 border-l-4 border-blue-600 pl-6">

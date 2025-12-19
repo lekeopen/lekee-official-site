@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Tag } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { getAllNews } from '../lib/content';
+import SEOMeta from '../components/common/SEOMeta';
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,10 +16,13 @@ const NewsDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
-      <Helmet>
-        <title>{newsItem.title} | 乐可开源</title>
-        <meta name="description" content={newsItem.summary.join(' ')} />
-      </Helmet>
+      <SEOMeta
+        title={`${newsItem.title} | 乐可开源`}
+        description={newsItem.summary.join(' ')}
+        url={`/news/${newsItem.id}`}
+        image={newsItem.cover}
+        type="article"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         {/* Back Link */}
         <Link 

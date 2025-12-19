@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { getAllProjects } from '../lib/content';
+import SEOMeta from '../components/common/SEOMeta';
 
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,10 +16,13 @@ const ProjectDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
-      <Helmet>
-        <title>{project.name} | 乐可开源</title>
-        <meta name="description" content={project.summary} />
-      </Helmet>
+      <SEOMeta
+        title={`${project.name} | 乐可开源`}
+        description={project.summary}
+        url={`/projects/${project.id}`}
+        image={project.cover}
+        type="article"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Back Link */}
         <Link 

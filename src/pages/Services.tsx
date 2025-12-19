@@ -1,5 +1,6 @@
 import React from 'react';
 import { Brain, Code, Server, Layout, Database, Shield } from 'lucide-react';
+import SEOMeta from '../components/common/SEOMeta';
 
 const Services: React.FC = () => {
   const services = [
@@ -119,6 +120,12 @@ const Services: React.FC = () => {
 
   return (
     <div className="py-16 bg-gray-50 min-h-screen">
+      <SEOMeta
+        title="能力与服务 | 乐可开源"
+        description="乐可开源提供 AI 应用开发、定制软件开发、技术架构咨询、前端工程化、数据处理与运维安全支持等全方位技术服务，作为你的长期技术伙伴。"
+        url="/services"
+        type="website"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">能力与服务</h1>
