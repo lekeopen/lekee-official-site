@@ -13,10 +13,13 @@ const Home: React.FC = () => {
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 lg:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            AI 驱动的技术服务与应用开发团队
+            乐可开源
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto">
-            我们致力于通过前沿的人工智能技术与专业的软件开发能力，为客户解决复杂问题，创造无限价值。
+          <p className="text-xl md:text-2xl text-blue-100 mb-4 max-w-3xl mx-auto">
+            专注 AI 与工程实践的技术团队
+          </p>
+          <p className="text-sm md:text-base text-blue-200 mb-10 max-w-2xl mx-auto">
+            天水乐可信息技术有限公司旗下技术与开源实践平台
           </p>
           <div className="flex justify-center space-x-4">
             <Link

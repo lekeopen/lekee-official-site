@@ -19,8 +19,8 @@ const Products: React.FC = () => {
         <div className="mb-16 border-l-4 border-blue-600 pl-6">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">产品与项目</h1>
           <p className="text-xl text-gray-600 max-w-4xl leading-relaxed">
-            这里展示的是自研产品、实验性项目与内部工具。<br />
-            我们不以“卖产品”为核心，而是通过这些项目，展示我们的<span className="font-semibold text-gray-900">技术实践能力、工程方法与思考方式</span>。<br />
+            这里展示的是乐可开源的自研产品、实验性项目与内部工具。<br />
+            我们不以“卖产品”为核心，而是通过这些项目，展示<span className="font-semibold text-gray-900">技术实践能力、工程方法与思考方式</span>。<br />
             它们是我们解决复杂问题的“样板”，也是技术持续演进的见证。
           </p>
         </div>
@@ -96,7 +96,7 @@ const Products: React.FC = () => {
           </div>
           <div className="mt-8 pt-8 border-t border-gray-200 text-center md:text-left">
             <p className="text-sm text-gray-500 italic">
-              * 这些过往经验是我们构建当前 AI 与复杂系统能力的重要基石。
+              * 这些过往经验是乐可开源构建当前 AI 与复杂系统能力的重要基石。
             </p>
           </div>
         </div>

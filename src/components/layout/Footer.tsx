@@ -10,11 +10,14 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div>
             <div className="mb-4">
-              <img src="/logo_footer.png" alt="Leke Tech Footer Logo" className="h-16 w-auto object-contain" />
+              <img src="/logo_footer.png" alt="乐可开源 Footer Logo" className="h-16 w-auto object-contain" />
             </div>
-            <h3 className="text-xl font-bold mb-4">天水乐可信息技术有限公司</h3>
+            <h3 className="text-xl font-bold mb-2">乐可开源</h3>
             <p className="text-gray-400 mb-4">
-              AI 驱动的技术服务与应用开发团队，致力于通过技术创新为客户创造价值。
+              专注 AI 与复杂系统工程实践的技术团队，通过技术创新为客户创造价值。
+            </p>
+            <p className="text-xs text-gray-500">
+              天水乐可信息技术有限公司
             </p>
           </div>
 

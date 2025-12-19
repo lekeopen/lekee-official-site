@@ -17,7 +17,7 @@ const NewsDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
       <Helmet>
-        <title>{newsItem.title} - 天水乐可信息技术有限公司</title>
+        <title>{newsItem.title} | 乐可开源</title>
         <meta name="description" content={newsItem.summary.join(' ')} />
       </Helmet>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">

@@ -12,7 +12,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', variant = 'full' }) => {
   return (
     <img 
       src={logoSrc} 
-      alt="Leke Tech Logo" 
+      alt="乐可开源 Logo" 
       // 移除内联 style 中的 height: auto，防止覆盖外部传入的 Tailwind 高度类 (如 h-12)
       // 添加 max-w-full 防止宽度溢出
       className={`object-contain max-w-full ${className}`}

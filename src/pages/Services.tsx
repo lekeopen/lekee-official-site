@@ -121,9 +121,9 @@ const Services: React.FC = () => {
     <div className="py-16 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">我们的能力与服务</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">能力与服务</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            我们是一支以 <strong>AI 技术与软件工程能力为核心</strong> 的技术服务团队。<br className="hidden md:block" />
+            乐可开源是一支以 <strong>AI 技术与软件工程能力为核心</strong> 的技术服务团队。<br className="hidden md:block" />
             不论你是正在探索新想法，还是已有系统需要升级优化，我们都可以作为你的长期技术伙伴，<br className="hidden md:block" />
             把想法落地为真正可用、可持续演进的系统。
           </p>

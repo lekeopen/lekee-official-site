@@ -10,8 +10,8 @@ const News: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
       <Helmet>
-        <title>公司动态 - 天水乐可信息技术有限公司</title>
-        <meta name="description" content="天水乐可信息技术有限公司的技术动态、更新日志与里程碑记录。" />
+        <title>公司动态 | 乐可开源</title>
+        <meta name="description" content="乐可开源的技术动态、更新日志与里程碑记录。" />
       </Helmet>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Header */}
