@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>天水乐可信息技术有限公司 - 公司动态</title>
-    <link>https://lekee.cc</link>
-    <description>AI 驱动的技术服务与应用开发团队技术动态与更新日志</description>
+    <title>乐可开源 - 技术动态</title>
+    <link>https://lekeopen.com</link>
+    <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 18 Dec 2025 15:24:39 GMT</lastBuildDate>
-    <atom:link href="https://lekee.cc/rss.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 19 Dec 2025 14:31:13 GMT</lastBuildDate>
+    <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title><![CDATA[官网品牌统一与 SEO 优化完成，正式发布 v1.0]]></title>
+      <link>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</link>
+      <guid>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</guid>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[完成官网品牌统一优化，对外技术品牌正式更名为「乐可开源」；同时新增 OpenGraph 与 Twitter Card 社交分享支持，提升内容传播体验。官网正式进入 v1.0 阶段。]]></description>
+      <category>Site Update</category>
+    </item>
+  
+    <item>
       <title><![CDATA[小乐 AI 智能体项目阶段性说明]]></title>
-      <link>https://lekee.cc/news/2025-12-18-xiaole-stage-update</link>
-      <guid>https://lekee.cc/news/2025-12-18-xiaole-stage-update</guid>
+      <link>https://lekeopen.com/news/2025-12-18-xiaole-stage-update</link>
+      <guid>https://lekeopen.com/news/2025-12-18-xiaole-stage-update</guid>
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。]]></description>
       <category>Project</category>
@@ -19,8 +28,8 @@
   
     <item>
       <title><![CDATA[乐教库正在重构中]]></title>
-      <link>https://lekee.cc/news/lejiaoku-refactor</link>
-      <guid>https://lekee.cc/news/lejiaoku-refactor</guid>
+      <link>https://lekeopen.com/news/lejiaoku-refactor</link>
+      <guid>https://lekeopen.com/news/lejiaoku-refactor</guid>
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[乐教库目前正在重构中，全新布局，全新架构，全部由 AI Agent 协同开发。大家拭目以待！]]></description>
       <category>Project</category>
@@ -28,8 +37,8 @@
   
     <item>
       <title><![CDATA[官网重构完成，进入 AI 驱动的新阶段]]></title>
-      <link>https://lekee.cc/news/site-refactor-2025</link>
-      <guid>https://lekee.cc/news/site-refactor-2025</guid>
+      <link>https://lekeopen.com/news/site-refactor-2025</link>
+      <guid>https://lekeopen.com/news/site-refactor-2025</guid>
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[官网完成从 WordPress 向现代前端架构（React + Vite）的迁移，提升访问体验与维护效率。公司技术方向明确聚焦于 AI 应用、智能体与长期系统工程。官网将不再仅仅是展示页，而是作为公司技术实践与阶段性成果的公开窗口。]]></description>
       <category>Site Update</category>
@@ -37,8 +46,8 @@
   
     <item>
       <title><![CDATA[小乐 AI 智能体项目进入持续迭代阶段]]></title>
-      <link>https://lekee.cc/news/xiaole-ai-iteration</link>
-      <guid>https://lekee.cc/news/xiaole-ai-iteration</guid>
+      <link>https://lekeopen.com/news/xiaole-ai-iteration</link>
+      <guid>https://lekeopen.com/news/xiaole-ai-iteration</guid>
       <pubDate>Mon, 01 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[小乐项目已完成核心架构验证，初步跑通 MVP 流程。进入以真实使用场景为导向的持续演进阶段，拒绝单纯的技术堆砌。后续将重点围绕“任务协作”与“信息整理”两大方向持续打磨体验。]]></description>
       <category>Project</category>

@@ -5,17 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && npm run build:rss",
+    "build": "tsc -b && vite build && npm run build:rss && npm run publish:queue",
     "build:rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "check": "tsc -b --noEmit",
-    "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts"
+    "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
+    "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "clsx": "^2.1.1",
     "front-matter": "^4.0.2",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^0.511.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

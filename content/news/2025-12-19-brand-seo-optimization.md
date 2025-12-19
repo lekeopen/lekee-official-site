@@ -7,6 +7,7 @@ tags:
   - SEO
   - OpenGraph
 status: published
+publish: true
 summary: 完成官网品牌统一优化，对外技术品牌正式更名为「乐可开源」；同时新增 OpenGraph 与 Twitter Card 社交分享支持，提升内容传播体验。官网正式进入 v1.0 阶段。
 cover: /og-default.png
 ---
