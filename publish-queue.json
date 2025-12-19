@@ -1,6 +1,19 @@
 {
-  "generatedAt": "2025-12-19T14:31:14.382Z",
+  "generatedAt": "2025-12-19T15:48:47.668Z",
   "items": [
+    {
+      "slug": "2025-12-18-xiaole-stage-update",
+      "title": "小乐 AI 智能体项目阶段性说明",
+      "date": "2025-12-18",
+      "summary": [
+        "小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。"
+      ],
+      "channels": [
+        "wechat",
+        "github"
+      ],
+      "status": "pending"
+    },
     {
       "slug": "2025-12-19-brand-seo-optimization",
       "title": "官网品牌统一与 SEO 优化完成，正式发布 v1.0",

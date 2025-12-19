@@ -6,6 +6,7 @@ summary:
   - 小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。
 tags: [AI, Agent, 小乐]
 status: published
+publish: true
 ---
 
 小乐是我们围绕真实工作场景持续打磨的 AI 智能体实践项目。
