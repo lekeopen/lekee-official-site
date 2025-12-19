@@ -32,7 +32,7 @@ const generateRSS = () => {
       <title><![CDATA[${item.title}]]></title>
       <link>${SITE_URL}/news/${item.id}</link>
       <guid>${SITE_URL}/news/${item.id}</guid>
-      <pubDate>${new Date(item.date).toUTCString()}</pubDate>
+      <pubDate>${new Date(item.date + (item.date.includes('T') ? '' : 'T00:00:00.000Z')).toUTCString()}</pubDate>
       <description><![CDATA[${Array.isArray(item.summary) ? item.summary.join(' ') : item.summary}]]></description>
       <category>${item.category}</category>
     </item>
