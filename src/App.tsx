@@ -10,6 +10,7 @@ import Contact from './pages/Contact';
 import NewsDetail from './pages/NewsDetail';
 import News from './pages/News';
 import ProjectDetail from './pages/ProjectDetail';
+import Privacy from './pages/Privacy';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="news" element={<News />} />
           <Route path="news/:id" element={<NewsDetail />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
+          <Route path="privacy" element={<Privacy />} />
         </Route>
       </Routes>
     </Router>
