@@ -85,13 +85,6 @@ const Footer: React.FC = () => {
             <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
               <Facebook size={20} />
             </a>
-            <a href="https://weibo.com/lekeopen" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Weibo">
-              {/* Custom Weibo Icon using SVG directly since lucide-react might not have it */}
-              <svg viewBox="0 0 24 24" fill="currentColor" height="20" width="20">
-                <path d="M20.12 10.79c-.31-.07-.62.13-.69.44-.48 2.12-2.4 3.69-4.66 3.69-2.76 0-5-2.24-5-5s2.24-5 5-5c1.07 0 2.05.35 2.84.94.25.19.61.14.8-.11.19-.25.14-.61-.11-.8C17.29 4.14 16.18 3.73 15 3.73 11.13 3.73 8 6.87 8 10.5S11.13 17.27 15 17.27c2.97 0 5.51-1.92 6.36-4.67.07-.31-.13-.62-.44-.69zM12 10.5c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3-3 1.34-3 3z"/>
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-              </svg>
-            </a>
             <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="RSS Feed">
               <Rss size={20} />
             </a>
