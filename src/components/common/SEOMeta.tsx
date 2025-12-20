@@ -22,7 +22,15 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
   
   const fullUrl = url ? `${SITE_URL}${url}` : SITE_URL;
-  const ogImage = image || DEFAULT_IMAGE;
+  
+  let ogImage = DEFAULT_IMAGE;
+  if (image) {
+    if (image.startsWith('http')) {
+      ogImage = image;
+    } else {
+      ogImage = `${SITE_URL}${image.startsWith('/') ? '' : '/'}${image}`;
+    }
+  }
   
   // 截取描述前 120 字
   const truncatedDesc = description.length > 120 
