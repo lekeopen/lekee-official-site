@@ -40,7 +40,8 @@ async function prerender() {
     const image = data.cover
       ? (data.cover.startsWith('http') ? data.cover : `${SITE_URL}${data.cover}`)
       : `${SITE_URL}/og-default.png`;
-    const url = `${SITE_URL}/news/${filename}`;
+    // 统一加上末尾斜杠，避免 Facebook 循环跳转警告
+    const url = `${SITE_URL}/news/${filename}/`;
 
     // 3. 使用 Cheerio 修改 HTML
     const $ = cheerio.load(templateHtml);

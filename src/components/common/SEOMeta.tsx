@@ -21,7 +21,12 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   const SITE_URL = 'https://lekeopen.com';
   const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
   
-  const fullUrl = url ? `${SITE_URL}${url}` : SITE_URL;
+  // 确保 URL 统一（避免循环跳转警告）
+  let fullUrl = url ? `${SITE_URL}${url}` : SITE_URL;
+  // 如果不是根路径且不以斜杠结尾，加上斜杠 (GitHub Pages 默认行为)
+  if (fullUrl !== SITE_URL && !fullUrl.endsWith('/')) {
+    fullUrl = `${fullUrl}/`;
+  }
   
   let ogImage = DEFAULT_IMAGE;
   if (image) {
