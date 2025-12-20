@@ -5,9 +5,18 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 19 Dec 2025 14:31:13 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 19 Dec 2025 16:38:11 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[自动发布流程全链路测试]]></title>
+      <link>https://lekeopen.com/news/2025-12-19-automation-test</link>
+      <guid>https://lekeopen.com/news/2025-12-19-automation-test</guid>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[这是一篇用于验证官网自动化发布流程的测试文章。 旨在确认从 Git 推送、构建部署、RSS 更新到 Make.com 触发、Facebook 发布及微信草稿同步的全链路是否畅通。]]></description>
+      <category>Site Update</category>
+    </item>
+  
     <item>
       <title><![CDATA[官网品牌统一与 SEO 优化完成，正式发布 v1.0]]></title>
       <link>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</link>
