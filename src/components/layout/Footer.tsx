@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Github, Linkedin, Rss } from 'lucide-react'; 
+import { Facebook, Github, Linkedin, Rss } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
