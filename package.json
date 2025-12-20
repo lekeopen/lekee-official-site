@@ -16,6 +16,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.23.26",
     "front-matter": "^4.0.2",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.511.0",
