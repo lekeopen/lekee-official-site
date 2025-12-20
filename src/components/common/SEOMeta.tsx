@@ -44,6 +44,7 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
       <meta name="description" content={truncatedDesc} />
       
       {/* OpenGraph Meta */}
+      <meta property="fb:app_id" content="1202485368502369" />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={title} />

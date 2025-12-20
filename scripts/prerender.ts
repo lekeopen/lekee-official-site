@@ -37,7 +37,7 @@ async function prerender() {
     // 准备 Meta 数据
     const title = data.title || '乐可开源';
     const description = (data.summary && data.summary[0]) || data.description || '专注 AI 与工程实践';
-    const image = data.cover 
+    const image = data.cover
       ? (data.cover.startsWith('http') ? data.cover : `${SITE_URL}${data.cover}`)
       : `${SITE_URL}/og-default.png`;
     const url = `${SITE_URL}/news/${filename}`;
@@ -64,14 +64,15 @@ async function prerender() {
     setMeta('og:image', image);
     setMeta('og:type', 'article');
     setMeta('og:site_name', '乐可开源');
+    setMeta('fb:app_id', '1202485368502369');
 
     // Twitter Card
     const setNameMeta = (name: string, content: string) => {
-        if ($(`meta[name="${name}"]`).length > 0) {
-            $(`meta[name="${name}"]`).attr('content', content);
-        } else {
-            $('head').append(`<meta name="${name}" content="${content}">`);
-        }
+      if ($(`meta[name="${name}"]`).length > 0) {
+        $(`meta[name="${name}"]`).attr('content', content);
+      } else {
+        $('head').append(`<meta name="${name}" content="${content}">`);
+      }
     };
     setNameMeta('twitter:card', 'summary_large_image');
     setNameMeta('twitter:title', title);
