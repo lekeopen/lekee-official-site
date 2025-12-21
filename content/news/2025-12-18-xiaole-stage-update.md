@@ -1,12 +1,16 @@
 ---
 title: 小乐 AI 智能体项目阶段性说明
-date: '2025-12-18'
+date: '2025-12-18 10:00:00'
 category: Project
 summary:
   - 小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。
-tags: [AI, Agent, 小乐]
+tags: 
+  - AI
+  - Agent
+  - 小乐 
 status: published
 publish: true
+cover: /images/news/xiaole-ai-iteration.png
 ---
 
 小乐是我们围绕真实工作场景持续打磨的 AI 智能体实践项目。
@@ -22,3 +26,6 @@ publish: true
 小乐不是一个 Demo 项目，而是一个会持续演进、长期使用的系统实践。
 
 后续进展将通过官网动态持续公开。
+
+### 相关链接
+- [查看产品页面](/products/xiaole-agent)
