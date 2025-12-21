@@ -1,154 +1,121 @@
 import React from 'react';
-import { Brain, Code, Server, Layout, Database, Shield } from 'lucide-react';
+import { Rocket, RefreshCw, Bot, Code, Database, Shield, Layout, Server, Smartphone } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
 
 const Services: React.FC = () => {
-  const services = [
+  // 核心业务方向 (New)
+  const coreServices = [
     {
-      icon: <Brain className="w-8 h-8 text-blue-600" />,
-      title: 'AI 应用与智能体',
-      description: (
-        <>
-          <p className="mb-4">面向真实业务场景，基于大语言模型与智能体技术，为个人、团队及企业定制 <strong>可落地、可维护</strong> 的 AI 应用。</p>
-          <div className="space-y-2 text-sm">
-            <p className="font-semibold text-gray-800">适用场景：</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>企业内部知识库 / 智能问答</li>
-              <li>智能客服与自动回复系统</li>
-              <li>自动化流程 Agent（信息整理、任务执行）</li>
-              <li>私有化 AI 应用与定制模型接入</li>
-            </ul>
-            <p className="font-semibold text-gray-800 mt-2">交付结果：</p>
-            <p>一个真正能用、能持续迭代的 AI 系统，而不是 Demo。</p>
-          </div>
-        </>
-      )
+      icon: <Rocket className="w-8 h-8 text-blue-600" />,
+      title: '从 0 到 1 的产品工程化',
+      target: '有业务想法但缺乏完整技术团队的创业者 / 转型期企业',
+      problem: '解决“只有想法没有产品”或“外包代码无法维护”的问题。我们不只写代码，还负责技术选型、架构设计直到上线运维。',
+      cooperation: '项目制交付（按里程碑验收）',
+      features: ['MVP 快速验证', '全栈开发', '长期可维护代码', '部署与运维']
     },
     {
-      icon: <Code className="w-8 h-8 text-indigo-600" />,
-      title: '软件定制开发',
-      description: (
-        <>
-          <p className="mb-4">针对具体业务需求，提供从需求分析到长期维护的 <strong>全流程定制开发服务</strong>。</p>
-          <div className="space-y-2 text-sm">
-            <p className="font-semibold text-gray-800">我们擅长：</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Web 系统 / 管理后台 / 工具型应用</li>
-              <li>业务系统重构与性能优化</li>
-              <li>从 0 到 1 的产品原型与 MVP 实现</li>
-            </ul>
-            <p className="font-semibold text-gray-800 mt-2">我们的关注点：</p>
-            <p>系统可扩展性与可维护性；不是“写完就走”，而是长期可用。</p>
-          </div>
-        </>
-      )
+      icon: <RefreshCw className="w-8 h-8 text-indigo-600" />,
+      title: '复杂系统重构与优化',
+      target: '业务发展快导致技术债堆积、系统不稳定的成长期团队',
+      problem: '解决系统经常崩溃、新功能加不进去、数据混乱等“生长痛”。在不中断业务的前提下，理清逻辑，完成架构升级。',
+      cooperation: '技术咨询 + 驻场/远程协作',
+      features: ['遗留代码重构', '性能瓶颈优化', '数据库迁移', '引入 CI/CD']
     },
     {
-      icon: <Server className="w-8 h-8 text-teal-600" />,
-      title: '技术架构咨询',
-      description: (
-        <>
-          <p className="mb-4">为初创团队、转型期企业或技术负责人提供 <strong>清晰、可执行</strong> 的技术决策支持。</p>
-          <div className="space-y-2 text-sm">
-            <p className="font-semibold text-gray-800">服务内容包括：</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>系统架构设计与技术选型建议</li>
-              <li>AI / 云服务 / 开源技术引入评估</li>
-              <li>系统演进路线规划</li>
-            </ul>
-            <p className="font-semibold text-gray-800 mt-2">你将获得：</p>
-            <p>一份结合你现状与未来发展的技术判断，而不是“随大流”的方案。</p>
-          </div>
-        </>
-      )
-    },
-    {
-      icon: <Layout className="w-8 h-8 text-purple-600" />,
-      title: '前端工程化与体验',
-      description: (
-        <>
-          <p className="mb-4">构建现代化、高性能、易维护的前端系统，让产品不仅“能用”，而且“好用、耐用”。</p>
-          <div className="space-y-2 text-sm">
-            <p className="font-semibold text-gray-800">服务内容：</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>前端架构设计与工程化建设</li>
-              <li>多端适配（Web / 移动端）</li>
-              <li>交互体验与性能优化</li>
-            </ul>
-            <p className="mt-2 text-gray-500 italic">适合对产品体验有要求的项目。</p>
-          </div>
-        </>
-      )
-    },
-    {
-      icon: <Database className="w-8 h-8 text-orange-600" />,
-      title: '数据处理与分析',
-      description: (
-        <>
-          <p className="mb-4">帮助你把零散的数据，转化为 <strong>可理解、可决策</strong> 的信息。</p>
-          <div className="space-y-2 text-sm">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>数据清洗与结构化处理</li>
-              <li>数据存储与查询优化</li>
-              <li>数据可视化与分析报表</li>
-            </ul>
-            <p className="font-semibold text-gray-800 mt-2">目标很简单：</p>
-            <p>让数据真正为业务决策服务。</p>
-          </div>
-        </>
-      )
-    },
-    {
-      icon: <Shield className="w-8 h-8 text-red-600" />,
-      title: '运维与安全支持',
-      description: (
-        <>
-          <p className="mb-4">为系统的长期稳定运行提供可靠保障。</p>
-          <div className="space-y-2 text-sm">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>服务器部署与云环境配置</li>
-              <li>CI/CD 持续集成与部署</li>
-              <li>系统监控、备份与安全防护</li>
-            </ul>
-            <p className="font-semibold text-gray-800 mt-2">适合：</p>
-            <p>没有专职运维人员的团队；希望系统“有人长期管”的项目。</p>
-          </div>
-        </>
-      )
+      icon: <Bot className="w-8 h-8 text-teal-600" />,
+      title: 'AI 智能体 (Agent) 场景落地',
+      target: '希望将大模型能力引入具体业务流的企业',
+      problem: '解决 Token 成本控制、响应速度、私有数据清洗与 RAG 准确率等工程难题。让 AI 真正进入生产环境。',
+      cooperation: 'POC 验证 -> 正式实施',
+      features: ['企业知识库搭建', '任务型 Agent 开发', 'Prompt 优化', '私有化部署评估']
     }
   ];
 
+  // 基础技术能力 (Old + Refined)
+  const capabilities = [
+    { icon: <Layout />, title: 'Web 与前端工程', desc: '构建高性能、响应式的现代化 Web 应用与管理后台。' },
+    { icon: <Smartphone />, title: '移动端开发', desc: '微信小程序、H5 及跨平台移动应用开发。' },
+    { icon: <Server />, title: '后端架构设计', desc: '高可用微服务架构、API 设计与系统集成。' },
+    { icon: <Database />, title: '数据处理与分析', desc: 'ETL 数据清洗、结构化处理与可视化报表。' },
+    { icon: <Shield />, title: '运维与安全', desc: '服务器托管、自动化部署、安全防护与监控。' },
+    { icon: <Code />, title: '技术咨询', desc: '技术选型评估、代码审查与团队工程规范建设。' }
+  ];
+
   return (
-    <div className="py-16 bg-gray-50 min-h-screen">
+    <div className="py-16 bg-gray-50">
       <SEOMeta
         title="能力与服务 | 乐可开源"
-        description="乐可开源提供 AI 应用开发、定制软件开发、技术架构咨询、前端工程化、数据处理与运维安全支持等全方位技术服务，作为你的长期技术伙伴。"
+        description="乐可开源提供从0到1的产品工程化、复杂系统重构、AI智能体落地服务。面向中小企业与创业团队，解决真实的技术痛点。"
         url="/services"
         type="website"
       />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">能力与服务</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-6">能力与服务</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            乐可开源是一支以 <strong>AI 技术与软件工程能力为核心</strong> 的技术服务团队。<br className="hidden md:block" />
-            不论你是正在探索新想法，还是已有系统需要升级优化，我们都可以作为你的长期技术伙伴，<br className="hidden md:block" />
-            把想法落地为真正可用、可持续演进的系统。
+            我们提供从顶层业务落地到底层技术实现的完整支持。<br/>
+            无论是核心业务系统的建设，还是单项技术能力的补充，我们都能提供专业服务。
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <div key={index} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="bg-gray-50 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
-                {service.icon}
+        {/* Part 1: 核心合作模式 */}
+        <div className="mb-20">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+            <span className="w-2 h-8 bg-blue-600 rounded-full mr-3"></span>
+            核心合作模式
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {coreServices.map((service, index) => (
+              <div key={index} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-100 flex flex-col">
+                <div className="bg-blue-50 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                <div className="space-y-4 flex-grow">
+                  <p className="text-sm text-gray-600 leading-relaxed">{service.problem}</p>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">交付内容</h4>
+                    <ul className="space-y-1">
+                      {service.features.map((f, i) => (
+                        <li key={i} className="text-xs text-gray-700 flex items-center">
+                          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"></span>{f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-medium">
+                  <span className="text-gray-500">适合：{service.target.split('/')[0].substring(0, 10)}...</span>
+                  <span className="text-blue-700 bg-blue-50 px-2 py-1 rounded">{service.cooperation.split(' ')[0]}</span>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
-              <div className="text-gray-600 leading-relaxed">
-                {service.description}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {/* Part 2: 基础技术能力矩阵 */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+            <span className="w-2 h-8 bg-gray-600 rounded-full mr-3"></span>
+            技术能力底座
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {capabilities.map((cap, index) => (
+              <div key={index} className="flex items-start p-6 bg-white rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                <div className="text-gray-400 mr-4 mt-1">
+                  {React.cloneElement(cap.icon as React.ReactElement, { size: 24 })}
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 mb-2">{cap.title}</h3>
+                  <p className="text-sm text-gray-600">{cap.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

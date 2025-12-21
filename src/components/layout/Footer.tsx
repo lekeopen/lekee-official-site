@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
             <Link to="/" className="block">
-              <img src="/logo_footer.png" alt="乐可开源" className="h-16 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
+              <img src="/logo_footer.png" alt="乐可开源" className="h-20 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
               专注 AI 与复杂系统工程实践的技术团队，通过技术创新为客户创造价值。
