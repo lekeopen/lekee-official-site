@@ -193,6 +193,55 @@ links:                          # 相关链接列表
 这里是项目详细介绍，支持完整的 Markdown 语法...
 ```
 
+## 🔄 提交与发布流程
+
+本项目遵循 Git Flow 简化流程，所有修改在 `develop` 分支进行，`main` 分支仅用于发布。
+
+### 1. 准备工作
+
+确保在 `develop` 分支并拉取最新代码：
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
+### 2. 提交修改 (Submission)
+
+修改内容（如添加新闻、更新页面）后，执行以下命令提交：
+
+```bash
+# 1. 查看修改状态
+git status
+
+# 2. 添加修改文件 (替换 <file> 为具体文件名，或使用 . 添加所有)
+git add .
+
+# 3. 提交修改
+git commit -m "描述你的修改内容"
+```
+
+### 3. 发布上线 (Release)
+
+确认本地无误后，合并到 `main` 分支并推送，GitHub Actions 会自动触发构建和部署。
+
+```bash
+# 1. 切换到 main 分支
+git checkout main
+
+# 2. 拉取最新 main 代码 (防止冲突)
+git pull origin main
+
+# 3. 合并 develop 分支的修改
+git merge develop
+
+# 4. 推送到远程 main 分支 (触发上线)
+git push origin main
+
+# 5. 切回 develop 分支继续开发
+git checkout develop
+```
+
 ## 🎨 特性说明
 
 ### 内容驱动架构
