@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Github, Linkedin, Rss } from 'lucide-react';
+import { Facebook, Github, Linkedin, Rss, MessageCircle } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -85,6 +85,24 @@ const Footer: React.FC = () => {
             <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
               <Facebook size={20} />
             </a>
+            {/* WeChat with Hover QR Code */}
+            <div className="relative group">
+              <button className="text-gray-400 hover:text-green-500 transition-colors focus:outline-none flex items-center" aria-label="WeChat">
+                <MessageCircle size={20} />
+              </button>
+              
+              {/* QR Code Popup */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 hidden group-hover:block z-50 w-36">
+                <div className="bg-white p-2 rounded-lg shadow-xl relative">
+                  <img src="/images/qrcode.jpg" alt="关注乐可开源公众号" className="w-32 h-32 object-contain mx-auto" />
+                  <p className="text-center text-[10px] text-gray-800 mt-1 whitespace-nowrap font-medium">扫描关注乐可开源公众号</p>
+                  
+                  {/* Arrow */}
+                  <div className="w-3 h-3 bg-white transform rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
+                </div>
+              </div>
+            </div>
+
             <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="RSS Feed">
               <Rss size={20} />
             </a>
