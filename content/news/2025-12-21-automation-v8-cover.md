@@ -1,6 +1,6 @@
 ---
 title: 🧪 自动化测试 v8.0：动态封面图验证
-date: '2025-12-21'
+date: '2025-12-21 22:30'
 category: Engineering
 tags:
   - Automation
