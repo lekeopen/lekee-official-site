@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Brain, Code, Terminal, ChevronRight, Rss, Github, Mail } from 'lucide-react';
+import { ArrowRight, Brain, Code, Terminal, ChevronRight, Rss, Github, Mail, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getAllNews, getAllProjects } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
@@ -241,7 +241,10 @@ const Home: React.FC = () => {
                               'bg-gray-100 text-gray-600'}`}>
                             {news.category}
                           </span>
-                          <time className="text-sm text-gray-400 font-mono">{news.date}</time>
+                          <time className="text-sm text-gray-400 font-mono flex items-center">
+                            <Calendar size={14} className="mr-1.5" />
+                            {news.date}
+                          </time>
                         </div>
                         
                         <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
