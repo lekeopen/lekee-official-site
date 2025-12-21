@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getAllProjects } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
 
@@ -82,7 +83,7 @@ const ProjectDetail: React.FC = () => {
 
             {/* Markdown Body */}
             <div className="prose prose-blue max-w-none">
-              <ReactMarkdown>{project.content.body}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.content.body}</ReactMarkdown>
             </div>
 
           </div>

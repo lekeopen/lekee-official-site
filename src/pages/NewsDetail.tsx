@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getAllNews } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
 
@@ -67,7 +68,7 @@ const NewsDetail: React.FC = () => {
         {/* Article Content */}
         <article className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 sm:p-10">
           <div className="prose prose-blue max-w-none">
-            <ReactMarkdown>{newsItem.content.body}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{newsItem.content.body}</ReactMarkdown>
           </div>
         </article>
       </div>
