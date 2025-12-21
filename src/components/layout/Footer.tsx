@@ -75,20 +75,33 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Right: Social Links */}
-          <div className="flex space-x-4">
-            <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">
-              <Github size={20} />
+          <div className="flex space-x-3 items-center">
+            {/* GitHub */}
+            <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer" 
+               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+               aria-label="GitHub">
+              <Github size={22} />
             </a>
-            <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
-              <Linkedin size={20} />
+            
+            {/* LinkedIn */}
+            <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer" 
+               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+               aria-label="LinkedIn">
+              <Linkedin size={22} />
             </a>
-            <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
-              <Facebook size={20} />
+            
+            {/* Facebook */}
+            <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" 
+               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1877f2] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+               aria-label="Facebook">
+              <Facebook size={22} />
             </a>
-            {/* WeChat with Hover QR Code */}
+            
+            {/* WeChat */}
             <div className="relative group">
-              <button className="text-gray-400 hover:text-green-500 transition-colors focus:outline-none flex items-center" aria-label="WeChat">
-                <MessageCircle size={20} />
+              <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#07c160] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none" 
+                      aria-label="WeChat">
+                <MessageCircle size={22} />
               </button>
               
               {/* QR Code Popup */}
@@ -96,15 +109,16 @@ const Footer: React.FC = () => {
                 <div className="bg-white p-2 rounded-lg shadow-xl relative">
                   <img src="/images/qrcode.jpg" alt="关注乐可开源公众号" className="w-32 h-32 object-contain mx-auto" />
                   <p className="text-center text-[10px] text-gray-800 mt-1 whitespace-nowrap font-medium">扫描关注乐可开源公众号</p>
-                  
-                  {/* Arrow */}
                   <div className="w-3 h-3 bg-white transform rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
                 </div>
               </div>
             </div>
 
-            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="RSS Feed">
-              <Rss size={20} />
+            {/* RSS */}
+            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" 
+               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#ee802f] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+               aria-label="RSS Feed">
+              <Rss size={22} />
             </a>
           </div>
         </div>
