@@ -5,17 +5,17 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 21 Dec 2025 14:33:16 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 21 Dec 2025 14:54:40 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title><![CDATA[✅ 自动化发布系统 v7.0：最终验收]]></title>
-      <link>https://lekeopen.com/news/2025-12-21-automation-v7-done</link>
-      <guid>https://lekeopen.com/news/2025-12-21-automation-v7-done</guid>
+      <title><![CDATA[🧪 自动化测试 v8.0：动态封面图验证]]></title>
+      <link>https://lekeopen.com/news/2025-12-21-automation-v8-cover</link>
+      <guid>https://lekeopen.com/news/2025-12-21-automation-v8-cover</guid>
       <pubDate>Sun, 21 Dec 2025 00:00:00 GMT</pubDate>
-      <description><![CDATA[系统调试完毕。Facebook 和 LinkedIn 实现全自动大图发布；GitHub Profile 自动同步；微信公众号改为邮件提醒/手动发布。Ready for production!]]></description>
+      <description><![CDATA[本次测试旨在验证 Make.com 是否能正确从 RSS 读取 `<enclosure>` 标签，并动态下载文章指定的封面图（而不是使用默认图）。]]></description>
       <category>Engineering</category>
-      <enclosure url="https://lekeopen.com/og-default.png" length="0" type="image/png" />
+      <enclosure url="https://lekeopen.com/images/news/monster.png" length="0" type="image/png" />
     </item>
   
     <item>
