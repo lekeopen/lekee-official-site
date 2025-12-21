@@ -56,12 +56,69 @@ const Footer: React.FC = () => {
               <li>电话：19219381342</li>
               <li>邮箱：info@lekee.cc</li>
             </ul>
+
+            <div className="flex space-x-3 items-center mt-6">
+              {/* GitHub */}
+              <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer" 
+                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+                 aria-label="GitHub">
+                <Github size={22} />
+              </a>
+              
+              {/* LinkedIn */}
+              <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer" 
+                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+                 aria-label="LinkedIn">
+                <Linkedin size={22} />
+              </a>
+              
+              {/* Facebook */}
+              <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" 
+                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1877f2] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+                 aria-label="Facebook">
+                <Facebook size={22} />
+              </a>
+              
+              {/* WeChat */}
+              <div className="relative group">
+                <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#07c160] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none" 
+                        aria-label="WeChat">
+                  <MessageCircle size={22} />
+                </button>
+                
+                {/* QR Code Popup */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 hidden group-hover:block z-50 w-36">
+                  <div className="bg-white p-2 rounded-lg shadow-xl relative">
+                    <img src="/images/qrcode.jpg" alt="关注乐可开源公众号" className="w-32 h-32 object-contain mx-auto" />
+                    <p className="text-center text-[10px] text-gray-800 mt-1 whitespace-nowrap font-medium">扫描关注乐可开源公众号</p>
+                    <div className="w-3 h-3 bg-white transform rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* RSS */}
+              <a href="/rss.xml" target="_blank" rel="noopener noreferrer" 
+                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#ee802f] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
+                 aria-label="RSS Feed">
+                <Rss size={22} />
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-6 text-gray-400 text-sm flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          {/* Left: Copyright & ICP */}
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-2 md:space-y-0 md:space-x-4 flex-wrap">
+        <div className="border-t border-gray-700 pt-6 text-gray-400 text-sm flex flex-col items-center">
+          
+          {/* Legal Links */}
+          <div className="flex space-x-4 mb-4 text-xs">
+            <Link to="/privacy" className="hover:text-white transition-colors">隐私政策</Link>
+            <span className="text-gray-600">|</span>
+            <Link to="/privacy" className="hover:text-white transition-colors">用户协议</Link>
+            <span className="text-gray-600">|</span>
+            <a href="mailto:info@lekee.cc?subject=Security%20Vulnerability%20Report" className="hover:text-white transition-colors">反馈安全漏洞</a>
+          </div>
+
+          {/* Copyright & ICP */}
+          <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 flex-wrap text-xs">
             <span>&copy; {new Date().getFullYear()} 天水乐可信息技术有限公司. All rights reserved.</span>
             <span className="hidden md:inline">|</span>
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
@@ -74,53 +131,7 @@ const Footer: React.FC = () => {
             </a>
           </div>
 
-          {/* Right: Social Links */}
-          <div className="flex space-x-3 items-center">
-            {/* GitHub */}
-            <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer" 
-               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
-               aria-label="GitHub">
-              <Github size={22} />
-            </a>
-            
-            {/* LinkedIn */}
-            <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer" 
-               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
-               aria-label="LinkedIn">
-              <Linkedin size={22} />
-            </a>
-            
-            {/* Facebook */}
-            <a href="https://www.facebook.com/lekeopen/" target="_blank" rel="noopener noreferrer" 
-               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1877f2] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
-               aria-label="Facebook">
-              <Facebook size={22} />
-            </a>
-            
-            {/* WeChat */}
-            <div className="relative group">
-              <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#07c160] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none" 
-                      aria-label="WeChat">
-                <MessageCircle size={22} />
-              </button>
-              
-              {/* QR Code Popup */}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 hidden group-hover:block z-50 w-36">
-                <div className="bg-white p-2 rounded-lg shadow-xl relative">
-                  <img src="/images/qrcode.jpg" alt="关注乐可开源公众号" className="w-32 h-32 object-contain mx-auto" />
-                  <p className="text-center text-[10px] text-gray-800 mt-1 whitespace-nowrap font-medium">扫描关注乐可开源公众号</p>
-                  <div className="w-3 h-3 bg-white transform rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
-                </div>
-              </div>
-            </div>
 
-            {/* RSS */}
-            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" 
-               className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#ee802f] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md" 
-               aria-label="RSS Feed">
-              <Rss size={22} />
-            </a>
-          </div>
         </div>
       </div>
     </footer>
