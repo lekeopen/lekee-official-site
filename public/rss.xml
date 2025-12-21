@@ -5,16 +5,17 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 21 Dec 2025 13:43:52 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 21 Dec 2025 14:33:16 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title><![CDATA[🎯 自动化发布系统 v6.0：全平台打通]]></title>
-      <link>https://lekeopen.com/news/2025-12-21-automation-v6-celebration</link>
-      <guid>https://lekeopen.com/news/2025-12-21-automation-v6-celebration</guid>
+      <title><![CDATA[✅ 自动化发布系统 v7.0：最终验收]]></title>
+      <link>https://lekeopen.com/news/2025-12-21-automation-v7-done</link>
+      <guid>https://lekeopen.com/news/2025-12-21-automation-v7-done</guid>
       <pubDate>Sun, 21 Dec 2025 00:00:00 GMT</pubDate>
-      <description><![CDATA[经过不懈努力，我们的全自动内容分发系统终于全线贯通。本文将同时出现在官网、Facebook、LinkedIn、GitHub 和微信公众号（草稿箱）。]]></description>
+      <description><![CDATA[系统调试完毕。Facebook 和 LinkedIn 实现全自动大图发布；GitHub Profile 自动同步；微信公众号改为邮件提醒/手动发布。Ready for production!]]></description>
       <category>Engineering</category>
+      <enclosure url="https://lekeopen.com/og-default.png" length="0" type="image/png" />
     </item>
   
     <item>
@@ -24,6 +25,7 @@
       <pubDate>Fri, 19 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[完成官网品牌统一优化，对外技术品牌正式更名为「乐可开源」；同时新增 OpenGraph 与 Twitter Card 社交分享支持，提升内容传播体验。官网正式进入 v1.0 阶段。]]></description>
       <category>Site Update</category>
+      <enclosure url="https://lekeopen.com/og-default.png" length="0" type="image/png" />
     </item>
   
     <item>
@@ -33,6 +35,7 @@
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。]]></description>
       <category>Project</category>
+      
     </item>
   
     <item>
@@ -42,6 +45,7 @@
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[乐教库目前正在重构中，全新布局，全新架构，全部由 AI Agent 协同开发。大家拭目以待！]]></description>
       <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/news/lejiaoku-refactor.png" length="0" type="image/png" />
     </item>
   
     <item>
@@ -51,6 +55,7 @@
       <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[官网完成从 WordPress 向现代前端架构（React + Vite）的迁移，提升访问体验与维护效率。公司技术方向明确聚焦于 AI 应用、智能体与长期系统工程。官网将不再仅仅是展示页，而是作为公司技术实践与阶段性成果的公开窗口。]]></description>
       <category>Site Update</category>
+      
     </item>
   
     <item>
@@ -60,6 +65,7 @@
       <pubDate>Mon, 01 Dec 2025 00:00:00 GMT</pubDate>
       <description><![CDATA[小乐项目已完成核心架构验证，初步跑通 MVP 流程。进入以真实使用场景为导向的持续演进阶段，拒绝单纯的技术堆砌。后续将重点围绕“任务协作”与“信息整理”两大方向持续打磨体验。]]></description>
       <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/news/xiaole-ai-iteration.png" length="0" type="image/png" />
     </item>
   
   </channel>

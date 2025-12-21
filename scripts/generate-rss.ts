@@ -27,7 +27,7 @@ const getNews = () => {
 
 const generateRSS = () => {
   const newsData = getNews();
-  const rssItems = newsData.map((item: { title: string; id: string; date: string; summary: string; category: string }) => `
+  const rssItems = newsData.map((item: { title: string; id: string; date: string; summary: string; category: string; cover?: string }) => `
     <item>
       <title><![CDATA[${item.title}]]></title>
       <link>${SITE_URL}/news/${item.id}</link>
@@ -35,6 +35,7 @@ const generateRSS = () => {
       <pubDate>${new Date(item.date + (item.date.includes('T') ? '' : 'T00:00:00.000Z')).toUTCString()}</pubDate>
       <description><![CDATA[${Array.isArray(item.summary) ? item.summary.join(' ') : item.summary}]]></description>
       <category>${item.category}</category>
+      ${item.cover ? `<enclosure url="${SITE_URL}${item.cover}" length="0" type="image/png" />` : ''}
     </item>
   `).join('');
 
