@@ -138,44 +138,56 @@ npm run lint
 npm run generate-rss
 ```
 
-## 📝 内容管理
+## 📝 内容管理指南
 
-### 添加新闻动态
+### 1. 新闻动态 (News)
 
-在 `content/news/` 目录下创建 `.md` 文件：
+在 `content/news/` 目录下创建 `.md` 文件。文件名建议使用 `YYYY-MM-DD-slug.md` 格式。
+
+**Front Matter 模板：**
 
 ```markdown
 ---
-title: "新闻标题"
-date: "2025-12-19"
-category: "Project"
-summary: "新闻摘要"
-cover: "/path/to/cover.jpg"
-status: "published"
-tags: ["AI", "技术"]
+title: "文章标题"
+date: "2025-12-21 22:30"        # 支持 "YYYY-MM-DD" 或 "YYYY-MM-DD HH:mm"
+category: "Engineering"         # 推荐分类：Engineering, Product, Company, Site Update
+summary: "文章摘要（用于列表页和 RSS 描述）"
+cover: "/images/news/cover.png" # 封面图路径（建议放在 public/images/news/ 下）
+tags:                           # 标签列表
+  - Tag1
+  - Tag2
+status: "published"             # 文章状态：published, draft
+publish: true                   # 是否发布到 RSS (true/false)
 ---
 
-这里是新闻正文内容，支持完整的 Markdown 语法...
+这里是正文内容，支持完整的 Markdown 语法...
 ```
 
-### 添加项目展示
+### 2. 项目展示 (Projects)
 
-在 `content/projects/` 目录下创建 `.md` 文件：
+在 `content/projects/` 目录下创建 `.md` 文件。
+
+**Front Matter 模板：**
 
 ```markdown
 ---
 name: "项目名称"
-subtitle: "项目副标题"
-status: "Live"
-publishStatus: "published"
-summary: "项目简介"
-category: "AI Agent"
-tech_stack: ["React", "TypeScript", "FastAPI"]
-image_bg: "bg-gradient-to-br from-blue-500 to-indigo-600"
-cover: "/path/to/cover.jpg"
-links:
+subtitle: "一句话副标题"
+status: "Live"                  # 项目状态：Live, Beta, In Development
+publishStatus: "published"      # 发布状态：published, draft
+summary: "项目简要介绍"
+category: "AI Product"          # 分类：AI Product, Open Source, Solution
+tech_stack:                     # 技术栈列表
+  - React
+  - TypeScript
+  - Python
+image_bg: "bg-blue-50"          # 封面背景色（Tailwind 类名，如 bg-blue-50, bg-gray-100）
+cover: "/images/projects/cover.png" # 项目封面图
+links:                          # 相关链接列表
   - label: "GitHub"
     url: "https://github.com/..."
+  - label: "Demo"
+    url: "https://..."
 ---
 
 这里是项目详细介绍，支持完整的 Markdown 语法...
