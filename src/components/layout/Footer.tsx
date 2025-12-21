@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
             <Link to="/" className="block">
-              <img src="/logo_footer.png" alt="乐可开源" className="h-12 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
+              <img src="/logo_footer.png" alt="乐可开源" className="h-16 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
               专注 AI 与复杂系统工程实践的技术团队，通过技术创新为客户创造价值。
@@ -37,8 +37,6 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li><Link to="/solutions" className="text-gray-400 hover:text-white transition-colors text-sm">解决方案</Link></li>
               <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">隐私政策</Link></li>
-              <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">用户协议</Link></li>
-              <li><a href="mailto:info@lekee.cc?subject=Security%20Report" className="text-gray-400 hover:text-white transition-colors text-sm">反馈安全漏洞</a></li>
             </ul>
           </div>
 
