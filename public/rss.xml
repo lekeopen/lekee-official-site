@@ -5,37 +5,27 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 21 Dec 2025 14:54:40 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 23 Dec 2025 10:54:10 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
-    <item>
-      <title><![CDATA[🧪 自动化测试 v8.0：动态封面图验证]]></title>
-      <link>https://lekeopen.com/news/2025-12-21-automation-v8-cover</link>
-      <guid>https://lekeopen.com/news/2025-12-21-automation-v8-cover</guid>
-      <pubDate>Sun, 21 Dec 2025 00:00:00 GMT</pubDate>
-      <description><![CDATA[本次测试旨在验证 Make.com 是否能正确从 RSS 读取 `<enclosure>` 标签，并动态下载文章指定的封面图（而不是使用默认图）。]]></description>
-      <category>Engineering</category>
-      <enclosure url="https://lekeopen.com/images/news/monster.png" length="0" type="image/png" />
-    </item>
-  
     <item>
       <title><![CDATA[官网品牌统一与 SEO 优化完成，正式发布 v1.0]]></title>
       <link>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</link>
       <guid>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</guid>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 GMT</pubDate>
+      <pubDate>Fri, 19 Dec 2025 07:30:40 GMT</pubDate>
       <description><![CDATA[完成官网品牌统一优化，对外技术品牌正式更名为「乐可开源」；同时新增 OpenGraph 与 Twitter Card 社交分享支持，提升内容传播体验。官网正式进入 v1.0 阶段。]]></description>
       <category>Site Update</category>
-      <enclosure url="https://lekeopen.com/og-default.png" length="0" type="image/png" />
+      <enclosure url="https://lekeopen.com/images/news/monster.png" length="0" type="image/png" />
     </item>
   
     <item>
       <title><![CDATA[小乐 AI 智能体项目阶段性说明]]></title>
       <link>https://lekeopen.com/news/2025-12-18-xiaole-stage-update</link>
       <guid>https://lekeopen.com/news/2025-12-18-xiaole-stage-update</guid>
-      <pubDate>Thu, 18 Dec 2025 00:00:00 GMT</pubDate>
+      <pubDate>Thu, 18 Dec 2025 02:00:00 GMT</pubDate>
       <description><![CDATA[小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。]]></description>
       <category>Project</category>
-      
+      <enclosure url="https://lekeopen.com/images/news/xiaole-ai-iteration.png" length="0" type="image/png" />
     </item>
   
     <item>
