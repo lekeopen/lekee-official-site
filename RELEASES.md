@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2025-12-30
+- feat: add news post for Lejiaoku official launch (2025-12-30-lejiaoku-official-launch)
+- feat: enhance project status visibility with "Live" radar pulse indicators
+- feat: improve project card interactions with full-area click and hover effects
+- feat: sync "Live" status indicators to Home page project showcase
+- chore: update publish queue and RSS feed
+
 ## 2025-12-22
 - content: update news (2025-12-18-xiaole-stage-update)
 - docs: add release workflow commands to README
