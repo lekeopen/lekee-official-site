@@ -24,7 +24,7 @@ export interface ProjectItem {
     id: string;
     name: string;
     subtitle: string;
-    status: 'Live' | 'Alpha' | 'Beta' | 'Internal' | 'Concept';
+    status: 'Live' | 'Production' | 'Alpha' | 'Beta' | 'Internal' | 'Concept';
     publishStatus: 'draft' | 'published';
     summary: string;
     category: string;
