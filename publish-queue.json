@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2025-12-21T11:00:14.800Z",
+  "generatedAt": "2025-12-29T18:06:29.044Z",
   "items": [
     {
       "slug": "2025-12-18-xiaole-stage-update",
       "title": "小乐 AI 智能体项目阶段性说明",
-      "date": "2025-12-18",
+      "date": "2025-12-18 10:00:00",
       "summary": [
         "小乐项目已完成基础架构与核心能力验证，当前进入持续演进与真实场景打磨阶段。"
       ],
@@ -17,7 +17,7 @@
     {
       "slug": "2025-12-19-brand-seo-optimization",
       "title": "官网品牌统一与 SEO 优化完成，正式发布 v1.0",
-      "date": "2025-12-19",
+      "date": "2025-12-19 15:30:40",
       "summary": "完成官网品牌统一优化，对外技术品牌正式更名为「乐可开源」；同时新增 OpenGraph 与 Twitter Card 社交分享支持，提升内容传播体验。官网正式进入 v1.0 阶段。",
       "channels": [
         "wechat",
@@ -26,10 +26,13 @@
       "status": "pending"
     },
     {
-      "slug": "2025-12-21-automation-v6-celebration",
-      "title": "🎯 自动化发布系统 v6.0：全平台打通",
-      "date": "2025-12-21",
-      "summary": "经过不懈努力，我们的全自动内容分发系统终于全线贯通。本文将同时出现在官网、Facebook、LinkedIn、GitHub 和微信公众号（草稿箱）。",
+      "slug": "2025-12-30-lejiaoku-official-launch",
+      "title": "乐教库知识管理平台正式上线：开启教育资源数字化新篇章",
+      "date": "2025-12-30 14:00:00",
+      "summary": [
+        "乐教库（lejiaoku.com）正式上线，标志着我们从传统资源管理向现代化、结构化知识中枢的跨越。",
+        "平台提供全栈式教学资源共享与智能检索方案，助力教育工作者提升备课效率。"
+      ],
       "channels": [
         "wechat",
         "github"

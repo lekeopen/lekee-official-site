@@ -5,9 +5,19 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 23 Dec 2025 10:54:10 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 29 Dec 2025 18:06:28 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[乐教库知识管理平台正式上线：开启教育资源数字化新篇章]]></title>
+      <link>https://lekeopen.com/news/2025-12-30-lejiaoku-official-launch</link>
+      <guid>https://lekeopen.com/news/2025-12-30-lejiaoku-official-launch</guid>
+      <pubDate>Tue, 30 Dec 2025 06:00:00 GMT</pubDate>
+      <description><![CDATA[乐教库（lejiaoku.com）正式上线，标志着我们从传统资源管理向现代化、结构化知识中枢的跨越。 平台提供全栈式教学资源共享与智能检索方案，助力教育工作者提升备课效率。]]></description>
+      <category>Product Launch</category>
+      <enclosure url="https://lekeopen.com/images/news/lejiaoku-launch-cover.png" length="0" type="image/png" />
+    </item>
+  
     <item>
       <title><![CDATA[官网品牌统一与 SEO 优化完成，正式发布 v1.0]]></title>
       <link>https://lekeopen.com/news/2025-12-19-brand-seo-optimization</link>
