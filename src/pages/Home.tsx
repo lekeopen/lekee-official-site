@@ -187,9 +187,20 @@ const Home: React.FC = () => {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
                   </div>
                   <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-blue-600 transition-colors">
-                      {project.name}
-                    </h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold group-hover:text-blue-600 transition-colors">
+                        {project.name}
+                      </h3>
+                      {(project.status === 'Live' || project.status === 'Production') && (
+                        <span className="flex items-center text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                          <span className="relative flex h-1.5 w-1.5 mr-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                          </span>
+                          LIVE
+                        </span>
+                      )}
+                    </div>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
                       {project.summary}
                     </p>

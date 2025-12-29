@@ -38,13 +38,18 @@ const ProjectDetail: React.FC = () => {
         <header className="mb-12">
           <div className="flex items-center space-x-3 mb-4">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-              ${project.status === 'Live' ? 'bg-green-50 text-green-700 border-green-200' : 
+              ${(project.status === 'Live' || project.status === 'Production') ? 'bg-green-50 text-green-700 border-green-200' : 
                 project.status === 'Alpha' ? 'bg-orange-50 text-orange-700 border-orange-200' : 
                 'bg-gray-100 text-gray-700 border-gray-200'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full mr-1.5 
-                ${project.status === 'Live' ? 'bg-green-500' : 
-                  project.status === 'Alpha' ? 'bg-orange-500' : 
-                  'bg-gray-500'}`}></span>
+              <span className={`relative flex h-2 w-2 mr-2`}>
+                {(project.status === 'Live' || project.status === 'Production') && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                )}
+                <span className={`relative inline-flex rounded-full h-2 w-2 
+                  ${(project.status === 'Live' || project.status === 'Production') ? 'bg-green-500' : 
+                    project.status === 'Alpha' ? 'bg-orange-500' : 
+                    'bg-gray-500'}`}></span>
+              </span>
               {project.status}
             </span>
             <span className="text-gray-400 text-sm">|</span>

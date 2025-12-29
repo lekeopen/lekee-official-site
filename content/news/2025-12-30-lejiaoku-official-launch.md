@@ -1,5 +1,5 @@
 ---
-title: 乐教库知识管理平台正式上线：开启教育资源数字化新篇章
+title: 乐教库正式上线：开启教育资源数字化新篇章
 date: '2025-12-30 14:00:00'
 category: Product Launch
 summary:

@@ -12,7 +12,7 @@ tech_stack:
 image_bg: bg-blue-50
 cover: /images/projects/xiaole-agent.png
 links:
-  - label: Web (Live)
+  - label: Web (Repo)
     url: https://github.com/rockts/xiaole-web
   - label: Backend (Repo)
     url: https://github.com/rockts/xiaole-backend

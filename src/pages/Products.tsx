@@ -35,11 +35,15 @@ const Products: React.FC = () => {
         {/* 核心项目展示 */}
         <div className="space-y-12 mb-20">
           {products.map((product) => (
-            <div key={product.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 transition-colors flex flex-col lg:flex-row">
+            <Link 
+              key={product.id} 
+              to={`/projects/${product.id}`}
+              className="block bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-md transition-all flex flex-col lg:flex-row group"
+            >
               {/* 左侧：项目预览占位 */}
               <div className={`lg:w-1/3 min-h-[240px] ${product.image_bg} flex items-center justify-center border-b lg:border-b-0 lg:border-r border-gray-100 relative overflow-hidden`}>
                 {product.cover ? (
-                   <img src={product.cover} alt={product.name} className="w-full h-full object-cover absolute inset-0" />
+                   <img src={product.cover} alt={product.name} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                    <span className="text-gray-400 font-medium text-lg px-8 text-center relative z-10">{product.name} <br/><span className="text-sm opacity-75">项目预览图占位</span></span>
                 )}
@@ -51,20 +55,29 @@ const Products: React.FC = () => {
                   <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold tracking-wide border border-gray-200">
                     {product.category}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide border ${
-                    product.status === 'Live' ? 'bg-green-50 text-green-700 border-green-200' : 
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide border ${
+                    (product.status === 'Live' || product.status === 'Production') ? 'bg-green-50 text-green-700 border-green-200' : 
                     product.status === 'Alpha' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-100 text-gray-600 border-gray-200'
                   }`}>
+                    <span className={`relative flex h-2 w-2 mr-2`}>
+                      {(product.status === 'Live' || product.status === 'Production') && (
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      )}
+                      <span className={`relative inline-flex rounded-full h-2 w-2 
+                        ${(product.status === 'Live' || product.status === 'Production') ? 'bg-green-500' : 
+                          product.status === 'Alpha' ? 'bg-yellow-500' : 
+                          'bg-gray-500'}`}></span>
+                    </span>
                     {product.status}
                   </span>
                 </div>
 
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{product.name}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                 <p className="text-gray-600 mb-6 text-lg leading-relaxed">
                   {product.summary}
                 </p>
 
-                <div className="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-100">
+                <div className="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-100 group-hover:bg-blue-50/30 transition-colors">
                   <h4 className="text-sm font-bold text-gray-900 mb-2">💡 核心理念</h4>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4">
                     {product.subtitle}
@@ -79,12 +92,12 @@ const Products: React.FC = () => {
                 </div>
 
                 <div className="flex space-x-4">
-                  <Link to={`/projects/${product.id}`} className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors">
-                    了解项目详情 <ExternalLink size={16} className="ml-1" />
-                  </Link>
+                  <div className="inline-flex items-center text-blue-600 font-medium">
+                    了解项目详情 <ExternalLink size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
