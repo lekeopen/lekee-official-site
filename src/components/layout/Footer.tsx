@@ -31,9 +31,9 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">快速导航</h3>
             <ul className="space-y-3">
               <li><Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">首页</Link></li>
-              <li><Link to="/services" className="text-gray-400 hover:text-white transition-colors text-sm">能力与服务</Link></li>
+              <li><Link to="/news" className="text-gray-400 hover:text-white transition-colors text-sm">公司动态</Link></li>
               <li><Link to="/products" className="text-gray-400 hover:text-white transition-colors text-sm">产品与项目</Link></li>
-              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm">关于我们</Link></li>
+              <li><Link to="/services" className="text-gray-400 hover:text-white transition-colors text-sm">能力与服务</Link></li>
             </ul>
           </div>
 
@@ -41,8 +41,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">资源与支持</h3>
             <ul className="space-y-3">
-              <li><Link to="/solutions" className="text-gray-400 hover:text-white transition-colors text-sm">解决方案</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm">关于我们</Link></li>
               <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">隐私政策</Link></li>
+              <li><Link to="/solutions" className="text-gray-400 hover:text-white transition-colors text-sm">解决方案</Link></li>
             </ul>
           </div>
 
@@ -58,22 +59,22 @@ const Footer: React.FC = () => {
             {/* Social Icons (Compact) */}
             <div className="flex space-x-2">
               {/* GitHub */}
-              <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer" 
-                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200" 
+              <a href="https://github.com/lekeopen" target="_blank" rel="noopener noreferrer"
+                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
                  aria-label="GitHub">
                 <Github size={16} />
               </a>
               
               {/* LinkedIn */}
-              <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer" 
-                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] transition-all duration-200" 
+              <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer"
+                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] transition-all duration-200"
                  aria-label="LinkedIn">
                 <Linkedin size={16} />
               </a>
 
               {/* Discord */}
-              <a href="https://discord.gg/s5dg3QYq7C" target="_blank" rel="noopener noreferrer" 
-                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#5865F2] transition-all duration-200" 
+              <a href="https://discord.gg/s5dg3QYq7C" target="_blank" rel="noopener noreferrer"
+                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#5865F2] transition-all duration-200"
                  aria-label="Discord">
                 <DiscordIcon size={16} />
               </a>
@@ -96,11 +97,9 @@ const Footer: React.FC = () => {
               </div>
 
               {/* RSS */}
-              <a href="/rss.xml" target="_blank" rel="noopener noreferrer" 
-                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#ee802f] transition-all duration-200" 
-                 aria-label="RSS">
+              <Link to="/rss.xml" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#ee802f] transition-all duration-200" aria-label="RSS">
                 <Rss size={16} />
-              </a>
+              </Link>
             </div>
           </div>
 

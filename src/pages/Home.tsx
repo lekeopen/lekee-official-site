@@ -326,13 +326,12 @@ const Home: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                   通过 RSS 阅读器订阅我们的最新技术动态，第一时间获取项目进展与技术分享。
                 </p>
-                <a 
-                  href="/rss.xml" 
-                  target="_blank" 
+                <Link 
+                  to="/rss.xml" 
                   className="w-full block text-center bg-white border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-200 font-medium py-2.5 rounded-lg transition-all text-sm hover:shadow-sm"
                 >
                   获取 RSS 链接
-                </a>
+                </Link>
               </motion.div>
             </div>
           </div>

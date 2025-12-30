@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getAllNews } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
+import type { Components } from 'react-markdown';
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,27 @@ const NewsDetail: React.FC = () => {
   if (!newsItem) {
     return <Navigate to="/" replace />;
   }
+
+  // 自定义 ReactMarkdown 组件，区分站内外链接
+  const components: Components = {
+    a: ({ node, href, children, ...props }) => {
+      const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
+      
+      if (isExternal) {
+        return (
+          <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+            {children}
+          </a>
+        );
+      }
+      
+      return (
+        <Link to={href || '#'} {...props}>
+          {children}
+        </Link>
+      );
+    },
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
@@ -68,7 +90,9 @@ const NewsDetail: React.FC = () => {
         {/* Article Content */}
         <article className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 sm:p-10">
           <div className="prose prose-blue max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{newsItem.content.body}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+              {newsItem.content.body}
+            </ReactMarkdown>
           </div>
         </article>
       </div>

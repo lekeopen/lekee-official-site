@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getAllProjects } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
+import type { Components } from 'react-markdown';
 
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,27 @@ const ProjectDetail: React.FC = () => {
   if (!project) {
     return <Navigate to="/products" replace />;
   }
+
+  // 自定义 ReactMarkdown 组件，区分站内外链接
+  const components: Components = {
+    a: ({ node, href, children, ...props }) => {
+      const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
+      
+      if (isExternal) {
+        return (
+          <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+            {children}
+          </a>
+        );
+      }
+      
+      return (
+        <Link to={href || '#'} {...props}>
+          {children}
+        </Link>
+      );
+    },
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
@@ -88,7 +110,9 @@ const ProjectDetail: React.FC = () => {
 
             {/* Markdown Body */}
             <div className="prose prose-blue max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.content.body}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+                {project.content.body}
+              </ReactMarkdown>
             </div>
 
           </div>

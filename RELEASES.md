@@ -5,6 +5,11 @@
 - feat: enhance project status visibility with "Live" radar pulse indicators
 - feat: improve project card interactions with full-area click and hover effects
 - feat: sync "Live" status indicators to Home page project showcase
+- feat: distinguish internal and external links - internal links stay in same window, external links open in new tab
+- feat: add company news link to footer quick navigation
+- feat: add custom ReactMarkdown renderer to auto-handle links in NewsDetail and ProjectDetail pages
+- style: optimize footer navigation order by text length
+- style: move "About Us" from quick navigation to resources section
 - chore: update publish queue and RSS feed
 
 ## 2025-12-22
