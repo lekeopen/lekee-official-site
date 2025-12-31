@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Linkedin, Rss, MessageCircle } from 'lucide-react';
+import { Github, Twitter, Rss, MessageCircle } from 'lucide-react';
 
 const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -65,11 +65,11 @@ const Footer: React.FC = () => {
                 <Github size={16} />
               </a>
               
-              {/* LinkedIn */}
-              <a href="https://www.linkedin.com/company/%E5%A4%A9%E6%B0%B4%E4%B9%90%E5%8F%AF%E4%BF%A1%E6%81%AF%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/" target="_blank" rel="noopener noreferrer"
-                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#0077b5] transition-all duration-200"
-                 aria-label="LinkedIn">
-                <Linkedin size={16} />
+              {/* Twitter/X */}
+              <a href="https://x.com/lekeopen" target="_blank" rel="noopener noreferrer"
+                 className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-black transition-all duration-200"
+                 aria-label="Twitter/X">
+                <Twitter size={16} />
               </a>
 
               {/* Discord */}
