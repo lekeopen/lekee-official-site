@@ -15,10 +15,9 @@ publish: true
 cover: /images/news/new-year-greeting-2026.png
 ---
 
-| | | |
-|:---:|:---:|:---:|
-| ![LEKE Logo](/images/news/logo-leke.png) | ![小乐 AI Logo](/images/news/logo-xiaole-ai.png) | ![乐教库 Logo](/images/news/logo-lejiaoku.png) |
-| **官方品牌** | **智能体产品** | **知识平台** |
+<div style="text-align: center; margin: 20px 0;">
+  <img src="/images/news/logo-leke.png" alt="官方品牌 - LEKE" width="150" style="display: inline-block; margin: 0 10px;" /><img src="/images/news/logo-xiaole-ai.png" alt="智能体产品 - 小乐AI" width="150" style="display: inline-block; margin: 0 10px;" /><img src="/images/news/logo-lejiaoku.png" alt="知识平台 - 乐教库" width="150" style="display: inline-block; margin: 0 10px;" />
+</div>
 
 ---
 
