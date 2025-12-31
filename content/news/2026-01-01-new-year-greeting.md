@@ -15,20 +15,10 @@ publish: true
 cover: /images/news/new-year-greeting-2026.png
 ---
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin: 40px 0; flex-wrap: wrap;">
-  <div style="text-align: center;">
-    <img src="/images/news/logo-leke.png" alt="LEKE Logo" style="width: 120px; height: auto; margin-bottom: 10px;">
-    <p style="font-size: 12px; color: #666;">官方品牌</p>
-  </div>
-  <div style="text-align: center;">
-    <img src="/images/news/logo-xiaole-ai.png" alt="小乐 AI Logo" style="width: 120px; height: auto; margin-bottom: 10px;">
-    <p style="font-size: 12px; color: #666;">智能体产品</p>
-  </div>
-  <div style="text-align: center;">
-    <img src="/images/news/logo-lejiaoku.png" alt="乐教库 Logo" style="width: 120px; height: auto; margin-bottom: 10px;">
-    <p style="font-size: 12px; color: #666;">知识平台</p>
-  </div>
-</div>
+| | | |
+|:---:|:---:|:---:|
+| ![LEKE Logo](/images/news/logo-leke.png) | ![小乐 AI Logo](/images/news/logo-xiaole-ai.png) | ![乐教库 Logo](/images/news/logo-lejiaoku.png) |
+| **官方品牌** | **智能体产品** | **知识平台** |
 
 ---
 
