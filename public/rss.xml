@@ -5,11 +5,21 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 29 Dec 2025 18:06:28 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 31 Dec 2025 16:14:09 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title><![CDATA[乐教库知识管理平台正式上线：开启教育资源数字化新篇章]]></title>
+      <title><![CDATA[2026新年贺词：感谢有你，一起向未来]]></title>
+      <link>https://lekeopen.com/news/2026-01-01-new-year-greeting</link>
+      <guid>https://lekeopen.com/news/2026-01-01-new-year-greeting</guid>
+      <pubDate>Wed, 31 Dec 2025 16:00:00 GMT</pubDate>
+      <description><![CDATA[2025年我们推出了小乐AI、乐教库等创新产品，感谢大家的支持与信任。 2026年，我们将继续深耕教育科技与AI智能体领域，为大家带来更多可能。]]></description>
+      <category>News</category>
+      <enclosure url="https://lekeopen.com/images/news/new-year-greeting-2026.png" length="0" type="image/png" />
+    </item>
+  
+    <item>
+      <title><![CDATA[乐教库正式上线：开启教育资源数字化新篇章]]></title>
       <link>https://lekeopen.com/news/2025-12-30-lejiaoku-official-launch</link>
       <guid>https://lekeopen.com/news/2025-12-30-lejiaoku-official-launch</guid>
       <pubDate>Tue, 30 Dec 2025 06:00:00 GMT</pubDate>
