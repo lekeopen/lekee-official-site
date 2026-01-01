@@ -52,7 +52,7 @@ const Privacy: React.FC = () => {
             如果您对本隐私政策有任何疑问，请通过以下方式联系我们：
           </p>
           <ul>
-            <li>邮箱：info@lekee.cc</li>
+            <li>邮箱：contact@lekeopen.com</li>
             <li>地址：天水市秦州区安居小区</li>
           </ul>
 
@@ -76,7 +76,7 @@ const Privacy: React.FC = () => {
             一旦移除，本应用将无法再访问您的相关权限。由于我们要么不保存数据，要么数据仅存在于您的设备或第三方平台（如 Make.com）的临时缓存中，移除应用授权即视为完成了数据清理。
           </p>
           <p>
-            如有更多疑问，请联系 info@lekee.cc。
+            如有更多疑问，请联系 contact@lekeopen.com。
           </p>
         </div>
       </div>

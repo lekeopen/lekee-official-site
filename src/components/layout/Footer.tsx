@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-gray-400 text-sm mb-6">
               <li>地址：天水市秦州区安居小区</li>
               <li>电话：19219381342</li>
-              <li>邮箱：info@lekee.cc</li>
+              <li>邮箱：contact@lekeopen.com</li>
             </ul>
             
             {/* Social Icons (Compact) */}

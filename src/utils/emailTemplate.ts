@@ -1,5 +1,5 @@
 // Email Template for Contact Form Submission
-// This template is designed to be sent FROM: service@lekee.cc TO: info@lekee.cc
+// This template is designed to be sent FROM: service@lekee.cc TO: contact@lekeopen.com
 
 export const generateEmailHtml = (data: {
   name: string;

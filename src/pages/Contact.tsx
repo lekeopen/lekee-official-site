@@ -5,10 +5,75 @@ import SEOMeta from '../components/common/SEOMeta';
 
 const Contact: React.FC = () => {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const form = useRef<HTMLFormElement>(null);
+
+  // 验证规则
+  const validateForm = (formData: FormData): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    const name = (formData.get('user_name') as string)?.trim() || '';
+    const contact = (formData.get('user_contact') as string)?.trim() || '';
+    const message = (formData.get('message') as string)?.trim() || '';
+
+    // 名字验证
+    if (!name) {
+      newErrors.user_name = '请填写您的称呼';
+    } else if (name.length < 2) {
+      newErrors.user_name = '称呼至少需要2个字符';
+    } else if (name.length > 50) {
+      newErrors.user_name = '称呼不能超过50个字符';
+    } else if (!/^[\u4e00-\u9fa5a-zA-Z0-9\s]+$/.test(name)) {
+      newErrors.user_name = '称呼只能包含中文、英文和数字';
+    }
+
+    // 联系方式验证
+    if (!contact) {
+      newErrors.user_contact = '请填写联系方式';
+    } else if (contact.length > 100) {
+      newErrors.user_contact = '联系方式不能超过100个字符';
+    } else {
+      // 验证是否为有效的邮箱或微信号格式
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const wechatRegex = /^[a-zA-Z0-9_-]{5,32}$/;
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      
+      if (!emailRegex.test(contact) && !wechatRegex.test(contact) && !phoneRegex.test(contact)) {
+        newErrors.user_contact = '请输入有效的邮箱、微信号或手机号';
+      }
+    }
+
+    // 消息内容验证
+    if (!message) {
+      newErrors.message = '请输入需求描述';
+    } else if (message.length < 10) {
+      newErrors.message = '需求描述至少需要10个字符';
+    } else if (message.length > 2000) {
+      newErrors.message = '需求描述不能超过2000个字符';
+    } else if (/^(.)\1{9,}$/m.test(message)) {
+      // 检测重复字符（防止垃圾内容如"aaaaaaaaaa"）
+      newErrors.message = '请输入有效的需求描述';
+    } else if (/[^\u4e00-\u9fa5a-zA-Z0-9\s.,;:!?，。；：！？—\-\n\r()（）\[\]【】""''""]+/.test(message)) {
+      // 过滤特殊符号
+      newErrors.message = '需求描述包含不允许的字符';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!form.current) return;
+    
+    const formData = new FormData(form.current);
+    
+    // 验证表单
+    if (!validateForm(formData)) {
+      return;
+    }
+
     setFormState('submitting');
 
     if (!form.current) return;
@@ -70,12 +135,10 @@ const Contact: React.FC = () => {
                 <Mail className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
                 <div>
                   <h3 className="font-bold text-gray-900">Email (推荐)</h3>
-                  <p className="text-gray-600 font-medium select-all">info@lekee.cc</p>
-                  <p className="text-xs text-gray-400 mt-1">技术负责人通常在 24 小时内回复</p>
+                  <p className="text-gray-600 font-medium select-all">contact@lekeopen.com</p>                  <p className="text-xs text-gray-400 mt-1">技术负责人通常在 24 小时内回复</p>
                 </div>
               </div>
-              
-              <div className="flex items-start">
+                            <div className="flex items-start">
                 <MessageSquare className="w-6 h-6 text-green-600 mt-1 mr-4 flex-shrink-0" />
                 <div>
                   <h3 className="font-bold text-gray-900">微信 / 电话</h3>
@@ -125,9 +188,14 @@ const Contact: React.FC = () => {
                       type="text"
                       name="user_name"
                       id="name"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white ${
+                        errors.user_name ? 'border-red-500' : 'border-gray-200'
+                      }`}
                       placeholder="例如：张先生"
                     />
+                    {errors.user_name && (
+                      <p className="text-red-500 text-sm mt-1">{errors.user_name}</p>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="contact" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -138,9 +206,14 @@ const Contact: React.FC = () => {
                       type="text"
                       name="user_contact"
                       id="contact"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
-                      placeholder="邮箱或微信号"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white ${
+                        errors.user_contact ? 'border-red-500' : 'border-gray-200'
+                      }`}
+                      placeholder="邮箱、微信号或手机号"
                     />
+                    {errors.user_contact && (
+                      <p className="text-red-500 text-sm mt-1">{errors.user_contact}</p>
+                    )}
                   </div>
                 </div>
 
@@ -153,9 +226,17 @@ const Contact: React.FC = () => {
                     id="message"
                     name="message"
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white resize-none"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 focus:bg-white resize-none ${
+                      errors.message ? 'border-red-500' : 'border-gray-200'
+                    }`}
                     placeholder="请简述您的业务背景和想解决的问题..."
                   ></textarea>
+                  {errors.message && (
+                    <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                  )}
+                  <p className="text-gray-400 text-xs mt-1">
+                    {(form.current?.message?.value?.length || 0)}/2000
+                  </p>
                 </div>
 
                 <button
