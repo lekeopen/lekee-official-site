@@ -5,6 +5,10 @@
 - feat: add OpenClaw / Clawdbot private deployment service section in `Services` page
 - assets: add OpenClaw mascot cover image for news and service section
 - fix: resolve missing `rehype-raw` dependency for markdown rendering in detail pages
+- fix: repair social share metadata extraction by escaping OG/Twitter meta attributes in prerender output
+- feat: expand prerender coverage to static pages and project detail pages for crawler-friendly HTML metadata
+- fix: fallback SVG cover images to PNG OG image for better WeChat/social crawler compatibility
+- fix: replace placeholder SEO description in `Solutions` page to improve shared snippet quality
 
 ## 2025-12-30
 - feat: add news post for Lejiaoku official launch (2025-12-30-lejiaoku-official-launch)

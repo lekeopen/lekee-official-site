@@ -19,23 +19,43 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   siteName = '乐可开源'
 }) => {
   const SITE_URL = 'https://lekeopen.com';
-  const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
-  
-  // 确保 URL 统一（避免循环跳转警告）
-  let fullUrl = url ? `${SITE_URL}${url}` : SITE_URL;
-  // 如果不是根路径且不以斜杠结尾，加上斜杠 (GitHub Pages 默认行为)
-  if (fullUrl !== SITE_URL && !fullUrl.endsWith('/')) {
-    fullUrl = `${fullUrl}/`;
-  }
-  
-  let ogImage = DEFAULT_IMAGE;
-  if (image) {
-    if (image.startsWith('http')) {
-      ogImage = image;
-    } else {
-      ogImage = `${SITE_URL}${image.startsWith('/') ? '' : '/'}${image}`;
+  const DEFAULT_IMAGE = `${SITE_URL}/og-450x300.png`;
+
+  const normalizeUrl = (value?: string) => {
+    const route = value || '/';
+    const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
+    const absolute = `${SITE_URL}${normalizedRoute}`;
+    if (absolute === SITE_URL || absolute === `${SITE_URL}/`) {
+      return `${SITE_URL}/`;
     }
-  }
+    return absolute.endsWith('/') ? absolute : `${absolute}/`;
+  };
+
+  const normalizeImage = (value?: string) => {
+    if (!value) {
+      return DEFAULT_IMAGE;
+    }
+    const absolute = value.startsWith('http')
+      ? value
+      : `${SITE_URL}${value.startsWith('/') ? '' : '/'}${value}`;
+
+    // 部分社媒平台（含微信）对 svg 抓取兼容较差，统一回退到 png 封面
+    if (/\.svg($|\?)/i.test(absolute)) {
+      return DEFAULT_IMAGE;
+    }
+    return absolute;
+  };
+
+  const detectImageType = (value: string) => {
+    if (/\.png($|\?)/i.test(value)) return 'image/png';
+    if (/\.jpe?g($|\?)/i.test(value)) return 'image/jpeg';
+    if (/\.webp($|\?)/i.test(value)) return 'image/webp';
+    return 'image/png';
+  };
+  
+  const fullUrl = normalizeUrl(url);
+  const ogImage = normalizeImage(image);
+  const ogImageType = detectImageType(ogImage);
   
   // 截取描述前 120 字
   const truncatedDesc = description.length > 120 
@@ -56,6 +76,10 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={fullUrl} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:secure_url" content={ogImage} />
+      <meta property="og:image:type" content={ogImageType} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       
       {/* Twitter Card Meta */}
       <meta name="twitter:card" content="summary_large_image" />

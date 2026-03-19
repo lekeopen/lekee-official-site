@@ -27,7 +27,12 @@ const Solutions: React.FC = () => {
 
   return (
     <div className="py-16 bg-white">
-      <SEOMeta title="解决方案 | 乐可开源" description="..." url="/solutions" type="website" />
+      <SEOMeta
+        title="解决方案 | 乐可开源"
+        description="乐可开源提供企业效率与协作优化、知识管理体系建设、自动化工具落地等定制化解决方案，覆盖复杂系统集成与数据资产化场景。"
+        url="/solutions"
+        type="website"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">解决方案</h1>
