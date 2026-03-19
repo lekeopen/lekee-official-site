@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-12-31T17:08:12.414Z",
+  "generatedAt": "2026-03-19T10:21:50.291Z",
   "items": [
     {
       "slug": "2025-12-18-xiaole-stage-update",
@@ -46,6 +46,20 @@
       "summary": [
         "2025年我们推出了小乐AI、乐教库等创新产品，感谢大家的支持与信任。",
         "2026年，我们将继续深耕教育科技与AI智能体领域，为大家带来更多可能。"
+      ],
+      "channels": [
+        "wechat",
+        "github"
+      ],
+      "status": "pending"
+    },
+    {
+      "slug": "2026-03-19-openclaw-adoption",
+      "title": "乐可开源正式接入 OpenClaw，AI 智能体投入内部实际使用",
+      "date": "2026-03-19 10:00:00",
+      "summary": [
+        "乐可开源团队已成功在阿里云上完成 OpenClaw（Clawdbot）的部署，并正式将其引入内部日常工作流。",
+        "OpenClaw 是目前全球增长最快的开源 AI 助手，能看屏幕、操作应用，真正帮助团队\"做事\"。"
       ],
       "channels": [
         "wechat",

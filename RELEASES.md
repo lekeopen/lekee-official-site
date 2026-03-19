@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2026-03-19
+- content: add news post `2026-03-19-openclaw-adoption` about OpenClaw internal adoption on Alibaba Cloud ECS
+- feat: add OpenClaw / Clawdbot private deployment service section in `Services` page
+- assets: add OpenClaw mascot cover image for news and service section
+- fix: resolve missing `rehype-raw` dependency for markdown rendering in detail pages
+
 ## 2025-12-30
 - feat: add news post for Lejiaoku official launch (2025-12-30-lejiaoku-official-launch)
 - feat: enhance project status visibility with "Live" radar pulse indicators

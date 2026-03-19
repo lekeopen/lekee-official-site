@@ -1,6 +1,7 @@
 import React from 'react';
-import { Rocket, RefreshCw, Bot, Code, Database, Shield, Layout, Server, Smartphone } from 'lucide-react';
+import { Rocket, RefreshCw, Bot, Code, Database, Shield, Layout, Server, Smartphone, CheckCircle } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
+import { Link } from 'react-router-dom';
 
 const Services: React.FC = () => {
   // 核心业务方向 (New)
@@ -96,7 +97,7 @@ const Services: React.FC = () => {
         </div>
 
         {/* Part 2: 基础技术能力矩阵 */}
-        <div>
+        <div className="mb-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
             <span className="w-2 h-8 bg-gray-600 rounded-full mr-3"></span>
             技术能力底座
@@ -113,6 +114,66 @@ const Services: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Part 3: OpenClaw 部署服务 */}
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-10 md:p-14 text-white">
+          <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10">
+            <div className="w-16 h-16 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0">
+              <img src="/images/news/openclaw-mascot.svg" alt="OpenClaw" className="w-10 h-10" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h2 className="text-2xl font-bold">OpenClaw / Clawdbot 私有化部署</h2>
+                <span className="text-xs font-bold bg-red-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">New</span>
+              </div>
+              <p className="text-gray-400 text-sm">帮助团队在阿里云、腾讯云等平台上快速拥有自己的 AI 智能体实例</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <div>
+              <p className="text-gray-300 leading-relaxed mb-6">
+                OpenClaw 是目前全球增长最快的开源 AI 助手，能<strong className="text-white">看屏幕、操作应用、执行真实任务</strong>，
+                是真正能融入工作流的 AI 智能体。乐可开源团队已在阿里云完成私有化部署并投入实际使用，
+                现将这套经过验证的部署经验开放为服务。
+              </p>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                无需自行处理繁琐的环境配置、Docker 冲突、Python 版本问题，我们为你完成从服务器初始化到
+                OpenClaw 稳定运行的全流程交付。
+              </p>
+            </div>
+            <div className="space-y-3">
+              {[
+                '云服务器环境配置与安全加固',
+                'OpenClaw (Clawdbot) 完整安装与调试',
+                'Telegram Bot 接入与自定义指令配置',
+                'HTTPS 加密与域名绑定（可选）',
+                '基础运维文档与使用指南交付',
+                '30 天部署后技术支持',
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <CheckCircle size={16} className="text-green-400 flex-shrink-0" />
+                  <span className="text-gray-300 text-sm">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <Link
+              to="/contact"
+              className="inline-flex items-center bg-white text-gray-900 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+            >
+              咨询部署服务
+            </Link>
+            <Link
+              to="/news/2026-03-19-openclaw-adoption"
+              className="inline-flex items-center text-gray-400 hover:text-white transition-colors text-sm font-medium py-3"
+            >
+              了解我们的使用实践 →
+            </Link>
           </div>
         </div>
 

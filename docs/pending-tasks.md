@@ -43,6 +43,8 @@
 - [x] 站内外链接区分：站内链接不打开新窗口，站外链接使用 target="_blank"。
 - [x] Footer 快速导航优化：添加公司动态链接，调整关于我们位置。
 - [x] Markdown 内容链接自动处理：NewsDetail 和 ProjectDetail 页面支持自动区分站内外链接。
+- [x] 发布 OpenClaw 接入动态：新增公司在阿里云部署 OpenClaw 的实践文章。
+- [x] 服务业务扩展：在 `Services` 页面新增 OpenClaw / Clawdbot 私有化部署服务介绍。
 
 ### 潜在优化点
 - **移动端适配**: 检查新版首页动画在手机端的性能表现。
