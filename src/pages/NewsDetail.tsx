@@ -42,7 +42,7 @@ const NewsDetail: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
       <SEOMeta
         title={`${newsItem.title} | 乐可开源`}
-        description={newsItem.summary.join(' ')}
+        description={Array.isArray(newsItem.summary) ? newsItem.summary.join(' ') : newsItem.summary}
         url={`/news/${newsItem.id}`}
         image={newsItem.cover}
         type="article"

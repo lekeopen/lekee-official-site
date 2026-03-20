@@ -1,10 +1,8 @@
 ---
-title: 乐可开源正式接入 OpenClaw，AI 智能体投入内部实际使用
+title: OpenClaw 接入实战：AI 智能体驱动团队协作
 date: '2026-03-19 10:00:00'
 category: Engineering
-summary:
-  - 乐可开源团队已成功在阿里云上完成 OpenClaw（Clawdbot）的部署，并正式将其引入内部日常工作流。
-  - OpenClaw 是目前全球增长最快的开源 AI 助手，能看屏幕、操作应用，真正帮助团队"做事"。
+summary: 乐可开源在阿里云完成 OpenClaw 部署，将这个能看屏幕、操作应用的 AI 智能体投入内部日常工作，实现真正的自动化协作。
 tags:
   - OpenClaw
   - AI Agent
@@ -12,7 +10,7 @@ tags:
   - 工程实践
 status: published
 publish: true
-cover: /images/news/openclaw-mascot.svg
+cover: /images/news/openclaw-mascot.png
 ---
 
 ## 我们为什么选择 OpenClaw

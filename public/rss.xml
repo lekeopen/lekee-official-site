@@ -5,17 +5,17 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 19 Mar 2026 12:21:19 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 20 Mar 2026 01:32:34 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title><![CDATA[乐可开源正式接入 OpenClaw，AI 智能体投入内部实际使用]]></title>
+      <title><![CDATA[OpenClaw 接入实战：AI 智能体驱动团队协作]]></title>
       <link>https://lekeopen.com/news/2026-03-19-openclaw-adoption</link>
       <guid>https://lekeopen.com/news/2026-03-19-openclaw-adoption</guid>
       <pubDate>Thu, 19 Mar 2026 02:00:00 GMT</pubDate>
-      <description><![CDATA[乐可开源团队已成功在阿里云上完成 OpenClaw（Clawdbot）的部署，并正式将其引入内部日常工作流。 OpenClaw 是目前全球增长最快的开源 AI 助手，能看屏幕、操作应用，真正帮助团队"做事"。]]></description>
+      <description><![CDATA[乐可开源在阿里云完成 OpenClaw 部署，将这个能看屏幕、操作应用的 AI 智能体投入内部日常工作，实现真正的自动化协作。]]></description>
       <category>Engineering</category>
-      <enclosure url="https://lekeopen.com/images/news/openclaw-mascot.svg" length="0" type="image/png" />
+      <enclosure url="https://lekeopen.com/images/news/openclaw-mascot.png" length="0" type="image/png" />
     </item>
   
     <item>
