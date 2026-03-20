@@ -83,7 +83,9 @@ export const getAllNews = (): NewsItem[] => {
             date: attributes.date as string,
             category: attributes.category as string,
             tags: (attributes.tags as string[]) || [],
-            summary: [attributes.summary as string], // Frontmatter summary is string, array needed?
+            summary: Array.isArray(attributes.summary)
+                ? (attributes.summary as string[])
+                : [(attributes.summary as string) || ''],
             cover: attributes.cover as string | undefined,
             status: (attributes.status as 'draft' | 'published') || 'published',
             content: {
