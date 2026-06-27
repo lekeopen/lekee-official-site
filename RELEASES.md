@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2026-06-27
+- content: replace placeholder Lab Projects entry with the live GeoGenius AI geometry learning assistant project
+- content: add GeoGenius project update news and local project cover image
+
 ## 2026-03-19
 - content: add news post `2026-03-19-openclaw-adoption` about OpenClaw internal adoption on Alibaba Cloud ECS
 - feat: add OpenClaw / Clawdbot private deployment service section in `Services` page

@@ -1,36 +1,41 @@
 ---
-name: Lab Projects · 实验性项目
-subtitle: 技术能力的试验田
-status: Internal
+name: GeoGenius · 几何直观AI学习助手
+subtitle: 面向小学数学图形与几何的动态演示学习工具
+status: Live
 publishStatus: published
-summary: 这里展示我们正在孵化的实验性技术项目，包括新技术验证、开源尝试与前沿探索。
-category: Workflow Tool
+summary: GeoGenius 是一个面向小学数学图形与几何学习的 AI 辅助工具，覆盖 6 个年级、35 个知识点与 144 个动画步骤，通过动态演示、AI 讲解与变式练习帮助学生建立几何直观。
+category: AI Education
 tech_stack:
-  - Rust
-  - WebAssembly
-  - Edge Computing
-image_bg: bg-purple-50
+  - AI 讲解
+  - 动态几何演示
+  - 小学数学
+  - 课程标准（2022版）
+  - 变式练习
+image_bg: bg-indigo-50
+cover: /images/projects/geogenius-og.png
 links:
-  - label: GitHub Profile
-    url: https://github.com/lekeopen
+  - label: 访问 GeoGenius
+    url: https://geogenius.xiaole.app/
 ---
 
 ## 为什么要做这个项目
 
 ### 背景问题
-技术迭代速度极快，团队需要一个安全的环境来试错和学习新技术，而不必担心影响生产环境。
+小学阶段的图形与几何学习很依赖空间想象与过程理解。传统讲解常常停留在静态图形和公式记忆上，学生不容易看清“图形如何变化”“面积或体积公式为什么成立”，也很难针对同一知识点获得连续、可视化的巩固练习。
 
 ### 技术动机
-保持团队的技术敏感度。探索 Rust、WebAssembly、Edge Computing 等前沿技术在实际业务中的可行性。
+我们希望把动态演示、结构化知识点与 AI 讲解结合起来，让抽象的几何概念变成可观察、可推演、可练习的学习过程。项目依据义务教育数学课程标准（2022版）组织内容，围绕小学图形与几何核心知识点提供更直观的学习体验。
 
 ## 我们解决了什么
 
 ### 技术层面
-不设限。这里有基于 Rust 编写的高性能 CLI 工具，有运行在边缘节点的 Serverless 函数，也有基于 WebGPU 的可视化实验。
+项目将 6 个年级、35 个知识点拆解为 144 个动画步骤，用动态过程呈现图形构造、面积推导、体积理解等关键环节。AI 讲解负责围绕当前步骤进行解释与引导，降低学生从静态图到抽象公式之间的理解门槛。
 
 ### 工程层面
-强调“快速构建，快速验证”。采用 Monorepo 管理多个实验性项目，共享基础库与构建配置。
+GeoGenius 以轻量 Web 应用形态发布，便于学生、家长和教师直接访问使用。页面围绕知识点选择、动画演示、步骤讲解与练习反馈组织，让学习链路尽量短，重点放在“看懂过程”和“立即练习”上。
 
 ## 当前阶段说明
 
-持续进行中。目前正在探索基于 Local LLM 的隐私保护方案，以及基于 WebAssembly 的浏览器端高性能计算。
+已上线运行，访问地址：<https://geogenius.xiaole.app/>。
+
+当前版本覆盖小学图形与几何方向的主要知识点，并提供动态演示、AI 讲解与变式练习能力。后续将继续围绕讲解质量、练习反馈和更多课堂使用场景进行迭代。

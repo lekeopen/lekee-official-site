@@ -5,9 +5,19 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 20 Mar 2026 01:39:28 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 13:22:03 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[GeoGenius 上线：用 AI 和动态演示帮助学生看懂几何]]></title>
+      <link>https://lekeopen.com/news/2026-06-27-geogenius-launch</link>
+      <guid>https://lekeopen.com/news/2026-06-27-geogenius-launch</guid>
+      <pubDate>Sat, 27 Jun 2026 12:55:00 GMT</pubDate>
+      <description><![CDATA[GeoGenius 几何直观AI学习助手已上线，面向小学图形与几何学习场景，覆盖 6 个年级、35 个知识点与 144 个动画步骤。]]></description>
+      <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/projects/geogenius-og.png" length="0" type="image/png" />
+    </item>
+  
     <item>
       <title><![CDATA[OpenClaw 接入实战：AI 智能体驱动团队协作]]></title>
       <link>https://lekeopen.com/news/2026-03-19-openclaw-adoption</link>
