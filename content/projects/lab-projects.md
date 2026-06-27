@@ -12,7 +12,7 @@ tech_stack:
   - 课程标准（2022版）
   - 变式练习
 image_bg: bg-indigo-50
-cover: /images/projects/geogenius-og.png
+cover: https://geogenius.xiaole.app/og.png
 links:
   - label: 访问 GeoGenius
     url: https://geogenius.xiaole.app/
