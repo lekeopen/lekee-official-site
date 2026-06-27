@@ -5,6 +5,7 @@ import frontMatter from 'front-matter';
 const RSS_PATH = path.join(process.cwd(), 'public', 'rss.xml');
 const NEWS_DIR = path.join(process.cwd(), 'content', 'news');
 const SITE_URL = 'https://lekeopen.com';
+const toAbsoluteUrl = (url: string) => url.startsWith('http://') || url.startsWith('https://') ? url : `${SITE_URL}${url}`;
 
 // Helper to parse news from markdown
 const getNews = () => {
@@ -35,7 +36,7 @@ const generateRSS = () => {
       <pubDate>${new Date(item.date.length > 10 ? item.date.replace(' ', 'T') : item.date + 'T00:00:00.000Z').toUTCString()}</pubDate>
       <description><![CDATA[${Array.isArray(item.summary) ? item.summary.join(' ') : item.summary}]]></description>
       <category>${item.category}</category>
-      ${item.cover ? `<enclosure url="${SITE_URL}${item.cover}" length="0" type="image/png" />` : ''}
+      ${item.cover ? `<enclosure url="${toAbsoluteUrl(item.cover)}" length="0" type="image/png" />` : ''}
     </item>
   `).join('');
 

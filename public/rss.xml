@@ -5,7 +5,7 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 27 Jun 2026 13:22:03 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 13:43:31 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
     <item>
@@ -15,7 +15,7 @@
       <pubDate>Sat, 27 Jun 2026 12:55:00 GMT</pubDate>
       <description><![CDATA[GeoGenius 几何直观AI学习助手已上线，面向小学图形与几何学习场景，覆盖 6 个年级、35 个知识点与 144 个动画步骤。]]></description>
       <category>Project</category>
-      <enclosure url="https://lekeopen.com/images/projects/geogenius-og.png" length="0" type="image/png" />
+      <enclosure url="https://geogenius.xiaole.app/og.png" length="0" type="image/png" />
     </item>
   
     <item>

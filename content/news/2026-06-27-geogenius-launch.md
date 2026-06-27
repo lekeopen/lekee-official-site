@@ -11,7 +11,7 @@ tags:
   - 动态演示
 status: published
 publish: true
-cover: /images/projects/geogenius-og.png
+cover: https://geogenius.xiaole.app/og.png
 ---
 
 ## 为什么做 GeoGenius
