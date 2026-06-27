@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-20T01:32:34.971Z",
+  "generatedAt": "2026-06-27T13:19:42.615Z",
   "items": [
     {
       "slug": "2025-12-18-xiaole-stage-update",
@@ -58,6 +58,17 @@
       "title": "OpenClaw 接入实战：AI 智能体驱动团队协作",
       "date": "2026-03-19 10:00:00",
       "summary": "乐可开源在阿里云完成 OpenClaw 部署，将这个能看屏幕、操作应用的 AI 智能体投入内部日常工作，实现真正的自动化协作。",
+      "channels": [
+        "wechat",
+        "github"
+      ],
+      "status": "pending"
+    },
+    {
+      "slug": "2026-06-27-geogenius-launch",
+      "title": "GeoGenius 上线：用 AI 和动态演示帮助学生看懂几何",
+      "date": "2026-06-27 20:55:00",
+      "summary": "GeoGenius 几何直观AI学习助手已上线，面向小学图形与几何学习场景，覆盖 6 个年级、35 个知识点与 144 个动画步骤。",
       "channels": [
         "wechat",
         "github"
