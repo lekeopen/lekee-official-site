@@ -1,0 +1,74 @@
+{
+  "button": [
+    {
+      "name": "了解我们",
+      "sub_button": [
+        {
+          "type": "view",
+          "name": "公司介绍",
+          "url": "https://lekeopen.com/about"
+        },
+        {
+          "type": "view",
+          "name": "最新文章",
+          "url": "https://lekeopen.com/news"
+        },
+        {
+          "type": "view",
+          "name": "官网首页",
+          "url": "https://lekeopen.com/"
+        }
+      ]
+    },
+    {
+      "name": "产品服务",
+      "sub_button": [
+        {
+          "type": "view",
+          "name": "GeoGenius",
+          "url": "https://geogenius.xiaole.app/"
+        },
+        {
+          "type": "view",
+          "name": "乐教库",
+          "url": "https://lejiaoku.com/"
+        },
+        {
+          "type": "view",
+          "name": "小乐 AI",
+          "url": "https://lekeopen.com/projects/xiaole-agent"
+        },
+        {
+          "type": "view",
+          "name": "AI教育方案",
+          "url": "https://lekeopen.com/solutions"
+        },
+        {
+          "type": "view",
+          "name": "OpenClaw",
+          "url": "https://lekeopen.com/news/2026-03-19-openclaw-adoption"
+        }
+      ]
+    },
+    {
+      "name": "合作联系",
+      "sub_button": [
+        {
+          "type": "view",
+          "name": "商务合作",
+          "url": "https://lekeopen.com/contact?topic=business"
+        },
+        {
+          "type": "view",
+          "name": "教育合作",
+          "url": "https://lekeopen.com/contact?topic=education"
+        },
+        {
+          "type": "view",
+          "name": "联系表单",
+          "url": "https://lekeopen.com/contact"
+        }
+      ]
+    }
+  ]
+}

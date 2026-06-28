@@ -13,6 +13,14 @@
     "check": "tsc -b --noEmit",
     "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js",
+    "wechat": "node tools/wechat-admin/src/cli.mjs",
+    "wechat:accounts": "node tools/wechat-admin/src/cli.mjs accounts",
+    "wechat:menu:get": "node tools/wechat-admin/src/cli.mjs menu get",
+    "wechat:menu:sync": "node tools/wechat-admin/src/cli.mjs menu sync",
+    "wechat:menu:delete": "node tools/wechat-admin/src/cli.mjs menu delete",
+    "wechat:replies": "node tools/wechat-admin/src/cli.mjs replies show",
+    "wechat:article": "node tools/wechat-admin/src/cli.mjs article render",
+    "wechat:draft": "node tools/wechat-admin/src/cli.mjs draft create",
     "prepare": "husky"
   },
   "lint-staged": {
