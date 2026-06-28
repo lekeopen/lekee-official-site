@@ -1,0 +1,55 @@
+{
+  "account": "lekeopen",
+  "subscribe": {
+    "type": "text",
+    "content": "欢迎关注「乐可开源」👋\n\n我们专注于 AI 产品、教育数字化和开源工程实践。\n\n你可以回复：\n【几何】体验 GeoGenius 几何学习助手\n【乐教库】了解教育资源管理平台\n【AI】了解小乐 AI 与智能体方案\n【合作】获取合作与咨询方式"
+  },
+  "fallback": {
+    "type": "text",
+    "content": "已收到你的消息 👋\n\n你可以回复关键词了解更多：\n\n【几何】体验 GeoGenius 几何学习助手\n【乐教库】了解教育资源管理平台\n【AI】了解智能体方案\n【合作】获取合作方式\n\n也可以直接留言你的需求，我们会尽快回复。"
+  },
+  "keywords": [
+    {
+      "name": "GeoGenius 几何学习助手",
+      "keywords": ["几何", "GeoGenius", "geogenius", "数学"],
+      "type": "text",
+      "content": "GeoGenius 是面向小学数学图形与几何的 AI 学习助手。\n\n适合：\n・学生理解图形变化和公式推导\n・家长课后辅导\n・老师课堂演示\n\n体验地址：\nhttps://geogenius.xiaole.app/"
+    },
+    {
+      "name": "乐教库",
+      "keywords": ["乐教库", "lejiaoku", "教育资源", "资源管理", "课件", "教案", "知识库"],
+      "type": "text",
+      "content": "乐教库是面向教育工作者的教学资源与知识管理平台，帮助学校和老师沉淀、检索和复用课件、教案、习题等资源。\n\n访问地址：\nhttps://lejiaoku.com/"
+    },
+    {
+      "name": "小乐 AI",
+      "keywords": ["AI", "小乐", "智能体", "Agent", "agent"],
+      "type": "text",
+      "content": "小乐 AI 是我们在智能体方向的产品与工程实践，重点探索 AI 如何真正进入任务流，而不只是聊天。\n\n菜单中点击【产品服务 → 小乐 AI】了解最新进展。\n\n了解更多：\nhttps://lekeopen.com/projects/xiaole-agent"
+    },
+    {
+      "name": "OpenClaw 部署",
+      "keywords": ["OpenClaw", "openclaw", "Clawdbot", "部署", "私有化"],
+      "type": "text",
+      "content": "我们提供 OpenClaw / Clawdbot 私有化部署服务，可帮助团队在阿里云、腾讯云等环境快速搭建自己的 AI 智能体实例。\n\n实践介绍：\nhttps://lekeopen.com/news/2026-03-19-openclaw-adoption\n\n咨询服务：\nhttps://lekeopen.com/contact?topic=openclaw"
+    },
+    {
+      "name": "合作咨询",
+      "keywords": ["合作", "商务", "对接", "咨询", "联系"],
+      "type": "text",
+      "content": "感谢关注乐可开源。\n\n如果你正在寻找：\n・AI 应用或智能体解决方案\n・教育数字化产品合作\n・软件系统开发与技术咨询\n\n可以通过表单留下需求，我们会尽快联系：\nhttps://lekeopen.com/contact?topic=business"
+    },
+    {
+      "name": "教育合作",
+      "keywords": ["教育", "学校", "机构", "老师", "课堂"],
+      "type": "text",
+      "content": "我们关注 AI 在真实教育场景中的应用，当前重点方向包括 GeoGenius 几何学习助手、乐教库资源管理平台和 AI 教育解决方案。\n\n教育合作咨询：\nhttps://lekeopen.com/contact?topic=education"
+    },
+    {
+      "name": "官网",
+      "keywords": ["官网", "网站", "首页"],
+      "type": "text",
+      "content": "乐可开源官网：\nhttps://lekeopen.com/\n\n你可以在官网查看产品项目、服务能力和最新动态。"
+    }
+  ]
+}

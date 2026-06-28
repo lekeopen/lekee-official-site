@@ -1,0 +1,11 @@
+{
+  "accounts": {
+    "lekeopen": {
+      "name": "乐可开源",
+      "type": "official_account",
+      "appIdEnv": "WECHAT_LEKEOPEN_APP_ID",
+      "appSecretEnv": "WECHAT_LEKEOPEN_APP_SECRET",
+      "menuFile": "menus/lekeopen.json"
+    }
+  }
+}

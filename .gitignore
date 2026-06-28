@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 .env
+.wechat-admin-cache/
+.wechat-admin-output/
+tools/wechat-admin/accounts.local.json
 
 # Editor directories and files
 .vscode/*
