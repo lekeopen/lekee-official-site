@@ -1,5 +1,8 @@
 # Release Notes
 
+## 2026-07-18
+- content: add Boral Wang dental clinic website project entry and related project update news
+
 ## 2026-07-16
 - content: add Gaoyuanwai free-e.net project entry and related project update news
 

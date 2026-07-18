@@ -5,9 +5,19 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 16 Jul 2026 16:52:09 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 18 Jul 2026 04:03:27 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[边大夫口腔官网完成静态优先改版]]></title>
+      <link>https://lekeopen.com/news/2026-07-18-boral-wang</link>
+      <guid>https://lekeopen.com/news/2026-07-18-boral-wang</guid>
+      <pubDate>Sat, 18 Jul 2026 03:53:38 GMT</pubDate>
+      <description><![CDATA[边大夫口腔官网已作为本地医疗服务网站加入乐可开源项目列表，重点展示诊所信息、诊疗项目、口腔知识和门诊动态，并采用静态优先架构提升稳定性与可维护性。]]></description>
+      <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/projects/boral-wang-og.png" length="0" type="image/png" />
+    </item>
+  
     <item>
       <title><![CDATA[高源外个人技术博客正式上线]]></title>
       <link>https://lekeopen.com/news/2026-07-16-free-e-gaoyuanwai</link>
