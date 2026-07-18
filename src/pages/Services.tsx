@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rocket, RefreshCw, Bot, Code, Database, Shield, Layout, Server, Smartphone, CheckCircle } from 'lucide-react';
+import { Rocket, RefreshCw, Bot, Code, Database, Shield, Layout, Server, Smartphone, CheckCircle, Workflow } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
 import { Link } from 'react-router-dom';
 
@@ -29,6 +29,14 @@ const Services: React.FC = () => {
       problem: '解决 Token 成本控制、响应速度、私有数据清洗与 RAG 准确率等工程难题。让 AI 真正进入生产环境。',
       cooperation: 'POC 验证 -> 正式实施',
       features: ['企业知识库搭建', '任务型 Agent 开发', 'Prompt 优化', '私有化部署评估']
+    },
+    {
+      icon: <Workflow className="w-8 h-8 text-cyan-600" />,
+      title: 'Codex 开发应用落地',
+      target: '希望用 AI 编程提升交付效率、改造内部工具或维护长期项目的团队',
+      problem: '解决 AI 只能写片段、难以进入真实工程流程的问题。我们将 Codex 融入需求拆解、代码实现、测试验证、文档同步与发布流程。',
+      cooperation: '研发流程共建 + 项目交付',
+      features: ['AI 辅助全栈开发', '旧系统改造', '自动化脚本与内部工具', '代码审查与测试补强']
     }
   ];
 
@@ -46,7 +54,7 @@ const Services: React.FC = () => {
     <div className="py-16 bg-gray-50">
       <SEOMeta
         title="能力与服务 | 乐可开源"
-        description="乐可开源提供从0到1的产品工程化、复杂系统重构、AI智能体落地服务。面向中小企业与创业团队，解决真实的技术痛点。"
+        description="乐可开源提供从0到1的产品工程化、复杂系统重构、AI智能体落地、Codex 开发应用落地服务。面向中小企业与创业团队，解决真实的技术痛点。"
         url="/services"
         type="website"
       />
@@ -67,7 +75,7 @@ const Services: React.FC = () => {
             <span className="w-2 h-8 bg-blue-600 rounded-full mr-3"></span>
             核心合作模式
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
             {coreServices.map((service, index) => (
               <div key={index} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-100 flex flex-col">
                 <div className="bg-blue-50 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
