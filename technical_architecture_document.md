@@ -1,55 +1,60 @@
-# 技术架构文档 - 天水乐可信息技术有限公司官网骨架
+# 乐可开源官网技术架构
 
-## 1. 技术栈
-- **核心框架**：React + TypeScript
-- **构建工具**：Vite
-- **样式方案**：Tailwind CSS
-- **路由管理**：React Router (推荐)
-- **图标库**：Lucide React 或 Heroicons (推荐)
+## 1. 当前架构
 
-## 2. 项目结构设计
+官网是 React + TypeScript + Vite 构建的静态优先网站，不包含自建后端、数据库或公开 API。
+
+- **界面**：React 18、React Router、Tailwind CSS、Framer Motion；
+- **内容**：`content/news` 和 `content/projects` 中的 Markdown；
+- **内容加载**：`src/lib/content.ts` 使用 `import.meta.glob` 在构建时载入内容；
+- **联系表单**：浏览器直接调用 EmailJS；
+- **SEO**：页面运行时 Meta 与构建后的路由级 HTML 预渲染；
+- **订阅与分发**：构建时生成 `public/rss.xml` 和 `publish-queue.json`；
+- **微信管理工具**：`tools/wechat-admin` 是本地 CLI，不属于官网运行时。
+
+## 2. 运行与构建流程
+
+```text
+Markdown / React 源码
+        ↓
+RSS 与发布队列生成
+        ↓
+TypeScript 编译检查
+        ↓
+Vite 静态构建
+        ↓
+路由级 SEO HTML 预渲染
+        ↓
+dist 生产产物
 ```
-/src
-  /assets         # 静态资源
-  /components     # 公共组件
-    /common       # 通用UI组件 (Button, Card, Input)
-    /layout       # 布局组件 (Header, Footer)
-    /sections     # 页面特定区块
-  /data           # 占位数据 (JSON/TS文件)
-  /layouts        # 页面布局模板 (MainLayout)
-  /pages          # 页面组件
-    Home.tsx
-    Services.tsx
-    Products.tsx
-    Solutions.tsx
-    About.tsx
-    Contact.tsx
-  /styles         # 全局样式
-  App.tsx         # 路由配置
-  main.tsx        # 入口文件
-```
 
-## 3. 关键技术实现
+完整构建命令为 `npm run build`。构建产物位于 `dist/`，其中包含静态页面、客户端资源以及新闻和项目详情的预渲染入口。
 
-### 3.1 路由配置
-使用 `react-router-dom` 配置以下路由：
-- `/` - 首页
-- `/services` - 能力与服务
-- `/products` - 产品与项目
-- `/solutions` - 解决方案
-- `/about` - 关于我们
-- `/contact` - 联系我们
+## 3. 路由
 
-### 3.2 组件化策略
-- **UI 组件**：尽可能原子化，使用 Tailwind 类名控制样式。
-- **布局组件**：`MainLayout` 包含导航栏（Header）和页脚（Footer），包裹所有页面内容。
-- **数据驱动**：页面内容（如卡片列表、服务列表）应从 `/data` 目录下的常量文件中读取，方便后续替换为 API 数据。
+- `/`：首页；
+- `/services`：能力与服务；
+- `/products`：产品与项目；
+- `/solutions`：解决方案；
+- `/about`：关于我们；
+- `/contact`：联系我们；
+- `/news`、`/news/:id`：动态列表与详情；
+- `/projects/:id`：项目详情；
+- `/privacy`：隐私政策；
+- `/rss.xml`：RSS 订阅源。
 
-### 3.3 样式规范
-- 使用 Tailwind CSS 工具类。
-- 定义一套基础颜色和字体变量（在 `tailwind.config.js` 中配置）。
-- 响应式断点遵循 Tailwind 默认标准 (sm, md, lg, xl)。
+## 4. 配置与安全边界
 
-### 3.4 占位内容策略
-- 文本：使用 "Lorem ipsum..." 或具描述性的中文占位符（如“此处填写服务详情...”）。
-- 图片：使用灰色背景 `div` 或 `https://placehold.co` 服务。
+生产联系表单依赖 `VITE_EMAILJS_SERVICE_ID`、`VITE_EMAILJS_TEMPLATE_ID` 和 `VITE_EMAILJS_PUBLIC_KEY`。这些值会进入浏览器构建产物，只能使用 EmailJS 设计为公开使用的标识，不得放入私钥、服务端 Token 或其他敏感凭据。地图入口使用普通高德地图 URI，不需要 API Key。
+
+## 5. 发布与回滚
+
+- 所有修改先进入 `develop`；
+- 本地完成测试、类型检查、Lint 和生产构建；
+- `develop` 合并到 `main`；
+- 推送 `main` 触发生产部署；
+- 回滚时优先回退到上一条已验证的 `main` 提交并重新部署，不直接修改生产产物。
+
+## 6. 后续演进
+
+V1.1 聚焦工程质量：统一验证命令、Markdown 内容校验、持续集成和文档治理。除非出现明确业务需求，不引入 CMS、数据库、自建 API 或新的运行时服务。
