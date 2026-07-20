@@ -19,7 +19,7 @@ const NewsDetail: React.FC = () => {
 
   // 自定义 ReactMarkdown 组件，区分站内外链接
   const components: Components = {
-    a: ({ node, href, children, ...props }) => {
+    a: ({ href, children, ...props }) => {
       const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
       
       if (isExternal) {
@@ -59,7 +59,7 @@ const NewsDetail: React.FC = () => {
 
         {/* Article Header */}
         <header className="mb-12">
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
               ${newsItem.category === 'Site Update' ? 'bg-blue-100 text-blue-800' : 
                 newsItem.category === 'Project' ? 'bg-indigo-100 text-indigo-800' : 

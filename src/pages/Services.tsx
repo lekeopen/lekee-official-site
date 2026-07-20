@@ -132,7 +132,7 @@ const Services: React.FC = () => {
               <img src="/images/news/openclaw-mascot.svg" alt="OpenClaw" className="w-10 h-10" />
             </div>
             <div>
-              <div className="flex items-center gap-3 mb-1">
+              <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h2 className="text-2xl font-bold">OpenClaw / Clawdbot 私有化部署</h2>
                 <span className="text-xs font-bold bg-red-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">New</span>
               </div>

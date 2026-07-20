@@ -41,7 +41,7 @@ const News: React.FC = () => {
             >
               {/* Content */}
               <div className="flex-grow order-2 md:order-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span className={`flex items-center text-xs font-semibold px-2 py-0.5 rounded
                     ${news.category === 'Site Update' ? 'bg-blue-50 text-blue-600' : 
                       news.category === 'Project' ? 'bg-indigo-50 text-indigo-600' : 
@@ -56,7 +56,7 @@ const News: React.FC = () => {
                   {news.title}
                 </h3>
                 
-                <div className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                <div className="text-gray-600 text-sm leading-relaxed line-clamp-none md:line-clamp-2">
                   {news.summary.join(' ')}
                 </div>
               </div>

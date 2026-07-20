@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, MessageSquare, CheckCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import SEOMeta from '../components/common/SEOMeta';
 
@@ -53,7 +53,7 @@ const Contact: React.FC = () => {
     } else if (/^(.)\1{9,}$/m.test(message)) {
       // 检测重复字符（防止垃圾内容如"aaaaaaaaaa"）
       newErrors.message = '请输入有效的需求描述';
-    } else if (/[^\u4e00-\u9fa5a-zA-Z0-9\s.,;:!?，。；：！？—\-\n\r()（）\[\]【】""''""]+/.test(message)) {
+    } else if (/[^\u4e00-\u9fa5a-zA-Z0-9\s.,;:!?，。；：！？—\n\r()（）\u005b\u005d【】""''""-]+/.test(message)) {
       // 过滤特殊符号
       newErrors.message = '需求描述包含不允许的字符';
     }
@@ -133,9 +133,10 @@ const Contact: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-start">
                 <Mail className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-gray-900">Email (推荐)</h3>
-                  <p className="text-gray-600 font-medium select-all">contact@lekeopen.com</p>                  <p className="text-xs text-gray-400 mt-1">技术负责人通常在 24 小时内回复</p>
+                  <p className="text-gray-600 font-medium select-all break-all">contact@lekeopen.com</p>
+                  <p className="text-xs text-gray-400 mt-1">技术负责人通常在 24 小时内回复</p>
                 </div>
               </div>
                             <div className="flex items-start">

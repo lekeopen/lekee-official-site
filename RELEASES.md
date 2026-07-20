@@ -1,5 +1,10 @@
 # Release Notes
 
+## 2026-07-20
+- fix: make mobile layouts resilient to enlarged WeChat text without overriding user font preferences
+- test: add regression coverage for viewport, wrapping, flexible text containers, and zoom accessibility
+- chore: clear existing ESLint errors found during release verification
+
 ## 2026-07-18
 - content: add Boral Wang dental clinic website project entry and related project update news
 

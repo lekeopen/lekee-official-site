@@ -5,7 +5,7 @@ interface LogoProps {
   variant?: 'full' | 'icon';
 }
 
-const Logo: React.FC<LogoProps> = ({ className = '', variant = 'full' }) => {
+const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   // 默认使用 public/logo.png
   const logoSrc = '/logo.png'; 
 

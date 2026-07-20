@@ -38,12 +38,14 @@ const TechBackground: React.FC = () => {
       }
 
       position() {
-        this.x + this.velocityX > w && this.velocityX > 0 || this.x + this.velocityX < 0 && this.velocityX < 0
-          ? (this.velocityX *= -1)
-          : this.velocityX;
-        this.y + this.velocityY > h && this.velocityY > 0 || this.y + this.velocityY < 0 && this.velocityY < 0
-          ? (this.velocityY *= -1)
-          : this.velocityY;
+        if ((this.x + this.velocityX > w && this.velocityX > 0)
+          || (this.x + this.velocityX < 0 && this.velocityX < 0)) {
+          this.velocityX *= -1;
+        }
+        if ((this.y + this.velocityY > h && this.velocityY > 0)
+          || (this.y + this.velocityY < 0 && this.velocityY < 0)) {
+          this.velocityY *= -1;
+        }
         this.x += this.velocityX;
         this.y += this.velocityY;
       }

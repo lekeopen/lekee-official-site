@@ -19,7 +19,7 @@ const ProjectDetail: React.FC = () => {
 
   // 自定义 ReactMarkdown 组件，区分站内外链接
   const components: Components = {
-    a: ({ node, href, children, ...props }) => {
+    a: ({ href, children, ...props }) => {
       const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
       
       if (isExternal) {
@@ -59,7 +59,7 @@ const ProjectDetail: React.FC = () => {
 
         {/* Header */}
         <header className="mb-12">
-          <div className="flex items-center space-x-3 mb-4">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
               ${(project.status === 'Live' || project.status === 'Production') ? 'bg-green-50 text-green-700 border-green-200' : 
                 project.status === 'Alpha' ? 'bg-orange-50 text-orange-700 border-orange-200' : 
@@ -76,7 +76,7 @@ const ProjectDetail: React.FC = () => {
               {project.status}
             </span>
             <span className="text-gray-400 text-sm">|</span>
-            <span className="text-gray-500 text-sm font-medium">Project ID: {project.id}</span>
+            <span className="text-gray-500 text-sm font-medium break-all">Project ID: {project.id}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             {project.name}

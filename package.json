@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node --test tests/*.test.mjs",
     "build": "npm run build:rss && npm run publish:queue && tsc -b && vite build && npm run prerender",
     "prerender": "node --loader ts-node/esm scripts/prerender.ts",
     "build:rss": "node --loader ts-node/esm scripts/generate-rss.ts",

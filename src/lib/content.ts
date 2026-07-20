@@ -64,10 +64,6 @@ export const getAllNews = (): NewsItem[] => {
 
         const { attributes, body } = parseMarkdown(content as string);
 
-        // Normalize summary to always be an array
-        const rawSummary = attributes.summary;
-        const summary = Array.isArray(rawSummary) ? rawSummary : [rawSummary as string];
-
         // Parse complex fields from body if needed, or rely on structured frontmatter + body
         // For news, we used to have structured fields. Let's try to extract them from sections or just use body.
         // For now, let's map the flat frontmatter to our structure.

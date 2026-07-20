@@ -110,7 +110,7 @@ const Footer: React.FC = () => {
           <div>
             &copy; {new Date().getFullYear()} 天水乐可信息技术有限公司. All rights reserved.
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
               陇ICP备15002697号-1
             </a>
