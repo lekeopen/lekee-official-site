@@ -19,7 +19,7 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   siteName = '乐可开源'
 }) => {
   const SITE_URL = 'https://lekeopen.com';
-  const DEFAULT_IMAGE = `${SITE_URL}/og-450x300.png`;
+  const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
   const normalizeUrl = (value?: string) => {
     const route = value || '/';
@@ -56,6 +56,9 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   const fullUrl = normalizeUrl(url);
   const ogImage = normalizeImage(image);
   const ogImageType = detectImageType(ogImage);
+  const ogImageWidth = ogImage === DEFAULT_IMAGE ? 600 : undefined;
+  const ogImageHeight = ogImage === DEFAULT_IMAGE ? 600 : undefined;
+  const twitterCard = ogImage === DEFAULT_IMAGE ? 'summary' : 'summary_large_image';
   
   // 截取描述前 120 字
   const truncatedDesc = description.length > 120 
@@ -78,11 +81,11 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
       <meta property="og:image:type" content={ogImageType} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      {ogImageWidth && <meta property="og:image:width" content={String(ogImageWidth)} />}
+      {ogImageHeight && <meta property="og:image:height" content={String(ogImageHeight)} />}
       
       {/* Twitter Card Meta */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={truncatedDesc} />
       <meta name="twitter:image" content={ogImage} />

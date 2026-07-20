@@ -5,6 +5,7 @@ import { glob } from 'glob';
 import matter from 'gray-matter';
 import * as cheerio from 'cheerio';
 import { fileURLToPath } from 'url';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,8 @@ type MetaPayload = {
   image: string;
   url: string;
   type: 'website' | 'article';
+  imageWidth?: number;
+  imageHeight?: number;
 };
 
 const normalizeUrl = (route: string) => {
@@ -32,7 +35,7 @@ const normalizeUrl = (route: string) => {
 };
 
 const normalizeImage = (image?: string) => {
-  const fallback = `${SITE_URL}/og-450x300.png`;
+  const fallback = `${SITE_URL}/og-default.png`;
   if (!image) {
     return fallback;
   }
@@ -52,6 +55,30 @@ const imageType = (imageUrl: string) => {
   if (/\.webp($|\?)/i.test(imageUrl)) return 'image/webp';
   return 'image/png';
 };
+
+async function imageDimensions(imageUrl: string) {
+  try {
+    const url = new URL(imageUrl);
+    if (url.origin !== SITE_URL) {
+      return {};
+    }
+
+    const relativePath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+    const filePath = path.join(ROOT_DIR, 'public', relativePath);
+    if (!fs.existsSync(filePath)) {
+      return {};
+    }
+
+    const metadata = await sharp(filePath).metadata();
+    if (!metadata.width || !metadata.height) {
+      return {};
+    }
+
+    return { imageWidth: metadata.width, imageHeight: metadata.height };
+  } catch {
+    return {};
+  }
+}
 
 function applyMeta(templateHtml: string, payload: MetaPayload) {
   const $ = cheerio.load(templateHtml);
@@ -96,10 +123,18 @@ function applyMeta(templateHtml: string, payload: MetaPayload) {
   setMeta('og:image', safeImage);
   setMeta('og:image:secure_url', safeImage);
   setMeta('og:image:type', imageType(payload.image));
-  setMeta('og:image:width', '1200');
-  setMeta('og:image:height', '630');
+  if (payload.imageWidth && payload.imageHeight) {
+    setMeta('og:image:width', String(payload.imageWidth));
+    setMeta('og:image:height', String(payload.imageHeight));
+  } else {
+    $('meta[property="og:image:width"]').remove();
+    $('meta[property="og:image:height"]').remove();
+  }
 
-  setNameMeta('twitter:card', 'summary_large_image');
+  const twitterCard = payload.imageWidth === payload.imageHeight && payload.imageWidth
+    ? 'summary'
+    : 'summary_large_image';
+  setNameMeta('twitter:card', twitterCard);
   setNameMeta('twitter:title', safeTitle);
   setNameMeta('twitter:description', safeDescription);
   setNameMeta('twitter:image', safeImage);
@@ -180,10 +215,12 @@ async function prerender() {
   ];
 
   for (const page of staticPages) {
+    const dimensions = await imageDimensions(`${SITE_URL}/og-default.png`);
     const html = applyMeta(templateHtml, {
       title: page.title,
       description: page.description,
-      image: `${SITE_URL}/og-450x300.png`,
+      image: `${SITE_URL}/og-default.png`,
+      ...dimensions,
       url: normalizeUrl(page.route),
       type: page.type,
     });
@@ -204,12 +241,14 @@ async function prerender() {
     const summary = Array.isArray(data.summary) ? data.summary.join(' ') : data.summary;
     const description = summary || data.description || '专注 AI 与工程实践';
     const image = normalizeImage(data.cover);
+    const dimensions = await imageDimensions(image);
     const route = `/news/${filename}`;
 
     const html = applyMeta(templateHtml, {
       title,
       description,
       image,
+      ...dimensions,
       url: normalizeUrl(route),
       type: 'article',
     });
@@ -230,12 +269,14 @@ async function prerender() {
     const title = data.name ? `${data.name} | 乐可开源` : '乐可开源';
     const description = data.summary || data.description || '乐可开源项目实践';
     const image = normalizeImage(data.cover);
+    const dimensions = await imageDimensions(image);
     const route = `/projects/${filename}`;
 
     const html = applyMeta(templateHtml, {
       title,
       description,
       image,
+      ...dimensions,
       url: normalizeUrl(route),
       type: 'article',
     });

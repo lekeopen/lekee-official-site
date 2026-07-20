@@ -1,5 +1,10 @@
 # Release Notes
 
+## 2026-07-21
+- fix: use a 600×600 logo card as the default social sharing image for WeChat
+- fix: emit accurate OG dimensions for local covers and omit unverifiable remote dimensions
+- test: cover default OG generation and sharing metadata behavior
+
 ## 2026-07-20
 - fix: make mobile layouts resilient to enlarged WeChat text without overriding user font preferences
 - test: add regression coverage for viewport, wrapping, flexible text containers, and zoom accessibility
