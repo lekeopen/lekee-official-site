@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Mail, MapPin, MessageSquare, CheckCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import SEOMeta from '../components/common/SEOMeta';
+import OfficeMap from '../components/contact/OfficeMap';
 
 const Contact: React.FC = () => {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -152,15 +153,7 @@ const Contact: React.FC = () => {
                 <MapPin className="w-6 h-6 text-gray-600 mt-1 mr-4 flex-shrink-0" />
                 <div>
                   <h3 className="font-bold text-gray-900">办公地址</h3>
-                  <p className="text-gray-600">天水市秦州区安居小区</p>
-                  <a
-                    href="https://uri.amap.com/search?keyword=%E5%A4%A9%E6%B0%B4%E5%B8%82%E7%A7%A6%E5%B7%9E%E5%8C%BA%E5%AE%89%E5%B1%85%E5%B0%8F%E5%8C%BA&view=map&src=lekeopen"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                  >
-                    在高德地图中查看
-                  </a>
+                  <p className="text-gray-600">天水市秦州区安居小区 E 区</p>
                 </div>
               </div>
             </div>
@@ -262,6 +255,7 @@ const Contact: React.FC = () => {
           </div>
 
         </div>
+        <OfficeMap />
       </div>
     </div>
   );
