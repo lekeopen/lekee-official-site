@@ -70,16 +70,18 @@ VITE_EMAILJS_SERVICE_ID=xxx VITE_EMAILJS_TEMPLATE_ID=xxx VITE_EMAILJS_PUBLIC_KEY
 
 ### 注意事项
 
-- ⚠️ **不要**将真实的 EmailJS 配置信息提交到 Git 仓库
+- ℹ️ `VITE_EMAILJS_SERVICE_ID`、`VITE_EMAILJS_TEMPLATE_ID` 和 `VITE_EMAILJS_PUBLIC_KEY` 会进入浏览器构建产物，它们是 EmailJS 设计为客户端使用的公开标识，不是服务端秘密
+- ⚠️ **不要**在这些变量或任何 `VITE_*` 变量中放置私钥、服务端 Token 或其他敏感凭据
 - ✅ `.env` 文件已在 `.gitignore` 中，本地开发安全
 - ✅ 生产环境必须通过部署平台的环境变量配置功能设置
 - ✅ 环境变量更新后需要重新构建和部署才能生效
 
-### 当前状态
+### 发布前质量检查
 
-- ✅ 本地开发环境：已配置（通过 .env 文件）
-- ❌ 生产环境：**待配置**（需要在部署平台添加环境变量）
+在 `develop` 分支运行：
 
----
+```bash
+npm run verify
+```
 
-**配置完成后，请删除此文档或将其移至 `docs/` 目录。**
+GitHub Actions 会在 Pull Request 及 `develop`、`main` 推送时运行相同门禁。部署后应在生产「联系我们」页面执行一次表单冒烟测试；文档不记录环境变量的实际值或假定某个部署环境已配置。

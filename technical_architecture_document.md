@@ -7,6 +7,7 @@
 - **界面**：React 18、React Router、Tailwind CSS、Framer Motion；
 - **内容**：`content/news` 和 `content/projects` 中的 Markdown；
 - **内容加载**：`src/lib/content.ts` 使用 `import.meta.glob` 在构建时载入内容；
+- **内容质量**：`scripts/validate-content.mjs` 在测试和构建前校验 Markdown frontmatter；
 - **联系表单**：浏览器直接调用 EmailJS；
 - **SEO**：页面运行时 Meta 与构建后的路由级 HTML 预渲染；
 - **订阅与分发**：构建时生成 `public/rss.xml` 和 `publish-queue.json`；
@@ -16,6 +17,8 @@
 
 ```text
 Markdown / React 源码
+        ↓
+内容校验、自动测试、TypeScript 与 ESLint
         ↓
 RSS 与发布队列生成
         ↓
@@ -28,7 +31,9 @@ Vite 静态构建
 dist 生产产物
 ```
 
-完整构建命令为 `npm run build`。构建产物位于 `dist/`，其中包含静态页面、客户端资源以及新闻和项目详情的预渲染入口。
+统一质量门禁为 `npm run verify`，它会执行内容校验、自动测试、TypeScript、ESLint 和完整生产构建。单独构建命令为 `npm run build`。构建产物位于 `dist/`，其中包含静态页面、客户端资源以及新闻和项目详情的预渲染入口。
+
+`.github/workflows/quality.yml` 在所有 Pull Request 以及 `develop`、`main` 推送时使用 Node 20、`npm ci` 和同一条 `npm run verify`，避免本地与 CI 门禁漂移。
 
 ## 3. 路由
 
@@ -50,11 +55,12 @@ dist 生产产物
 ## 5. 发布与回滚
 
 - 所有修改先进入 `develop`；
-- 本地完成测试、类型检查、Lint 和生产构建；
+- `develop` 本地运行 `npm run verify`；
+- GitHub Actions `quality` 检查通过；
 - `develop` 合并到 `main`；
 - 推送 `main` 触发生产部署；
 - 回滚时优先回退到上一条已验证的 `main` 提交并重新部署，不直接修改生产产物。
 
 ## 6. 后续演进
 
-V1.1 聚焦工程质量：统一验证命令、Markdown 内容校验、持续集成和文档治理。除非出现明确业务需求，不引入 CMS、数据库、自建 API 或新的运行时服务。
+V1.1 已建立统一验证命令、Markdown 内容校验、持续集成和文档治理。除非出现明确业务需求，不引入 CMS、数据库、自建 API 或新的运行时服务。

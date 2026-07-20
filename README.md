@@ -208,7 +208,13 @@ git pull origin develop
 
 ### 2. 提交修改 (Submission)
 
-修改内容（如添加新闻、更新页面）后，执行以下命令提交：
+修改内容（如添加新闻、更新页面）后，必须先在 `develop` 分支运行统一质量门禁：
+
+```bash
+npm run verify
+```
+
+该命令会依次校验 Markdown 内容、运行自动测试、TypeScript 检查、ESLint 和完整生产构建。全部通过后再执行以下命令提交：
 
 ```bash
 # 1. 查看修改状态
@@ -223,7 +229,7 @@ git commit -m "描述你的修改内容"
 
 ### 3. 发布上线 (Release)
 
-确认本地无误后，合并到 `main` 分支并推送，GitHub Actions 会自动触发构建和部署。
+确认 `develop` 上的 `npm run verify` 与 GitHub Actions `quality` 检查均通过后，合并到 `main` 分支并推送；生产托管会自动构建和部署。
 
 ```bash
 # 1. 切换到 main 分支

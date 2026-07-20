@@ -1,6 +1,10 @@
 # Release Notes
 
 ## 2026-07-21
+- v1.1: add `npm run verify` as the canonical local and CI quality gate
+- quality: validate required news and project frontmatter, status values, dates, and project tech stacks
+- ci: run the same lockfile-based verification on pull requests and pushes to `develop` and `main`
+- docs: synchronize architecture, environment, release, rollback, and roadmap documentation
 - fix: use a 600×600 logo card as the default social sharing image for WeChat
 - fix: emit accurate OG dimensions for local covers and omit unverifiable remote dimensions
 - test: cover default OG generation and sharing metadata behavior
