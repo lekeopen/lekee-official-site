@@ -27,7 +27,7 @@
 - Consumes: `.github/workflows/quality.yml` as UTF-8 text.
 - Produces: a quality workflow pinned to action major version 7 and Node.js 24, protected by the standard test suite.
 
-- [ ] **Step 1: Write the failing regression test**
+- [x] **Step 1: Write the failing regression test**
 
 ```js
 import assert from 'node:assert/strict';
@@ -47,13 +47,13 @@ test('quality workflow uses Node.js 24-native GitHub actions', () => {
 });
 ```
 
-- [ ] **Step 2: Run the focused test and confirm it fails**
+- [x] **Step 2: Run the focused test and confirm it fails**
 
 Run: `node --test tests/quality-workflow.test.mjs`
 
 Expected: FAIL because the workflow still contains `actions/checkout@v4`, `actions/setup-node@v4`, and `node-version: 20`.
 
-- [ ] **Step 3: Upgrade the workflow versions**
+- [x] **Step 3: Upgrade the workflow versions**
 
 ```yaml
 steps:
@@ -66,7 +66,7 @@ steps:
   - run: npm run verify
 ```
 
-- [ ] **Step 4: Run the focused test and full local quality gate**
+- [x] **Step 4: Run the focused test and full local quality gate**
 
 Run: `node --test tests/quality-workflow.test.mjs`
 
@@ -76,7 +76,7 @@ Run: `npm run verify`
 
 Expected: content validation, all tests, TypeScript, ESLint, build, and prerender complete with exit code 0.
 
-- [ ] **Step 5: Commit the workflow upgrade**
+- [x] **Step 5: Commit the workflow upgrade**
 
 ```bash
 git add .github/workflows/quality.yml tests/quality-workflow.test.mjs
@@ -95,7 +95,7 @@ git commit -m "Upgrade quality workflow to Node 24 actions"
 - Consumes: the verified workflow upgrade commit from Task 1.
 - Produces: an auditable V1.1.1 release record and completed checklist.
 
-- [ ] **Step 1: Add the V1.1.1 release entry**
+- [x] **Step 1: Add the V1.1.1 release entry**
 
 Add under the current release date:
 
@@ -104,11 +104,11 @@ Add under the current release date:
 - 新增质量工作流版本回归测试，防止 action 或 Node.js 版本意外回退。
 ```
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 Change every completed checkbox in this plan from `- [ ]` to `- [x]` only after its command has succeeded.
 
-- [ ] **Step 3: Run final pre-release verification**
+- [x] **Step 3: Run final pre-release verification**
 
 Run: `git diff --check && npm run verify`
 

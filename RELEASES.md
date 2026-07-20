@@ -1,6 +1,8 @@
 # Release Notes
 
 ## 2026-07-21
+- V1.1.1：升级 GitHub Actions 至 v7，并将 CI 验证环境统一为 Node.js 24。
+- 新增质量工作流版本回归测试，防止 action 或 Node.js 版本意外回退。
 - v1.1: add `npm run verify` as the canonical local and CI quality gate
 - quality: validate required news and project frontmatter, status values, dates, and project tech stacks
 - ci: run the same lockfile-based verification on pull requests and pushes to `develop` and `main`
