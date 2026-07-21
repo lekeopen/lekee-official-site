@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -41,4 +41,12 @@ test('rejects an initial entry above the configured budget', async (t) => {
     assertBundleBudget(rootDir, 100),
     /101 bytes exceeds the 100-byte budget/,
   );
+});
+
+test('the canonical verification gate checks the freshly built bundle', async () => {
+  const packageJson = JSON.parse(
+    await readFile(new URL('../package.json', import.meta.url), 'utf8'),
+  );
+
+  assert.match(packageJson.scripts.verify, /npm run build && npm run check:bundle$/);
 });

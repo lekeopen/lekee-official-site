@@ -1,6 +1,10 @@
 # Release Notes
 
 ## 2026-07-21
+- V1.2：页面改为路由级懒加载，入口 JavaScript 从 999,991 字节降至 230,080 字节（下降 77.0%）。
+- performance：移动端 Lighthouse 达到 LCP 2.369 秒、CLS 0.019、TBT 0 毫秒和性能分 97。
+- quality：将 699,993 字节入口包预算纳入 `npm run verify`，新增路由、动画、图片和预算回归测试。
+- accessibility：路由加载状态保持 Header/Footer 稳定，并让主标题立即渲染，避免加载位移和 LCP 动画延迟。
 - V1.1.1：升级 GitHub Actions 至 v7，并将 CI 验证环境统一为 Node.js 24。
 - 新增质量工作流版本回归测试，防止 action 或 Node.js 版本意外回退。
 - v1.1: add `npm run verify` as the canonical local and CI quality gate

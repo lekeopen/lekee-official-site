@@ -41,3 +41,33 @@ V1.0 已完成品牌展示、服务与解决方案、项目与动态内容、联
 - README、架构文档和部署文档与实际流程一致。
 
 实施步骤见 `docs/superpowers/plans/2026-07-20-site-v1.1-engineering-quality.md`。
+
+## V1.2：性能与可观测性
+
+**状态：✅ 已完成（2026-07-21）**
+
+### 目标
+
+在不改变现有设计、业务功能、SEO、预渲染和可访问性的前提下，降低首屏 JavaScript 与移动端运行成本，并建立可重复的性能回归保护。
+
+### 计划范围
+
+- 建立 V1.1 入口包和移动端性能基线；
+- 页面模块改为路由级懒加载；
+- 入口 JavaScript 至少降低 30%；
+- 优化移动端粒子动画的生命周期与低性能设备成本；
+- 为非首屏卡片图片增加延迟加载和异步解码提示；
+- 将确定性的入口包预算纳入 `npm run verify`；
+- 记录移动端 Lighthouse LCP 与 CLS 验收证据。
+
+### 完成标准
+
+- 入口 JavaScript 不超过 699,993 字节；
+- 移动端实验室 LCP 不超过 2.5 秒，CLS 不超过 0.1；
+- 全部路由、SEO 元数据预渲染、RSS、地图与联系功能保持正常；
+- `develop`、`main` 质量门禁和生产验证全部通过。
+
+详细设计与实施步骤见：
+
+- `docs/superpowers/specs/2026-07-21-site-v1.2-performance-design.md`
+- `docs/superpowers/plans/2026-07-21-site-v1.2-performance.md`

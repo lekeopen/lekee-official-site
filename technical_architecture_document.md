@@ -31,9 +31,13 @@ Vite 静态构建
 dist 生产产物
 ```
 
-统一质量门禁为 `npm run verify`，它会执行内容校验、自动测试、TypeScript、ESLint 和完整生产构建。单独构建命令为 `npm run build`。构建产物位于 `dist/`，其中包含静态页面、客户端资源以及新闻和项目详情的预渲染入口。
+统一质量门禁为 `npm run verify`，它会执行内容校验、自动测试、TypeScript、ESLint、完整生产构建和入口包预算检查。单独构建命令为 `npm run build`。构建产物位于 `dist/`，其中包含静态页面、客户端资源以及新闻和项目详情的预渲染入口。
 
-`.github/workflows/quality.yml` 在所有 Pull Request 以及 `develop`、`main` 推送时使用 Node 20、`npm ci` 和同一条 `npm run verify`，避免本地与 CI 门禁漂移。
+`.github/workflows/quality.yml` 在所有 Pull Request 以及 `develop`、`main` 推送时使用 Node 24、`npm ci` 和同一条 `npm run verify`，避免本地与 CI 门禁漂移。
+
+页面组件通过 `React.lazy` 按路由加载，`MainLayout`、Header 和 Footer 保持在入口包中，并在 `Outlet` 外提供稳定且可访问的 `Suspense` 加载状态。新闻与项目详情页的 Markdown 依赖、首页动画依赖不会进入初始入口包。
+
+`npm run check:bundle` 读取 `dist/index.html` 引用的入口脚本并执行 699,993 字节预算。Lighthouse 的 LCP、CLS 使用固定移动端配置做版本验收，但不作为共享 CI 运行器上的硬门禁。
 
 ## 3. 路由
 
@@ -63,4 +67,4 @@ dist 生产产物
 
 ## 6. 后续演进
 
-V1.1 已建立统一验证命令、Markdown 内容校验、持续集成和文档治理。除非出现明确业务需求，不引入 CMS、数据库、自建 API 或新的运行时服务。
+V1.2 在 V1.1 质量门禁上增加路由级加载、入口包预算和移动端性能验收。除非出现明确业务需求，不引入 CMS、数据库、自建 API 或新的运行时服务。

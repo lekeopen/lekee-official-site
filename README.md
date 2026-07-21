@@ -214,7 +214,15 @@ git pull origin develop
 npm run verify
 ```
 
-该命令会依次校验 Markdown 内容、运行自动测试、TypeScript 检查、ESLint 和完整生产构建。全部通过后再执行以下命令提交：
+该命令会依次校验 Markdown 内容、运行自动测试、TypeScript 检查、ESLint、完整生产构建和入口 JavaScript 预算。全部通过后再执行以下命令提交：
+
+生产构建完成后可单独检查入口包预算：
+
+```bash
+npm run check:bundle
+```
+
+当前预算以 V1.1 的 999,991 字节入口为基线，要求入口 JavaScript 不超过 699,993 字节。Lighthouse 的时间型指标受运行环境波动影响，只作为版本验收证据记录，不放入默认 CI 门禁。
 
 ```bash
 # 1. 查看修改状态

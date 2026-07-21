@@ -48,14 +48,13 @@ const Home: React.FC = () => {
             variants={staggerContainer}
             className="max-w-4xl mx-auto"
           >
-            <motion.h1 
-              variants={fadeInUp}
+            <h1
               className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight"
             >
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
                 乐可开源
               </span>
-            </motion.h1>
+            </h1>
             
             <motion.p 
               variants={fadeInUp}

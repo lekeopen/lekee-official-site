@@ -36,5 +36,6 @@ test('the persistent layout provides an accessible route fallback', () => {
   assert.match(layout, /<Suspense\s+fallback=/);
   assert.match(layout, /role="status"/);
   assert.match(layout, /页面加载中…/);
+  assert.match(layout, /min-h-\[calc\(100vh-5rem\)\]/);
   assert.match(layout, /<Outlet \/>/);
 });

@@ -7,7 +7,7 @@
     "dev": "vite",
     "test": "node --test tests/*.test.mjs",
     "validate:content": "node scripts/validate-content.mjs",
-    "verify": "npm run validate:content && npm test && npm run check && npm run lint && npm run build",
+    "verify": "npm run validate:content && npm test && npm run check && npm run lint && npm run build && npm run check:bundle",
     "build": "npm run build:og && npm run build:rss && npm run publish:queue && tsc -b && vite build && npm run prerender",
     "build:og": "node scripts/generate-default-og.mjs",
     "prerender": "node --loader ts-node/esm scripts/prerender.ts",

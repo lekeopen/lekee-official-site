@@ -11,7 +11,7 @@ const MainLayout: React.FC = () => {
         <Suspense
           fallback={(
             <div
-              className="min-h-[40vh] flex items-center justify-center text-sm text-gray-500"
+              className="min-h-[calc(100vh-5rem)] flex items-center justify-center text-sm text-gray-500"
               role="status"
             >
               页面加载中…

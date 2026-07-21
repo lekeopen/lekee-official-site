@@ -29,3 +29,8 @@ test('below-the-fold card images use lazy asynchronous decoding hints', () => {
     assert.match(source, /height=\{384\}/);
   }
 });
+
+test('the homepage LCP heading renders immediately without opacity animation', () => {
+  assert.match(home, /<h1\s/);
+  assert.doesNotMatch(home, /<motion\.h1/);
+});
