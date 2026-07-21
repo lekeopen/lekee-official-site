@@ -177,7 +177,15 @@ const Home: React.FC = () => {
                 >
                   <div className={`h-48 ${project.image_bg || 'bg-gray-100'} flex items-center justify-center relative overflow-hidden`}>
                     {project.cover ? (
-                      <img src={project.cover} alt={project.name} className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110" />
+                      <img
+                        src={project.cover}
+                        alt={project.name}
+                        loading="lazy"
+                        decoding="async"
+                        width={640}
+                        height={384}
+                        className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+                      />
                     ) : (
                       <span className="text-gray-400 font-medium text-center px-4">
                         {project.name} <br/>
@@ -270,7 +278,15 @@ const Home: React.FC = () => {
                       {/* Cover Image (Optional) */}
                       {news.cover && (
                         <div className="w-full md:w-48 h-32 md:h-32 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 order-1 md:order-2">
-                           <img src={news.cover} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                           <img
+                             src={news.cover}
+                             alt={news.title}
+                             loading="lazy"
+                             decoding="async"
+                             width={640}
+                             height={384}
+                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                           />
                         </div>
                       )}
                     </Link>

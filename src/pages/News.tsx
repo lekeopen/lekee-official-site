@@ -64,7 +64,15 @@ const News: React.FC = () => {
               {/* Cover Image (Optional) */}
               {news.cover && (
                 <div className="w-full md:w-48 h-32 md:h-32 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 order-1 md:order-2">
-                   <img src={news.cover} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                   <img
+                     src={news.cover}
+                     alt={news.title}
+                     loading="lazy"
+                     decoding="async"
+                     width={640}
+                     height={384}
+                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                   />
                 </div>
               )}
             </Link>

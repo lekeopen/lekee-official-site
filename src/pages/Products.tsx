@@ -43,7 +43,15 @@ const Products: React.FC = () => {
               {/* 左侧：项目预览占位 */}
               <div className={`lg:w-1/3 min-h-[240px] ${product.image_bg} flex items-center justify-center border-b lg:border-b-0 lg:border-r border-gray-100 relative overflow-hidden`}>
                 {product.cover ? (
-                   <img src={product.cover} alt={product.name} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500" />
+                   <img
+                     src={product.cover}
+                     alt={product.name}
+                     loading="lazy"
+                     decoding="async"
+                     width={640}
+                     height={384}
+                     className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+                   />
                 ) : (
                    <span className="text-gray-400 font-medium text-lg px-8 text-center relative z-10">{product.name} <br/><span className="text-sm opacity-75">项目预览图占位</span></span>
                 )}

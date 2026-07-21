@@ -12,6 +12,9 @@ const TechBackground: React.FC = () => {
 
     let w = (canvas.width = window.innerWidth);
     let h = (canvas.height = window.innerHeight);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let animationFrame = 0;
+    let running = false;
     
     // 粒子配置
     const particles: Particle[] = [];
@@ -19,7 +22,7 @@ const TechBackground: React.FC = () => {
       bgColor: 'rgba(17, 24, 39, 1)', // gray-900
       particleColor: 'rgba(100, 200, 255, 1)', // 亮青色粒子
       particleRadius: 3,
-      particleCount: 60,
+      particleCount: window.innerWidth < 768 ? 32 : 60,
       lineLength: 150,
       particleSpeed: 0.5,
     };
@@ -95,30 +98,65 @@ const TechBackground: React.FC = () => {
       }
     };
 
-    const loop = () => {
+    const drawFrame = (moveParticles = true) => {
       reDrawBackground();
-      reDrawParticles();
+      if (moveParticles) {
+        reDrawParticles();
+      } else {
+        for (const particle of particles) {
+          particle.reDraw();
+        }
+      }
       drawLines();
-      requestAnimationFrame(loop);
+    };
+
+    const loop = () => {
+      if (!running || document.hidden) return;
+      drawFrame();
+      animationFrame = requestAnimationFrame(loop);
+    };
+
+    const start = () => {
+      if (running || reducedMotion || document.hidden) return;
+      running = true;
+      animationFrame = requestAnimationFrame(loop);
+    };
+
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationFrame);
     };
 
     const init = () => {
       for (let i = 0; i < properties.particleCount; i++) {
         particles.push(new Particle());
       }
-      loop();
+      drawFrame(false);
+      start();
     };
 
     const handleResize = () => {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
+      drawFrame(false);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
+      }
     };
 
     init();
     window.addEventListener('resize', handleResize);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      stop();
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
