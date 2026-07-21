@@ -71,3 +71,27 @@ V1.0 已完成品牌展示、服务与解决方案、项目与动态内容、联
 
 - `docs/superpowers/specs/2026-07-21-site-v1.2-performance-design.md`
 - `docs/superpowers/plans/2026-07-21-site-v1.2-performance.md`
+
+## V1.3：完整技术 SEO
+
+**状态：✅ 已完成（2026-07-21）**
+
+### 目标
+
+以中国搜索引擎抓取能力为优先，同时满足 Google 与 Bing 的通用技术 SEO 标准，让所有公开页面无需执行 JavaScript 即可读取完整正文。
+
+### 已完成范围
+
+- 保留 React + Vite 架构，增加仅在构建期运行的完整页面静态渲染；
+- 26 个公开页面均输出正文、唯一 `h1`、独立标题、描述和 canonical；
+- 文档语言统一为 `zh-CN`；
+- 输出 Organization、WebSite、WebPage、Article、CreativeWork 和 BreadcrumbList 结构化数据；
+- 自动生成只包含已发布内容的 `sitemap.xml`；
+- 自动生成带 sitemap 声明的 `robots.txt`；
+- 生成带 `noindex, nofollow` 的静态 `404.html`；
+- 将完整正文、canonical、JSON-LD、sitemap、robots 和 404 校验纳入 `npm run verify`。
+
+详细设计与实施步骤见：
+
+- `docs/superpowers/specs/2026-07-21-site-v1.3-technical-seo-design.md`
+- `docs/superpowers/plans/2026-07-21-site-v1.3-technical-seo.md`

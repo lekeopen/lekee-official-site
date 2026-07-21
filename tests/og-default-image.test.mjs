@@ -25,16 +25,18 @@ test('default OG image uses square dimensions for WeChat link cards', async () =
 
 test('client and prerender metadata use the logo-based default OG image', async () => {
   const seoMeta = await readFile(rootFile('src/components/common/SEOMeta.tsx'), 'utf8');
-  const prerender = await readFile(rootFile('scripts/prerender.ts'), 'utf8');
+  const site = await readFile(rootFile('src/seo/site.ts'), 'utf8');
+  const prerender = await readFile(rootFile('scripts/prerender.mjs'), 'utf8');
+  const routes = await readFile(rootFile('scripts/seo-routes.mjs'), 'utf8');
 
-  assert.match(seoMeta, /const DEFAULT_IMAGE = `\$\{SITE_URL\}\/og-default\.png`/);
-  assert.match(seoMeta, /const ogImageWidth = ogImage === DEFAULT_IMAGE \? 600 : undefined/);
-  assert.match(seoMeta, /const ogImageHeight = ogImage === DEFAULT_IMAGE \? 600 : undefined/);
-  assert.match(seoMeta, /const twitterCard = ogImage === DEFAULT_IMAGE \? 'summary' : 'summary_large_image'/);
-  assert.match(prerender, /const fallback = `\$\{SITE_URL\}\/og-default\.png`/);
-  assert.match(prerender, /image: `\$\{SITE_URL\}\/og-default\.png`/);
+  assert.match(site, /DEFAULT_OG_IMAGE = `\$\{SITE_URL\}\/og-default\.png`/);
+  assert.match(seoMeta, /const ogImageWidth = ogImage === DEFAULT_OG_IMAGE \? 600 : undefined/);
+  assert.match(seoMeta, /const ogImageHeight = ogImage === DEFAULT_OG_IMAGE \? 600 : undefined/);
+  assert.match(seoMeta, /const twitterCard = ogImage === DEFAULT_OG_IMAGE \? 'summary' : 'summary_large_image'/);
+  assert.match(routes, /DEFAULT_IMAGE = `\$\{SITE_URL\}\/og-default\.png`/);
+  assert.match(prerender, /import .*DEFAULT_IMAGE/);
   assert.match(prerender, /async function imageDimensions/);
-  assert.doesNotMatch(`${seoMeta}\n${prerender}`, /og-450x300\.png/);
+  assert.doesNotMatch(`${seoMeta}\n${site}\n${prerender}\n${routes}`, /og-450x300\.png/);
 });
 
 test('production build regenerates the default OG image deterministically', async () => {

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { buildStructuredData } from '../../seo/structuredData';
+import { absoluteImageUrl, canonicalUrl, DEFAULT_OG_IMAGE } from '../../seo/site';
 
 interface SEOMetaProps {
   title: string;
@@ -8,6 +10,8 @@ interface SEOMetaProps {
   image?: string;
   type?: 'website' | 'article';
   siteName?: string;
+  kind?: 'page' | 'article' | 'project';
+  datePublished?: string;
 }
 
 const SEOMeta: React.FC<SEOMetaProps> = ({
@@ -16,36 +20,10 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   url,
   image,
   type = 'article',
-  siteName = '乐可开源'
+  siteName = '乐可开源',
+  kind = type === 'article' ? 'article' : 'page',
+  datePublished,
 }) => {
-  const SITE_URL = 'https://lekeopen.com';
-  const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
-
-  const normalizeUrl = (value?: string) => {
-    const route = value || '/';
-    const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
-    const absolute = `${SITE_URL}${normalizedRoute}`;
-    if (absolute === SITE_URL || absolute === `${SITE_URL}/`) {
-      return `${SITE_URL}/`;
-    }
-    return absolute.endsWith('/') ? absolute : `${absolute}/`;
-  };
-
-  const normalizeImage = (value?: string) => {
-    if (!value) {
-      return DEFAULT_IMAGE;
-    }
-    const absolute = value.startsWith('http')
-      ? value
-      : `${SITE_URL}${value.startsWith('/') ? '' : '/'}${value}`;
-
-    // 部分社媒平台（含微信）对 svg 抓取兼容较差，统一回退到 png 封面
-    if (/\.svg($|\?)/i.test(absolute)) {
-      return DEFAULT_IMAGE;
-    }
-    return absolute;
-  };
-
   const detectImageType = (value: string) => {
     if (/\.png($|\?)/i.test(value)) return 'image/png';
     if (/\.jpe?g($|\?)/i.test(value)) return 'image/jpeg';
@@ -53,12 +31,12 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
     return 'image/png';
   };
   
-  const fullUrl = normalizeUrl(url);
-  const ogImage = normalizeImage(image);
+  const fullUrl = canonicalUrl(url || '/');
+  const ogImage = absoluteImageUrl(image);
   const ogImageType = detectImageType(ogImage);
-  const ogImageWidth = ogImage === DEFAULT_IMAGE ? 600 : undefined;
-  const ogImageHeight = ogImage === DEFAULT_IMAGE ? 600 : undefined;
-  const twitterCard = ogImage === DEFAULT_IMAGE ? 'summary' : 'summary_large_image';
+  const ogImageWidth = ogImage === DEFAULT_OG_IMAGE ? 600 : undefined;
+  const ogImageHeight = ogImage === DEFAULT_OG_IMAGE ? 600 : undefined;
+  const twitterCard = ogImage === DEFAULT_OG_IMAGE ? 'summary' : 'summary_large_image';
   
   // 截取描述前 120 字
   const truncatedDesc = description.length > 120 
@@ -70,6 +48,10 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
       {/* 基础 Meta */}
       <title>{title}</title>
       <meta name="description" content={truncatedDesc} />
+      <link rel="canonical" href={fullUrl} />
+      <script type="application/ld+json">
+        {JSON.stringify(buildStructuredData({ title, description: truncatedDesc, canonical: fullUrl, image: ogImage, kind, datePublished }))}
+      </script>
       
       {/* OpenGraph Meta */}
       <meta property="fb:app_id" content="1202485368502369" />

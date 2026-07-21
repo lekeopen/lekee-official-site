@@ -214,6 +214,8 @@ git pull origin develop
 npm run verify
 ```
 
+`npm run verify` 会执行内容校验、类型检查、Lint、生产构建、自动化测试、技术 SEO 验证和入口包预算检查。生产构建会为全部已发布页面生成完整静态 HTML，并输出 `sitemap.xml`、`robots.txt` 和不可索引的 `404.html`。
+
 该命令会依次校验 Markdown 内容、运行自动测试、TypeScript 检查、ESLint、完整生产构建和入口 JavaScript 预算。全部通过后再执行以下命令提交：
 
 生产构建完成后可单独检查入口包预算：
@@ -279,7 +281,7 @@ git checkout develop
 
 ### SEO 优化
 
-通过 React Helmet Async 实现动态 SEO 优化。
+通过 React Helmet Async 保持客户端导航的页面元数据，并在生产构建时输出完整静态正文、canonical、JSON-LD、sitemap、robots 和 404 页面。静态路由清单只收录已发布的新闻与项目内容，以中国搜索引擎直接抓取为优先，同时兼容 Google 与 Bing。
 
 ## 📦 部署
 

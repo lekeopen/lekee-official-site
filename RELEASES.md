@@ -1,6 +1,10 @@
 # Release Notes
 
 ## 2026-07-21
+- V1.3：所有公开路由输出无需 JavaScript 的完整静态正文，并保持现有客户端懒加载架构。
+- SEO：新增统一 canonical、`zh-CN`、站点与内容类型 JSON-LD，以及面包屑结构化数据。
+- crawler：自动生成发布内容限定的 sitemap、带 sitemap 声明的 robots 和 noindex 静态 404。
+- quality：新增 `check:seo`，验证 26 个索引页面的正文、主标题、canonical、JSON-LD 和爬虫文件。
 - content: add Leke Insight project entry, dashboard screenshots, and related company update news
 - V1.2：页面改为路由级懒加载，入口 JavaScript 从 999,991 字节降至 230,080 字节（下降 77.0%）。
 - performance：移动端 Lighthouse 达到 LCP 2.369 秒、CLS 0.019、TBT 0 毫秒和性能分 97。

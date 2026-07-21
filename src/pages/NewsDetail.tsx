@@ -46,6 +46,8 @@ const NewsDetail: React.FC = () => {
         url={`/news/${newsItem.id}`}
         image={newsItem.cover}
         type="article"
+        kind="article"
+        datePublished={newsItem.date}
       />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         {/* Back Link */}

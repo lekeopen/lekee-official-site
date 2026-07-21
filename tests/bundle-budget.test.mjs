@@ -48,5 +48,5 @@ test('the canonical verification gate checks the freshly built bundle', async ()
     await readFile(new URL('../package.json', import.meta.url), 'utf8'),
   );
 
-  assert.match(packageJson.scripts.verify, /npm run build && npm run check:bundle$/);
+  assert.match(packageJson.scripts.verify, /npm run build .* npm run check:bundle$/);
 });
