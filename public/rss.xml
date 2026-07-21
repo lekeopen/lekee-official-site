@@ -5,9 +5,19 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Jul 2026 09:21:04 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 21 Jul 2026 06:18:43 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[乐可观澜项目经营决策驾驶舱上线]]></title>
+      <link>https://lekeopen.com/news/2026-07-21-leke-insight</link>
+      <guid>https://lekeopen.com/news/2026-07-21-leke-insight</guid>
+      <pubDate>Tue, 21 Jul 2026 06:14:44 GMT</pubDate>
+      <description><![CDATA[乐可观澜已作为乐可开源内部项目经营决策驾驶舱上线，用于统一观察多个项目的访问表现、数据可信度、近期动态和下一阶段行动建议。]]></description>
+      <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/projects/leke-insight-overview.png" length="0" type="image/png" />
+    </item>
+  
     <item>
       <title><![CDATA[边大夫口腔官网完成静态优先改版]]></title>
       <link>https://lekeopen.com/news/2026-07-18-boral-wang</link>

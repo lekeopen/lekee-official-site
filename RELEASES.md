@@ -1,6 +1,7 @@
 # Release Notes
 
 ## 2026-07-21
+- content: add Leke Insight project entry, dashboard screenshots, and related company update news
 - V1.2：页面改为路由级懒加载，入口 JavaScript 从 999,991 字节降至 230,080 字节（下降 77.0%）。
 - performance：移动端 Lighthouse 达到 LCP 2.369 秒、CLS 0.019、TBT 0 毫秒和性能分 97。
 - quality：将 699,993 字节入口包预算纳入 `npm run verify`，新增路由、动画、图片和预算回归测试。
