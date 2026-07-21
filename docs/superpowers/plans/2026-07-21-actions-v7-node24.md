@@ -114,7 +114,7 @@ Run: `git diff --check && npm run verify`
 
 Expected: no whitespace errors and the complete quality gate exits 0.
 
-- [ ] **Step 4: Commit the release record**
+- [x] **Step 4: Commit the release record**
 
 ```bash
 git add RELEASES.md docs/superpowers/plans/2026-07-21-actions-v7-node24.md
