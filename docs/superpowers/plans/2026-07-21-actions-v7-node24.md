@@ -121,6 +121,6 @@ git add RELEASES.md docs/superpowers/plans/2026-07-21-actions-v7-node24.md
 git commit -m "Record V1.1.1 engineering maintenance release"
 ```
 
-- [ ] **Step 5: Release through branch gates**
+- [x] **Step 5: Release through branch gates**
 
 Push the completed branch to `develop`, require the `quality` workflow to pass without the Node.js 20 action-runtime warning, fast-forward `main`, push it, and require the `main` quality workflow to pass. Confirm `https://lekeopen.com` and `https://lekeopen.com/rss.xml` return HTTP 200.
