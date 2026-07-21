@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import Home from './pages/Home';
-import Services from './pages/Services';
-import Products from './pages/Products';
-import Solutions from './pages/Solutions';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import NewsDetail from './pages/NewsDetail';
-import News from './pages/News';
-import ProjectDetail from './pages/ProjectDetail';
-import Privacy from './pages/Privacy';
+
+const Home = lazy(() => import('./pages/Home'));
+const Services = lazy(() => import('./pages/Services'));
+const Products = lazy(() => import('./pages/Products'));
+const Solutions = lazy(() => import('./pages/Solutions'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail'));
+const News = lazy(() => import('./pages/News'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const Privacy = lazy(() => import('./pages/Privacy'));
 
 function App() {
   return (
