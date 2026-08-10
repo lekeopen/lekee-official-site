@@ -27,6 +27,7 @@
     "wechat:menu:delete": "node tools/wechat-admin/src/cli.mjs menu delete",
     "wechat:replies": "node tools/wechat-admin/src/cli.mjs replies show",
     "wechat:article": "node tools/wechat-admin/src/cli.mjs article render",
+    "wechat:article:preview": "node tools/wechat-admin/src/cli.mjs article preview",
     "wechat:draft": "node tools/wechat-admin/src/cli.mjs draft create",
     "prepare": "husky"
   },

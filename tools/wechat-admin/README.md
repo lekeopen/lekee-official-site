@@ -84,6 +84,14 @@ npm run wechat:menu:delete -- lekeopen
 npm run wechat:article -- tools/wechat-admin/articles/2026-06-geogenius-wechat.md
 ```
 
+本地预览文章初稿：
+
+```bash
+npm run wechat:article:preview -- tools/wechat-admin/articles/2026-06-geogenius-wechat.md
+```
+
+这个命令会直接打开生成的本地 HTML 预览文件，也会在终端里打印可复制的 `file://` 地址。
+
 创建公众号草稿：
 
 ```bash
@@ -104,6 +112,14 @@ tools/wechat-admin/replies/lekeopen.json
 ```
 
 当前用于人工复制到公众号后台，后续可以接入服务器消息事件后自动处理。
+
+## 自动化协作
+
+周检和月度内容排期自动化会先生成可复制的草稿方向和排期建议，然后通过 Bark 发送审核提醒到小龙虾服务器上的通知服务。当前默认流程仍是人工审核、人工发布，不会自动调用公众号发布接口。
+
+更完整的运营入口见：
+
+- [公众号运营总入口](../../docs/wechat-ops-hub.md)
 
 ## 文章渲染
 

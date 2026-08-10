@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">公众号内容生产流程图</title>
+  <desc id="desc">从官网 Markdown 到公众号草稿，再到 Bark 审核提醒和人工发布的流程示意图。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="900" rx="40" fill="url(#bg)"/>
+  <circle cx="1220" cy="120" r="180" fill="#DBEAFE" opacity="0.45"/>
+  <circle cx="260" cy="760" r="220" fill="#E9D5FF" opacity="0.35"/>
+
+  <text x="80" y="110" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="40" font-weight="700">公众号内容生产与审核流程</text>
+  <text x="80" y="154" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="22">自动产草稿，Bark 提醒审核，人工确认后再发布</text>
+
+  <g filter="url(#shadow)">
+    <rect x="80" y="250" width="220" height="180" rx="28" fill="#FFFFFF"/>
+    <rect x="330" y="250" width="220" height="180" rx="28" fill="#FFFFFF"/>
+    <rect x="580" y="250" width="220" height="180" rx="28" fill="#FFFFFF"/>
+    <rect x="830" y="250" width="220" height="180" rx="28" fill="#FFFFFF"/>
+    <rect x="1080" y="250" width="220" height="180" rx="28" fill="#FFFFFF"/>
+  </g>
+
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" text-anchor="middle">
+    <text x="190" y="318" fill="#2563EB" font-size="22" font-weight="700">官网 / Markdown</text>
+    <text x="440" y="318" fill="#7C3AED" font-size="22" font-weight="700">草稿生成</text>
+    <text x="690" y="318" fill="#0F766E" font-size="22" font-weight="700">Bark 提醒</text>
+    <text x="940" y="318" fill="#B45309" font-size="22" font-weight="700">人工审核</text>
+    <text x="1190" y="318" fill="#1D4ED8" font-size="22" font-weight="700">公众号发布</text>
+
+    <text x="190" y="360" fill="#475569" font-size="18">项目更新</text>
+    <text x="190" y="388" fill="#475569" font-size="18">内容素材池</text>
+
+    <text x="440" y="360" fill="#475569" font-size="18">标题 / 导语</text>
+    <text x="440" y="388" fill="#475569" font-size="18">正文骨架</text>
+
+    <text x="690" y="360" fill="#475569" font-size="18">手机收到推送</text>
+    <text x="690" y="388" fill="#475569" font-size="18">提醒去审稿</text>
+
+    <text x="940" y="360" fill="#475569" font-size="18">标题 / 配图 / CTA</text>
+    <text x="940" y="388" fill="#475569" font-size="18">是否值得发</text>
+
+    <text x="1190" y="360" fill="#475569" font-size="18">手动发表</text>
+    <text x="1190" y="388" fill="#475569" font-size="18">不越权自动发</text>
+  </g>
+
+  <g stroke="url(#line)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M300 340H330"/>
+    <path d="M550 340H580"/>
+    <path d="M800 340H830"/>
+    <path d="M1050 340H1080"/>
+  </g>
+  <g fill="#2563EB">
+    <path d="M322 340l-18-10v20l18-10Z"/>
+    <path d="M572 340l-18-10v20l18-10Z"/>
+    <path d="M822 340l-18-10v20l18-10Z"/>
+    <path d="M1072 340l-18-10v20l18-10Z"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="200" y="520" width="1040" height="200" rx="32" fill="#0F172A"/>
+  </g>
+  <text x="260" y="588" fill="#E2E8F0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="28" font-weight="700">这条线的目标不是全自动</text>
+  <text x="260" y="638" fill="#CBD5E1" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="22">而是把该看的东西提前推到你面前，把判断留给人，把重复劳动交给流程。</text>
+  <text x="260" y="680" fill="#93C5FD" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="20">适合小团队长期稳定运行</text>
+</svg>

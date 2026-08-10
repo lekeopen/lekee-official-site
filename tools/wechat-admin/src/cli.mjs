@@ -2,8 +2,9 @@
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,14 +49,18 @@ async function main() {
   }
 
   if (area === 'article') {
-    if (action !== 'render') {
-      throw new Error('文章命令目前支持 render');
+    if (!['render', 'preview'].includes(action)) {
+      throw new Error('文章命令目前支持 render 或 preview');
     }
     if (!accountKey) {
       throw new Error('请指定 Markdown 文件路径，例如：npm run wechat:article -- tools/wechat-admin/articles/demo.md');
     }
-    const result = await renderArticle(accountKey);
-    printJson(result);
+    if (action === 'render') {
+      const result = await renderArticle(accountKey);
+      printJson(result);
+      return;
+    }
+    await previewArticle(accountKey, options);
     return;
   }
 
@@ -339,7 +344,8 @@ async function renderArticle(inputFile) {
   const articleDir = path.join(OUTPUT_DIR, 'articles');
   await mkdir(articleDir, { recursive: true });
 
-  const html = renderWechatHtml(parsed);
+  const clipboard = await buildClipboardBundle(parsed);
+  const html = renderWechatHtml(parsed, clipboard);
   const text = renderPlainText(parsed);
   const manifest = {
     title: parsed.data.title || slug,
@@ -358,6 +364,16 @@ async function renderArticle(inputFile) {
   await writeFile(path.join(articleDir, `${slug}.json`), JSON.stringify(manifest, null, 2), 'utf8');
 
   return manifest;
+}
+
+async function previewArticle(inputFile, options) {
+  const manifest = await renderArticle(inputFile);
+  const htmlPath = path.resolve(REPO_ROOT, manifest.htmlFile);
+  const previewUrl = pathToFileURL(htmlPath).href;
+  const opened = shouldOpenPreview(options, () => openLocalFile(htmlPath));
+
+  console.log(`本地预览入口：${previewUrl}`);
+  console.log(opened ? '已尝试打开默认浏览器。' : '未自动打开，请手动在浏览器中打开上面的 file URL。');
 }
 
 async function createDraft(account, inputFile, options) {
@@ -460,11 +476,16 @@ function parseSimpleYaml(raw) {
   return data;
 }
 
-function renderWechatHtml(article) {
+function renderWechatHtml(article, clipboard = null) {
   const title = escapeHtml(article.data.title || '');
   const subtitle = escapeHtml(article.data.subtitle || '');
   const author = escapeHtml(article.data.author || '');
-  const content = markdownToHtml(article.body);
+  const content = markdownToHtml(article.body, {
+    imageSrc: (src) => src.startsWith('/images/') ? `../../public${src}` : src,
+  });
+  const copyData = clipboard
+    ? `      <script type="application/json" id="wechat-copy-html">${jsonForScript(clipboard.html)}</script>\n      <script type="application/json" id="wechat-copy-text">${jsonForScript(clipboard.text)}</script>`
+    : '';
 
   return `<!doctype html>
 <html lang="zh-CN">
@@ -474,29 +495,133 @@ function renderWechatHtml(article) {
   <title>${title}</title>
   <style>
     body { margin: 0; padding: 24px; background: #f6f7f9; color: #1f2937; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    main { max-width: 680px; margin: 0 auto; background: #fff; padding: 28px 24px; }
-    h1 { margin: 0 0 8px; font-size: 24px; line-height: 1.35; color: #111827; }
-    .meta { margin-bottom: 28px; color: #6b7280; font-size: 14px; }
-    h2 { margin: 32px 0 14px; font-size: 20px; line-height: 1.4; color: #111827; }
-    p { margin: 16px 0; font-size: 16px; line-height: 1.85; }
-    ul { padding-left: 1.2em; margin: 16px 0; }
-    li { margin: 8px 0; line-height: 1.75; }
-    a { color: #2563eb; word-break: break-all; }
+    main { max-width: 680px; margin: 0 auto; background: #fff; padding: 28px 24px 40px; }
+    .toolbar { position: sticky; top: 12px; z-index: 20; max-width: 680px; margin: 0 auto 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 16px; background: rgba(255,255,255,0.96); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); backdrop-filter: blur(12px); }
+    .toolbar button { border: 0; border-radius: 999px; padding: 10px 16px; font-size: 14px; line-height: 1; cursor: pointer; }
+    .toolbar button.primary { background: #111827; color: #fff; }
+    .toolbar button.secondary { background: #eef2ff; color: #3730a3; }
+    .toolbar .status { margin-left: auto; font-size: 13px; color: #6b7280; }
+    .hero { margin-bottom: 22px; }
+    .title { margin: 0 0 8px; font-size: 24px; line-height: 1.35; color: #111827; }
+    .meta { color: #6b7280; font-size: 14px; }
+    .copy-shell { font-size: 16px; line-height: 1.85; color: #1f2937; }
   </style>
 </head>
 <body>
+  <div class="toolbar">
+    <button class="primary" id="copy-rich">一键复制富文本</button>
+    <button class="secondary" id="copy-text">复制纯文本</button>
+    <span class="status" id="copy-status">打开后点击按钮，再到公众号后台粘贴</span>
+  </div>
   <main>
-    <h1>${title}</h1>
-    <div class="meta">${[subtitle, author].filter(Boolean).join(' · ')}</div>
+    <div class="hero">
+      <h1 class="title">${title}</h1>
+      <div class="meta">${[subtitle, author].filter(Boolean).join(' · ')}</div>
+    </div>
+    <section class="copy-shell">
 ${content}
+    </section>
   </main>
+${copyData}
+  <script>
+    const copyHtmlNode = document.getElementById('wechat-copy-html');
+    const copyTextNode = document.getElementById('wechat-copy-text');
+    const copyRichButton = document.getElementById('copy-rich');
+    const copyTextButton = document.getElementById('copy-text');
+    const statusNode = document.getElementById('copy-status');
+
+    function setStatus(message) {
+      statusNode.textContent = message;
+    }
+
+    async function writeClipboard(html, text) {
+      if (window.isSecureContext && navigator.clipboard && navigator.clipboard.write && 'ClipboardItem' in window) {
+        const clipboardItems = [new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([text], { type: 'text/plain' }),
+        })];
+        await navigator.clipboard.write(clipboardItems);
+        return true;
+      }
+
+      return copyHtmlBySelection(html);
+    }
+
+    function copyHtmlBySelection(html) {
+      const container = document.createElement('div');
+      container.setAttribute('contenteditable', 'true');
+      container.setAttribute('aria-hidden', 'true');
+      container.style.position = 'fixed';
+      container.style.left = '-99999px';
+      container.style.top = '0';
+      container.style.opacity = '0';
+      container.innerHTML = html;
+      document.body.appendChild(container);
+
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(container);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      let success = false;
+      try {
+        success = document.execCommand('copy');
+      } finally {
+        selection.removeAllRanges();
+        document.body.removeChild(container);
+      }
+
+      return success;
+    }
+
+    async function copyPlainText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.select();
+      const success = document.execCommand('copy');
+      document.body.removeChild(temp);
+      return success;
+    }
+
+    copyRichButton.addEventListener('click', async () => {
+      try {
+        const html = JSON.parse(copyHtmlNode.textContent || '""');
+        const text = JSON.parse(copyTextNode.textContent || '""');
+        const success = await writeClipboard(html, text);
+        setStatus(success ? '已复制富文本，切到公众号后台直接粘贴。' : '复制未成功，请手动全选后再复制。');
+      } catch (error) {
+        console.error(error);
+        setStatus('复制失败，请手动全选正文复制。');
+      }
+    });
+
+    copyTextButton.addEventListener('click', async () => {
+      try {
+        const text = JSON.parse(copyTextNode.textContent || '""');
+        const success = await copyPlainText(text);
+        setStatus(success ? '已复制纯文本。' : '纯文本复制未成功。');
+      } catch (error) {
+        console.error(error);
+        setStatus('纯文本复制失败。');
+      }
+    });
+  </script>
 </body>
 </html>
 `;
 }
 
 function renderWechatContentHtml(article) {
-  return `<section style="font-size:16px;line-height:1.85;color:#1f2937;">\n${markdownToHtml(article.body).replace(/^    /gm, '')}\n</section>`;
+  return `<section style="font-size:16px;line-height:1.85;color:#1f2937;">\n${markdownToHtml(article.body, { inlineStyles: true }).replace(/^    /gm, '')}\n</section>`;
 }
 
 function renderPlainText(article) {
@@ -550,32 +675,84 @@ function guessMimeType(file) {
   if (lower.endsWith('.png')) return 'image/png';
   if (lower.endsWith('.webp')) return 'image/webp';
   if (lower.endsWith('.gif')) return 'image/gif';
+  if (lower.endsWith('.svg')) return 'image/svg+xml';
   return 'image/jpeg';
 }
 
-function markdownToHtml(markdown) {
+function markdownToHtml(markdown, options = {}) {
   const lines = markdown.split(/\r?\n/);
   const parts = [];
   let list = [];
+  const imageSrc = options.imageSrc || ((src) => src);
+  const inlineStyles = options.inlineStyles !== false;
+
+  const blockStyle = {
+    p: 'margin:16px 0;font-size:16px;line-height:1.85;color:#1f2937;',
+    h2: 'margin:32px 0 14px;font-size:20px;line-height:1.4;color:#111827;font-weight:700;',
+    h3: 'margin:24px 0 12px;font-size:18px;line-height:1.45;color:#111827;font-weight:700;',
+    ul: 'padding-left:1.2em;margin:16px 0;',
+    li: 'margin:8px 0;line-height:1.75;',
+    blockquote: 'margin:24px 0;padding:14px 18px;border-left:4px solid #d1d5db;background:#f9fafb;color:#374151;',
+    imageWrap: 'margin:28px 0;text-align:center;',
+    image: 'max-width:100%;height:auto;border-radius:18px;display:inline-block;',
+  };
+
+  const styleAttr = (value) => (inlineStyles ? ` style="${value}"` : '');
 
   const flushList = () => {
     if (list.length === 0) {
       return;
     }
-    parts.push(`    <ul>\n${list.map((item) => `      <li>${inlineMarkdown(item)}</li>`).join('\n')}\n    </ul>`);
+    parts.push(`    <ul${styleAttr(blockStyle.ul)}>\n${list.map((item) => `      <li${styleAttr(blockStyle.li)}>${inlineMarkdown(item)}</li>`).join('\n')}\n    </ul>`);
     list = [];
   };
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     const trimmed = line.trim();
     if (!trimmed) {
       flushList();
       continue;
     }
 
-    if (trimmed.startsWith('## ')) {
+    const headingMatch = trimmed.match(/^(#{2,6})\s+(.+)$/);
+    if (headingMatch) {
       flushList();
-      parts.push(`    <h2>${inlineMarkdown(trimmed.slice(3))}</h2>`);
+      const level = Math.min(headingMatch[1].length, 3);
+      const tag = level === 3 ? 'h3' : 'h2';
+      parts.push(`    <${tag}${styleAttr(blockStyle[tag])}>${inlineMarkdown(headingMatch[2])}</${tag}>`);
+      continue;
+    }
+
+    if (trimmed.startsWith('![') && trimmed.includes('](') && trimmed.endsWith(')')) {
+      flushList();
+      const imageMatch = trimmed.match(/^!\[(.*)\]\((.+)\)$/);
+      if (imageMatch) {
+        const alt = escapeHtml(imageMatch[1]);
+        const src = escapeHtml(imageSrc(imageMatch[2]));
+        parts.push(
+          `    <p${styleAttr(blockStyle.imageWrap)}><img src="${src}" alt="${alt}"${styleAttr(blockStyle.image)} /></p>`
+        );
+        continue;
+      }
+    }
+
+    if (trimmed.startsWith('> ')) {
+      flushList();
+      const quoteLines = [trimmed.slice(2)];
+      let nextIndex = index + 1;
+      while (nextIndex < lines.length) {
+        const nextTrimmed = lines[nextIndex].trim();
+        if (!nextTrimmed.startsWith('> ')) {
+          break;
+        }
+        quoteLines.push(nextTrimmed.slice(2));
+        nextIndex += 1;
+      }
+      parts.push(
+        `    <blockquote${styleAttr(blockStyle.blockquote)}>${quoteLines.map((item) => inlineMarkdown(item)).join('<br />')}</blockquote>`
+      );
+      index = nextIndex - 1;
       continue;
     }
 
@@ -585,7 +762,7 @@ function markdownToHtml(markdown) {
     }
 
     flushList();
-    parts.push(`    <p>${inlineMarkdown(trimmed)}</p>`);
+    parts.push(`    <p${styleAttr(blockStyle.p)}>${inlineMarkdown(trimmed)}</p>`);
   }
 
   flushList();
@@ -596,6 +773,7 @@ function inlineMarkdown(value) {
   const escaped = escapeHtml(value);
   return escaped
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*(?!\*)(.+?)\*(?!\*)/g, '$1<em>$2</em>')
     .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>');
 }
 
@@ -606,6 +784,74 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+async function buildClipboardBundle(article) {
+  const text = renderPlainText(article);
+  const imageSources = extractImageSources(article.body);
+  const imageMap = new Map();
+
+  for (const source of imageSources) {
+    imageMap.set(source, await loadImageDataUri(source));
+  }
+
+  const html = renderClipboardHtml(article, (source) => imageMap.get(source) || source);
+  return { html, text };
+}
+
+function extractImageSources(markdown) {
+  const sources = [];
+  const seen = new Set();
+  const pattern = /!\[[^\]]*\]\((.+?)\)/g;
+  let match;
+  while ((match = pattern.exec(markdown))) {
+    const source = match[1];
+    if (!seen.has(source)) {
+      seen.add(source);
+      sources.push(source);
+    }
+  }
+  return sources;
+}
+
+async function loadImageDataUri(source) {
+  if (/^https?:\/\//.test(source)) {
+    const response = await fetch(source);
+    if (!response.ok) {
+      throw new Error(`图片下载失败：${source} (HTTP ${response.status})`);
+    }
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    const mimeType = response.headers.get('content-type') || guessMimeType(source);
+    return bytesToDataUri(bytes, mimeType);
+  }
+
+  const resolved = source.startsWith('/images/') ? path.resolve(REPO_ROOT, `public${source}`) : path.resolve(REPO_ROOT, source);
+  const bytes = await readFile(resolved);
+  return bytesToDataUri(bytes, guessMimeType(resolved));
+}
+
+function bytesToDataUri(bytes, mimeType) {
+  return `data:${mimeType};base64,${Buffer.from(bytes).toString('base64')}`;
+}
+
+function renderClipboardHtml(article, imageSrc) {
+  const title = escapeHtml(article.data.title || '');
+  const subtitle = escapeHtml(article.data.subtitle || '');
+  const author = escapeHtml(article.data.author || '');
+  const content = markdownToHtml(article.body, {
+    imageSrc,
+    inlineStyles: true,
+  });
+
+  return `<article style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1f2937;background:#ffffff;">
+  <h1 style="margin:0 0 8px;font-size:24px;line-height:1.35;color:#111827;font-weight:700;">${title}</h1>
+  <div style="margin:0 0 28px;color:#6b7280;font-size:14px;">${[subtitle, author].filter(Boolean).join(' · ')}</div>
+  ${content}
+</article>`;
+}
+
+function jsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
 function validateMenu(menu) {
@@ -714,7 +960,15 @@ function parseOptions(args) {
   return {
     dryRun: args.includes('--dry-run'),
     yes: args.includes('--yes') || args.includes('-y'),
+    noOpen: args.includes('--no-open'),
   };
+}
+
+function shouldOpenPreview(options, opener) {
+  if (options?.noOpen) {
+    return false;
+  }
+  return opener();
 }
 
 function printAccounts(store) {
@@ -747,6 +1001,7 @@ function printHelp() {
   npm run wechat:menu:delete -- <account> --yes
   npm run wechat:replies -- <account>
   npm run wechat:article -- <markdown-file>
+  npm run wechat:article:preview -- <markdown-file>
   npm run wechat:draft -- <account> <markdown-file> [--dry-run]
 
 配置：
@@ -754,6 +1009,15 @@ function printHelp() {
   tools/wechat-admin/menus/<account>.json 菜单配置
   .env                                    AppID/AppSecret
 `);
+}
+
+function openLocalFile(filePath) {
+  if (process.platform !== 'darwin') {
+    return false;
+  }
+
+  const result = spawnSync('open', [filePath], { stdio: 'ignore' });
+  return result.status === 0;
 }
 
 function formatError(error) {
@@ -771,7 +1035,19 @@ function formatWechatApiError(scope, data) {
   return base;
 }
 
-main().catch((error) => {
-  console.error(formatError(error));
-  process.exit(1);
-});
+const isDirectExecution = process.argv[1]
+  && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
+
+if (isDirectExecution) {
+  main().catch((error) => {
+    console.error(formatError(error));
+    process.exit(1);
+  });
+}
+
+export {
+  markdownToHtml,
+  parseFrontMatter as parseArticle,
+  renderWechatHtml,
+  shouldOpenPreview,
+};
