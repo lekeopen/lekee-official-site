@@ -108,10 +108,78 @@ test('accepted submissions persist only safe state fields atomically', async () 
   assert.equal(JSON.stringify(state).includes('aB3-4567'), false);
 });
 
+test('Baidu partial success records listed failures as rejected and only mapped successes as accepted', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-baidu-partial-state-'));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+
+  const result = await submitProvider('baidu', URLS, {
+    execute: true,
+    config: { site: 'https://lekeopen.com', token: 'baidu-test-token' },
+    fetchImpl: async () => new Response(JSON.stringify({
+      success: 1,
+      not_valid: ['https://lekeopen.com/news/b/'],
+    }), { status: 200 }),
+    statePath,
+  });
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.equal(result.status, 'partial-acceptance');
+  assert.deepEqual(state.records.map(({ url, resultClass }) => ({ url, resultClass })), [
+    { url: 'https://lekeopen.com/news/a/', resultClass: 'accepted-for-processing' },
+    { url: 'https://lekeopen.com/news/b/', resultClass: 'rejected' },
+  ]);
+});
+
+test('Baidu fails closed when partial response counts and failure arrays cannot map URLs safely', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-baidu-uncertain-state-'));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+
+  await submitProvider('baidu', URLS, {
+    execute: true,
+    config: { site: 'https://lekeopen.com', token: 'baidu-test-token' },
+    fetchImpl: async () => new Response(JSON.stringify({
+      success: 1,
+      not_valid: ['https://lekeopen.com/news/not-submitted/'],
+    }), { status: 200 }),
+    statePath,
+  });
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.ok(state.records.every((record) => record.resultClass === 'rejected'));
+});
+
 test('inventory prints each canonical URL once without callback metadata', async () => {
   const output = [];
   const result = await runCli({ argv: ['inventory'], output: (...values) => output.push(...values) });
 
   assert.equal(output.length, result.urlCount + 1);
   assert.ok(output.slice(1).every((value) => typeof value === 'string'));
+});
+
+test('Baidu dry-run prints the exact pending URL set without its token', async () => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-cli-'));
+  const output = [];
+  const token = 'must-not-appear';
+
+  await runCli({
+    argv: ['submit', 'baidu', '--dry-run'],
+    rootDir,
+    env: { BAIDU_SITE: 'https://lekeopen.com', BAIDU_SUBMIT_TOKEN: token },
+    output: (line) => output.push(line),
+  });
+
+  assert.deepEqual(output, [
+    'Eligible canonical URLs: 8',
+    'URLs pending baidu: 8',
+    'https://lekeopen.com/',
+    'https://lekeopen.com/about/',
+    'https://lekeopen.com/contact/',
+    'https://lekeopen.com/news/',
+    'https://lekeopen.com/privacy/',
+    'https://lekeopen.com/products/',
+    'https://lekeopen.com/services/',
+    'https://lekeopen.com/solutions/',
+    'baidu: dry-run; URLs: 8',
+  ]);
+  assert.equal(JSON.stringify(output).includes(token), false);
 });

@@ -55,6 +55,7 @@ export async function main({
   const pendingUrls = notificationDelta(urls, acceptedUrls(state, provider));
   output(`Eligible canonical URLs: ${urls.length}`);
   output(`URLs pending ${provider}: ${pendingUrls.length}`);
+  pendingUrls.forEach((url) => output(url));
   const result = await submitProvider(provider, pendingUrls, {
     ...options,
     config: providerConfig(provider, env),

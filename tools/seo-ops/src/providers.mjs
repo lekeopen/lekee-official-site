@@ -115,24 +115,58 @@ function resultForIndexNow(response) {
   };
 }
 
-async function resultForBaidu(response, submittedCount) {
+function uniformResults(urls, result) {
+  return urls.map((url) => ({ url, ...result }));
+}
+
+function baiduFailureUrls(payload, urls) {
+  const submitted = new Set(urls);
+  const failed = new Set();
+
+  for (const field of ['not_same_site', 'not_valid']) {
+    const value = payload[field];
+    if (value === undefined || typeof value === 'number') continue;
+    if (!Array.isArray(value)) return null;
+
+    for (const url of value) {
+      if (typeof url !== 'string' || !submitted.has(url)) return null;
+      failed.add(url);
+    }
+  }
+
+  return failed;
+}
+
+async function resultsForBaidu(response, urls) {
   if (!response.ok) {
-    return {
+    return uniformResults(urls, {
       resultClass: response.status === 429 || response.status >= 500 ? 'retry-eligible' : 'rejected',
       retryEligible: response.status === 429 || response.status >= 500,
-    };
+    });
   }
 
   let payload;
   try {
     payload = JSON.parse(await response.text());
   } catch {
-    return { resultClass: 'rejected', retryEligible: false };
+    return uniformResults(urls, { resultClass: 'rejected', retryEligible: false });
   }
 
-  return Number(payload?.success) === submittedCount
-    ? { resultClass: 'accepted-for-processing', retryEligible: false }
-    : { resultClass: 'rejected', retryEligible: false };
+  const successCount = Number(payload?.success);
+  const failedUrls = baiduFailureUrls(payload, urls);
+  if (!Number.isSafeInteger(successCount) || successCount < 0 || failedUrls === null
+    || successCount + failedUrls.size !== urls.length) {
+    return uniformResults(urls, { resultClass: 'rejected', retryEligible: false });
+  }
+
+  return urls.map((url) => (failedUrls.has(url)
+    ? { url, resultClass: 'rejected', retryEligible: false }
+    : { url, resultClass: 'accepted-for-processing', retryEligible: false }));
+}
+
+function overallStatus(results) {
+  const statuses = new Set(results.map((result) => result.resultClass));
+  return statuses.size === 1 ? results[0].resultClass : 'partial-acceptance';
 }
 
 function displaySummary(provider, urlCount, status, secretValues = []) {
@@ -158,18 +192,17 @@ export async function submitProvider(provider, urls, {
   try {
     request = requestFor(provider, eligible, config);
     const response = await requestWithRetry(request.url, request.init, { fetchImpl, ...requestOptions });
-    const result = provider === 'baidu'
-      ? await resultForBaidu(response, eligible.length)
-      : resultForIndexNow(response);
-    const acceptedAt = result.resultClass === 'accepted-for-processing' ? now() : null;
-    await recordSubmission(statePath, eligible.map((url) => ({
+    const results = provider === 'baidu'
+      ? await resultsForBaidu(response, eligible)
+      : uniformResults(eligible, resultForIndexNow(response));
+    await recordSubmission(statePath, results.map(({ url, resultClass, retryEligible }) => ({
       provider,
       url,
-      acceptedAt,
-      resultClass: result.resultClass,
-      retryEligible: result.retryEligible,
+      acceptedAt: resultClass === 'accepted-for-processing' ? now() : null,
+      resultClass,
+      retryEligible,
     })));
-    return displaySummary(provider, eligible.length, result.resultClass, request.secretValues);
+    return displaySummary(provider, eligible.length, overallStatus(results), request.secretValues);
   } catch (error) {
     throw new Error(redact(error instanceof Error ? error.message : String(error), request?.secretValues || []));
   }
