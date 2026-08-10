@@ -72,6 +72,12 @@ export const validateSeoKeywordMap = async ({ rootDir = process.cwd(), keywordMa
     }
   }
 
+  for (const publicPath of publicPaths) {
+    if (!paths.has(publicPath)) {
+      errors.push(`missing keyword record for public route "${publicPath}"`);
+    }
+  }
+
   for (const [primaryIntent, records] of intents) {
     if (records.length > 1 && records.some((record) => !isNonEmptyString(record.sharedIntentReason))) {
       errors.push(

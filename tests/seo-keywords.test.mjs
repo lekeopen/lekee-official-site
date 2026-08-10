@@ -42,14 +42,25 @@ test('keyword map covers the required public routes without validation errors', 
 
 test('keyword map reports duplicate intent, self-links, and unpublished route references', async () => {
   const root = await createFixtureRoot();
+  const records = (await loadSeoRoutes(root)).map((route, index) => ({
+    path: route.path,
+    primaryIntent: `Intent ${index + 1}`,
+    supportingTerms: [],
+    relatedPaths: [],
+  }));
+  Object.assign(records.find((record) => record.path === '/'), {
+    primaryIntent: 'AI engineering',
+    relatedPaths: ['/'],
+  });
+  Object.assign(records.find((record) => record.path === '/services'), {
+    primaryIntent: 'AI engineering',
+    relatedPaths: ['/news/draft'],
+  });
   const errors = await validateSeoKeywordMap({
     rootDir: root,
     keywordMap: {
       version: 1,
-      records: [
-        { path: '/', primaryIntent: 'AI engineering', supportingTerms: [], relatedPaths: ['/'] },
-        { path: '/services', primaryIntent: 'AI engineering', supportingTerms: [], relatedPaths: ['/news/draft'] },
-      ],
+      records,
     },
   });
 
@@ -58,6 +69,26 @@ test('keyword map reports duplicate intent, self-links, and unpublished route re
     '/services: related path "/news/draft" is not a public route',
     'primaryIntent "AI engineering" is shared without sharedIntentReason for: /, /services',
   ]);
+});
+
+test('validator reports a missing public route from the keyword map', async () => {
+  const root = await createFixtureRoot();
+  const publicRoutes = await loadSeoRoutes(root);
+  const keywordMap = {
+    version: 1,
+    records: publicRoutes
+      .filter((route) => route.path !== '/solutions')
+      .map((route, index) => ({
+        path: route.path,
+        primaryIntent: `Intent ${index + 1}`,
+        supportingTerms: [],
+        relatedPaths: [],
+      })),
+  };
+
+  const errors = await validateSeoKeywordMap({ rootDir: root, keywordMap });
+
+  assert.deepEqual(errors, ['missing keyword record for public route "/solutions"']);
 });
 
 test('paired project and news content link naturally to each other\'s canonical route', async () => {
