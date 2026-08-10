@@ -41,3 +41,14 @@ test('notificationDelta returns canonical URLs absent from successful submission
     ['https://lekeopen.com/'],
   ), ['https://lekeopen.com/news/a/']);
 });
+
+test('canonical URLs use the shared trailing-slash form for inventory and submission delta', () => {
+  assert.deepEqual(canonicalUrls([
+    { canonical: 'https://lekeopen.com/news/a' },
+    { canonical: 'https://lekeopen.com/news/a/' },
+  ]), ['https://lekeopen.com/news/a/']);
+  assert.deepEqual(notificationDelta(
+    ['https://lekeopen.com/news/a/'],
+    ['https://lekeopen.com/news/a'],
+  ), []);
+});

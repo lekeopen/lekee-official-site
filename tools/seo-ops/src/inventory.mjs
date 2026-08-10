@@ -1,15 +1,13 @@
 import * as cheerio from 'cheerio';
-
-const SITE_ORIGIN = 'https://lekeopen.com';
+import { canonicalUrl as routeCanonicalUrl, SITE_URL } from '../../../scripts/seo-routes.mjs';
 
 function canonicalUrl(value) {
   if (typeof value !== 'string') return null;
 
   try {
     const url = new URL(value);
-    if (url.origin !== SITE_ORIGIN || url.username || url.password || url.search) return null;
-    url.hash = '';
-    return url.toString();
+    if (url.origin !== SITE_URL || url.username || url.password || url.search) return null;
+    return routeCanonicalUrl(url.pathname);
   } catch {
     return null;
   }
