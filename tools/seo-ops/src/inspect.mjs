@@ -60,6 +60,69 @@ function isSuccessStatus(status) {
   return status >= 200 && status < 400;
 }
 
+function wildcardRobotRules(robots) {
+  const groups = [];
+  let group;
+  let hasRules = false;
+
+  function finishGroup() {
+    if (group) groups.push(group);
+    group = undefined;
+    hasRules = false;
+  }
+
+  for (const rawLine of robots.split(/\r?\n/)) {
+    const line = rawLine.replace(/#.*$/, '').trim();
+    if (!line) continue;
+    const separator = line.indexOf(':');
+    if (separator < 0) continue;
+    const directive = line.slice(0, separator).trim().toLowerCase();
+    const value = line.slice(separator + 1).trim();
+
+    if (directive === 'user-agent') {
+      if (!group || hasRules) {
+        finishGroup();
+        group = { agents: [], rules: [] };
+      }
+      group.agents.push(value.toLowerCase());
+      continue;
+    }
+    if ((directive === 'allow' || directive === 'disallow') && group) {
+      hasRules = true;
+      if (value) group.rules.push({ type: directive, pattern: value });
+    }
+  }
+  finishGroup();
+
+  return groups
+    .filter((candidate) => candidate.agents.includes('*'))
+    .flatMap((candidate) => candidate.rules);
+}
+
+function robotsPattern(pattern) {
+  const anchored = pattern.endsWith('$');
+  const source = anchored ? pattern.slice(0, -1) : pattern;
+  const escaped = source
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+    .replaceAll('*', '.*');
+  return new RegExp(`^${escaped}${anchored ? '$' : ''}`);
+}
+
+function robotsAllows(url, rules) {
+  const target = `${new URL(url).pathname}${new URL(url).search}`;
+  const matches = rules
+    .filter((rule) => robotsPattern(rule.pattern).test(target))
+    .map((rule) => ({
+      ...rule,
+      specificity: rule.pattern.replace(/[*$]/g, '').length,
+    }))
+    .sort((left, right) => (
+      right.specificity - left.specificity
+      || (left.type === right.type ? 0 : left.type === 'allow' ? -1 : 1)
+    ));
+  return matches.length === 0 || matches[0].type === 'allow';
+}
+
 function expectedCanonical(origin, route) {
   return routeUrl(origin, new URL(route.canonical).pathname);
 }
@@ -160,38 +223,49 @@ export async function inspectProduction({
   const sitemapResponse = await get(sitemapUrl, 'sitemap-status', 200);
   if (sitemapResponse) {
     const xml = await sitemapResponse.text();
-    const $xml = cheerio.load(xml, { xmlMode: true });
-    const rawSitemapUrls = $xml('url > loc').map((_, element) => $xml(element).text()).get();
-    const sitemapUrls = parseSitemap(xml).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
-    const expectedUrls = canonicalUrls(routes).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
-    let hasMalformedSitemapUrl = false;
-    const safeSitemapUrls = rawSitemapUrls.map((value) => {
-      try {
-        return safeUrl(value);
-      } catch {
-        hasMalformedSitemapUrl = true;
-        return null;
-      }
-    });
-    const rawUrlsAreCanonical = rawSitemapUrls.every((value) => {
-      try {
-        const url = new URL(value);
-        return url.protocol === 'https:' && url.origin === normalizedOrigin
-          && !url.username && !url.password && !url.search && !url.hash;
-      } catch {
-        return false;
-      }
-    });
-    record(
-      'sitemap-coverage',
-      sitemapUrl,
-      expectedUrls,
-      hasMalformedSitemapUrl ? '[invalid sitemap location]' : safeSitemapUrls,
-      !hasMalformedSitemapUrl
-        && rawUrlsAreCanonical
-        && rawSitemapUrls.length === sitemapUrls.length
-        && JSON.stringify(sitemapUrls) === JSON.stringify(expectedUrls),
-    );
+    let sitemapUrls;
+    try {
+      sitemapUrls = parseSitemap(xml).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
+      record('sitemap-xml-valid', sitemapUrl, 'well-formed urlset with one loc per URL', 'valid', true);
+    } catch {
+      record('sitemap-xml-valid', sitemapUrl, 'well-formed urlset with one loc per URL', 'invalid XML or sitemap structure', false);
+    }
+    if (sitemapUrls) {
+      const $xml = cheerio.load(xml, { xmlMode: true });
+      const rawSitemapUrls = $xml.root().find('*').filter((_, element) => (
+        String(element.name || '').split(':').at(-1) === 'loc'
+        && String(element.parent?.name || '').split(':').at(-1) === 'url'
+      )).map((_, element) => $xml(element).text()).get();
+      const expectedUrls = canonicalUrls(routes).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
+      let hasMalformedSitemapUrl = false;
+      const safeSitemapUrls = rawSitemapUrls.map((value) => {
+        try {
+          return safeUrl(value);
+        } catch {
+          hasMalformedSitemapUrl = true;
+          return null;
+        }
+      });
+      const rawUrlsAreCanonical = rawSitemapUrls.every((value) => {
+        try {
+          const url = new URL(value);
+          return url.protocol === 'https:' && url.origin === normalizedOrigin
+            && !url.username && !url.password && !url.search && !url.hash;
+        } catch {
+          return false;
+        }
+      });
+      record(
+        'sitemap-coverage',
+        sitemapUrl,
+        expectedUrls,
+        hasMalformedSitemapUrl ? '[invalid sitemap location]' : safeSitemapUrls,
+        !hasMalformedSitemapUrl
+          && rawUrlsAreCanonical
+          && rawSitemapUrls.length === sitemapUrls.length
+          && JSON.stringify(sitemapUrls) === JSON.stringify(expectedUrls),
+      );
+    }
   }
 
   const robotsUrl = routeUrl(normalizedOrigin, '/robots.txt');
@@ -200,6 +274,16 @@ export async function inspectProduction({
     const robots = await robotsResponse.text();
     const expectedSitemap = `${normalizedOrigin}/sitemap.xml`;
     record('robots-sitemap-discovery', robotsUrl, expectedSitemap, robots.match(/^Sitemap:\s*(.+)$/mi)?.[1] ?? null, new RegExp(`^Sitemap:\\s*${expectedSitemap.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi').test(robots));
+    const rules = wildcardRobotRules(robots);
+    const inspectedUrls = representativeRoutes.map((route) => routeUrl(normalizedOrigin, route.path));
+    const blockedUrls = inspectedUrls.filter((url) => !robotsAllows(url, rules));
+    record(
+      'robots-crawl-permission',
+      robotsUrl,
+      'all inspected canonical routes allowed for User-agent: *',
+      blockedUrls.length === 0 ? 'allowed' : blockedUrls,
+      blockedUrls.length === 0,
+    );
   }
 
   await get(routeUrl(normalizedOrigin, '/rss.xml'), 'rss-available', 200);

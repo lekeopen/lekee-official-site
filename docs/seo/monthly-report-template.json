@@ -8,16 +8,46 @@
       "failed": null
     }
   },
-  "providers": {
+  "platforms": {
     "baidu": {
-      "submitted": null,
-      "accepted": null,
-      "indexed": null
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
     },
-    "indexnow": {
-      "submitted": null,
-      "accepted": null,
-      "indexed": null
+    "google": {
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
+    },
+    "bing": {
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
+    }
+  },
+  "notifications": {
+    "baiduUrlSubmission": {
+      "status": null,
+      "submittedUrls": null,
+      "acceptedUrls": null,
+      "lastSubmittedAt": null,
+      "retryEligible": null
+    },
+    "indexNow": {
+      "status": null,
+      "submittedUrls": null,
+      "acceptedUrls": null,
+      "lastSubmittedAt": null,
+      "retryEligible": null
     }
   },
   "contentChanges": [

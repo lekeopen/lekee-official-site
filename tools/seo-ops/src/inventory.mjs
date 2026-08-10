@@ -1,6 +1,152 @@
 import * as cheerio from 'cheerio';
 import { canonicalUrl as routeCanonicalUrl, SITE_URL } from '../../../scripts/seo-routes.mjs';
 
+const STANDARD_URL_CHILDREN = new Set(['loc', 'lastmod', 'changefreq', 'priority']);
+
+function sitemapError() {
+  return new TypeError('Expected valid sitemap XML with one urlset root and url/loc structure');
+}
+
+function assertValidEntities(value) {
+  const withoutEntities = value.replace(/&(amp|lt|gt|apos|quot|#\d+|#x[\da-f]+);/gi, '');
+  if (withoutEntities.includes('&')) throw sitemapError();
+}
+
+function findTagEnd(xml, start) {
+  let quote;
+  for (let index = start; index < xml.length; index += 1) {
+    const character = xml[index];
+    if (quote) {
+      if (character === quote) quote = undefined;
+    } else if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '>') {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function assertValidAttributes(value) {
+  let index = 0;
+  while (index < value.length) {
+    while (/\s/.test(value[index])) index += 1;
+    if (index >= value.length) return;
+
+    const name = value.slice(index).match(/^[A-Za-z_][\w:.-]*/)?.[0];
+    if (!name) throw sitemapError();
+    index += name.length;
+    while (/\s/.test(value[index])) index += 1;
+    if (value[index] !== '=') throw sitemapError();
+    index += 1;
+    while (/\s/.test(value[index])) index += 1;
+    const quote = value[index];
+    if (quote !== '"' && quote !== "'") throw sitemapError();
+    const end = value.indexOf(quote, index + 1);
+    if (end < 0) throw sitemapError();
+    assertValidEntities(value.slice(index + 1, end));
+    index = end + 1;
+  }
+}
+
+function assertWellFormedXml(xml) {
+  if (typeof xml !== 'string' || xml.trim().length === 0) throw sitemapError();
+  const stack = [];
+  let rootName;
+  let index = 0;
+
+  while (index < xml.length) {
+    const open = xml.indexOf('<', index);
+    const text = open < 0 ? xml.slice(index) : xml.slice(index, open);
+    assertValidEntities(text);
+    if (stack.length === 0 && text.trim()) throw sitemapError();
+    if (open < 0) break;
+
+    if (xml.startsWith('<!--', open)) {
+      const end = xml.indexOf('-->', open + 4);
+      if (end < 0) throw sitemapError();
+      index = end + 3;
+      continue;
+    }
+    if (xml.startsWith('<![CDATA[', open)) {
+      if (stack.length === 0) throw sitemapError();
+      const end = xml.indexOf(']]>', open + 9);
+      if (end < 0) throw sitemapError();
+      index = end + 3;
+      continue;
+    }
+    if (xml.startsWith('<?', open)) {
+      const end = xml.indexOf('?>', open + 2);
+      if (end < 0) throw sitemapError();
+      index = end + 2;
+      continue;
+    }
+    if (xml.startsWith('<!', open)) throw sitemapError();
+
+    const end = findTagEnd(xml, open + 1);
+    if (end < 0) throw sitemapError();
+    const rawTag = xml.slice(open + 1, end);
+    if (rawTag.startsWith('/')) {
+      const match = rawTag.match(/^\/\s*([A-Za-z_][\w:.-]*)\s*$/);
+      if (!match || stack.pop() !== match[1]) throw sitemapError();
+      index = end + 1;
+      continue;
+    }
+
+    const selfClosing = /\/\s*$/.test(rawTag);
+    const opening = selfClosing ? rawTag.replace(/\/\s*$/, '') : rawTag;
+    const name = opening.match(/^\s*([A-Za-z_][\w:.-]*)/)?.[1];
+    if (!name) throw sitemapError();
+    const nameEnd = opening.indexOf(name) + name.length;
+    assertValidAttributes(opening.slice(nameEnd));
+
+    if (stack.length === 0) {
+      if (rootName !== undefined) throw sitemapError();
+      rootName = name;
+    }
+    if (!selfClosing) stack.push(name);
+    index = end + 1;
+  }
+
+  if (stack.length !== 0 || rootName === undefined) throw sitemapError();
+}
+
+function elementChildren(element) {
+  return (element?.children || []).filter((child) => child.type === 'tag');
+}
+
+function hasUnexpectedText(element) {
+  return (element?.children || []).some((child) => (
+    child.type === 'text' && String(child.data || '').trim().length > 0
+  ));
+}
+
+function localName(element) {
+  return String(element?.name || '').split(':').at(-1);
+}
+
+function sitemapLocations(xml) {
+  assertWellFormedXml(xml);
+  const $ = cheerio.load(xml, { xmlMode: true });
+  const roots = $.root().children().toArray().filter((child) => child.type === 'tag');
+  if (roots.length !== 1 || localName(roots[0]) !== 'urlset') throw sitemapError();
+  if (hasUnexpectedText(roots[0])) throw sitemapError();
+
+  const urlElements = elementChildren(roots[0]);
+  if (urlElements.some((element) => localName(element) !== 'url')) throw sitemapError();
+
+  return urlElements.map((urlElement) => {
+    const children = elementChildren(urlElement);
+    if (hasUnexpectedText(urlElement)) throw sitemapError();
+    const locations = children.filter((element) => localName(element) === 'loc');
+    if (locations.length !== 1 || $(locations[0]).text().trim().length === 0) throw sitemapError();
+    if (children.some((element) => (
+      !String(element.name).includes(':') && !STANDARD_URL_CHILDREN.has(localName(element))
+    ))) throw sitemapError();
+    return $(locations[0]).text().trim();
+  });
+}
+
 function canonicalUrl(value) {
   if (typeof value !== 'string') return null;
 
@@ -22,8 +168,7 @@ export function canonicalUrls(routes) {
 }
 
 export function parseSitemap(xml) {
-  const $ = cheerio.load(xml, { xmlMode: true });
-  return normalizedUrls($('url > loc').map((_, element) => $(element).text()).get());
+  return normalizedUrls(sitemapLocations(xml));
 }
 
 export function notificationDelta(currentUrls, successfulUrls) {

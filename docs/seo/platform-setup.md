@@ -21,6 +21,13 @@ values produce no meta tag. Verification values containing control characters
 are rejected during the build; `INDEXNOW_KEY` must be 8–128 ASCII letters,
 numbers, or hyphens.
 
+When `INDEXNOW_KEY_LOCATION` is supplied to the operations command, it must be
+an absolute HTTPS URL without credentials, query parameters, or a fragment. It
+must use the same production origin as every submitted URL. Per the IndexNow
+path-scope rule, only URLs below the key file's directory are authorized. The
+root file `https://lekeopen.com/<INDEXNOW_KEY>.txt` therefore covers the full
+current inventory; a key under `/news/` cannot authorize `/projects/` or `/`.
+
 `BAIDU_SUBMIT_TOKEN` is different: it authorizes URL-submission requests and
 is private. Do not put it in the public build configuration or expose it in
 client code, documentation examples, screenshots, logs, or tickets. Store it
@@ -42,6 +49,11 @@ only in the controlled operations environment that runs Baidu submission.
 4. Record the platform, ownership method, deployment timestamp, sitemap
    submission timestamp, and accepted/pending status without recording secret
    submission tokens.
+
+The Baidu URL submission endpoint accepts at most 2,000 URLs per request. The
+current inventory contains 26 canonical URLs, so V1.4 intentionally defers
+batching. Stop real submissions and implement tested batching before the
+inventory reaches that protocol limit.
 
 ## Human-operated pauses
 

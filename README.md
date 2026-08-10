@@ -80,8 +80,8 @@ lekee-official-site/
 
 ### 环境要求
 
-- Node.js >= 18
-- npm >= 9
+- Node.js 24.x
+- npm >= 11
 
 ### 安装依赖
 
@@ -298,13 +298,18 @@ npm run seo:inspect
 npm run seo:submit -- baidu --dry-run
 npm run seo:submit -- indexnow --dry-run
 
+# 内容发生实质变化时，显式选择一个已接受的 published canonical URL 重提；仍默认为 dry-run
+npm run seo:submit -- indexnow --resubmit https://lekeopen.com/about/ --dry-run
+
 # 生成月度报告；输入必须是脱敏后的汇总 JSON
 npm run seo:report -- --input /absolute/path/sanitized-monthly-seo.json --output /absolute/path/monthly-seo-report.md
 ```
 
-只有人工确认 URL 清单、平台凭据和发布状态后，才可把 `--dry-run` 改为 `--execute`。百度执行环境需要 `BAIDU_SITE` 与私密的 `BAIDU_SUBMIT_TOKEN`；IndexNow 需要公开所有权 key `INDEXNOW_KEY`，可选 `INDEXNOW_KEY_LOCATION`。站长平台 HTML 验证构建可分别使用 `BAIDU_SITE_VERIFICATION`、`GOOGLE_SITE_VERIFICATION` 与 `BING_SITE_VERIFICATION`。不得把 token、Cookie、认证请求头或平台原始导出放入仓库、日志、截图或月报输入。
+只有人工确认本次精确 URL 清单、平台凭据和发布状态后，才可把 `--dry-run` 改为 `--execute`；`--resubmit` 不能绕过该审批边界。百度执行环境需要 `BAIDU_SITE` 与私密的 `BAIDU_SUBMIT_TOKEN`；IndexNow 需要公开所有权 key `INDEXNOW_KEY`，可选 `INDEXNOW_KEY_LOCATION`。后者必须是无凭据、query 或 hash 的绝对 HTTPS URL，必须与待提交 URL 使用同一生产 host，且 key 文件目录必须覆盖全部待提交 URL 的路径范围。站长平台 HTML 验证构建可分别使用 `BAIDU_SITE_VERIFICATION`、`GOOGLE_SITE_VERIFICATION` 与 `BING_SITE_VERIFICATION`。不得把 token、Cookie、认证请求头或平台原始导出放入仓库、日志、截图或月报输入。
 
-成功接受的提交状态保存在 gitignored 的 `.seo-ops/state.json`。它不保存凭据，但用于避免重复提交：修复或回滚前先在仓库外备份，不能把删除状态文件当作撤回提交；平台已接受的请求无法由本工具撤销。需要停止运营写入时，先停止 `--execute`，再按平台要求轮换或撤销凭据。站点所有权、sitemap 和人工平台检查点见 [`docs/seo/platform-setup.md`](./docs/seo/platform-setup.md)，本版本工程验收与发布后待办见 [`docs/seo/v1.4-acceptance.md`](./docs/seo/v1.4-acceptance.md)。
+所有 accepted、rejected、retry-eligible 等脱敏提交结果都可以保存在 gitignored 的 `.seo-ops/state.json`，但只有 `accepted-for-processing` 记录会从普通 URL delta 中排除；内容发生实质变化时必须使用显式 `--resubmit <canonical-url>`。状态不保存凭据或 provider 原始响应。修复或回滚前先在仓库外备份，不能把删除状态文件当作撤回提交；平台已接受的请求无法由本工具撤销。需要停止运营写入时，先停止 `--execute`，再按平台要求轮换或撤销凭据。
+
+百度单次提交上限为 2,000 个 URL；当前 canonical inventory 为 26 个，V1.4 暂不引入批处理。若 inventory 接近或超过 2,000，必须先停止真实执行并增加经过测试的分批提交，再恢复运营写入。站点所有权、sitemap 和人工平台检查点见 [`docs/seo/platform-setup.md`](./docs/seo/platform-setup.md)，本版本工程验收与发布后待办见 [`docs/seo/v1.4-acceptance.md`](./docs/seo/v1.4-acceptance.md)。
 
 ## 📦 部署
 

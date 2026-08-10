@@ -35,6 +35,22 @@ test('parseSitemap returns canonical loc values and excludes invalid variants', 
   ]);
 });
 
+test('parseSitemap rejects malformed XML and invalid sitemap structures', () => {
+  const url = 'https://lekeopen.com/news/a/';
+  const invalidDocuments = [
+    `<urlset><url><loc>${url}</loc></url>`,
+    `<urlset><url><loc>${url}</url></loc></urlset>`,
+    `<sitemapindex><sitemap><loc>${url}</loc></sitemap></sitemapindex>`,
+    `<urlset><loc>${url}</loc></urlset>`,
+    '<urlset><url></url></urlset>',
+    `<urlset>unexpected text<url><loc>${url}</loc></url></urlset>`,
+  ];
+
+  for (const xml of invalidDocuments) {
+    assert.throws(() => parseSitemap(xml), /valid sitemap XML/i);
+  }
+});
+
 test('notificationDelta returns canonical URLs absent from successful submissions', () => {
   assert.deepEqual(notificationDelta(
     ['https://lekeopen.com/', 'https://lekeopen.com/news/a/'],

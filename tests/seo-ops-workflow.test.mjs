@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
@@ -34,4 +35,17 @@ test('quality workflow runs verification without provider writes or credential r
     workflow,
     /seo:submit|--execute|BAIDU_(?:SITE|SUBMIT_TOKEN)|INDEXNOW_(?:KEY|KEY_LOCATION)|secrets\./i,
   );
+});
+
+test('the complete local SEO operations state directory is ignored', () => {
+  for (const candidate of [
+    '.seo-ops/state.json',
+    '.seo-ops/state.json.lock',
+    '.seo-ops/provider-results/sanitized.json',
+  ]) {
+    const result = spawnSync('git', ['check-ignore', '--quiet', candidate], {
+      cwd: new URL('..', import.meta.url),
+    });
+    assert.equal(result.status, 0, `${candidate} must be ignored`);
+  }
 });

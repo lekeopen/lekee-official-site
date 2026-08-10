@@ -145,3 +145,84 @@ test('requestWithRetry makes at most three attempts and throws the final network
   assert.equal(calls, 3);
   assert.deepEqual(delays, [500, 1000]);
 });
+
+test('requestWithRetry rejects invalid per-attempt timeouts before fetching', async () => {
+  for (const timeoutMs of [0, -1, NaN, Infinity, '100']) {
+    let calls = 0;
+    await assert.rejects(
+      requestWithRetry('https://example.test/invalid-timeout', {}, {
+        fetchImpl: async () => {
+          calls += 1;
+          return new Response(null, { status: 200 });
+        },
+        timeoutMs,
+      }),
+      /timeoutMs must be a finite positive number/,
+    );
+    assert.equal(calls, 0);
+  }
+});
+
+test('requestWithRetry times out a stalled fetch and retries the next attempt', async () => {
+  let calls = 0;
+  let aborts = 0;
+  const delays = [];
+  const operation = requestWithRetry('https://example.test/stalled-fetch', {}, {
+    fetchImpl: async (_url, init) => {
+      calls += 1;
+      if (calls === 1) {
+        init.signal?.addEventListener('abort', () => { aborts += 1; }, { once: true });
+        return new Promise(() => {});
+      }
+      return new Response('ok', { status: 200 });
+    },
+    delay: async (milliseconds) => delays.push(milliseconds),
+    attempts: 2,
+    baseDelayMs: 1,
+    timeoutMs: 10,
+  });
+
+  const result = await Promise.race([
+    operation.then(async (response) => response.text()),
+    new Promise((resolve) => setTimeout(() => resolve('did-not-settle'), 200)),
+  ]);
+
+  assert.equal(result, 'ok');
+  assert.equal(calls, 2);
+  assert.equal(aborts, 1);
+  assert.deepEqual(delays, [1]);
+});
+
+test('requestWithRetry times out stalled response-body consumption and retries', async () => {
+  let calls = 0;
+  const delays = [];
+  const operation = requestWithRetry('https://example.test/stalled-body', {}, {
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          status: 200,
+          statusText: 'OK',
+          ok: true,
+          headers: new Headers({ 'content-type': 'text/plain' }),
+          arrayBuffer: async () => new Promise(() => {}),
+          text: async () => new Promise(() => {}),
+        };
+      }
+      return new Response('buffered', { status: 200 });
+    },
+    delay: async (milliseconds) => delays.push(milliseconds),
+    attempts: 2,
+    baseDelayMs: 1,
+    timeoutMs: 10,
+  });
+
+  const result = await Promise.race([
+    operation.then(async (response) => response.text()),
+    new Promise((resolve) => setTimeout(() => resolve('did-not-settle'), 200)),
+  ]);
+
+  assert.equal(result, 'buffered');
+  assert.equal(calls, 2);
+  assert.deepEqual(delays, [1]);
+});

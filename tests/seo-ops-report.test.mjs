@@ -14,9 +14,43 @@ const fixture = {
     startedAt: '2026-08-01T08:00:00.000Z',
     summary: { total: 12, passed: 11, failed: 1 },
   },
-  providers: {
-    indexnow: { submitted: 8, accepted: 8, indexed: null },
-    baidu: { submitted: 8, accepted: 6 },
+  platforms: {
+    bing: {
+      indexedPages: null,
+      impressions: 24,
+      clicks: 3,
+      representativeRankings: [
+        { keyword: 'AI 工程实践', position: 8, url: 'https://lekeopen.com/services/' },
+      ],
+      crawlErrors: 0,
+      sitemapStatus: 'accepted',
+    },
+    baidu: {
+      indexedPages: 6,
+      impressions: 120,
+      clicks: 12,
+      representativeRankings: [
+        { keyword: '乐可开源', position: 3, url: 'https://lekeopen.com/' },
+        { keyword: '小乐 AI', position: 5, url: 'https://lekeopen.com/projects/xiaole-agent/' },
+      ],
+      crawlErrors: 1,
+      sitemapStatus: 'accepted',
+    },
+    google: {},
+  },
+  notifications: {
+    indexNow: {
+      status: 'accepted-for-processing',
+      submittedUrls: 8,
+      acceptedUrls: 8,
+      lastSubmittedAt: '2026-08-02T00:00:00.000Z',
+    },
+    baiduUrlSubmission: {
+      status: 'partial-acceptance',
+      submittedUrls: 8,
+      acceptedUrls: 6,
+      lastSubmittedAt: '2026-08-01T00:00:00.000Z',
+    },
   },
   contentChanges: [
     { date: '2026-08-03', title: '第二篇文章', url: 'https://lekeopen.com/news/b/' },
@@ -28,10 +62,17 @@ const fixture = {
   ],
 };
 
-test('buildMonthlyReport renders deterministic provider sections and never equates acceptance with indexing', () => {
+test('buildMonthlyReport separates deterministic search-platform metrics from notification status', () => {
   const reversed = {
     ...fixture,
-    providers: Object.fromEntries(Object.entries(fixture.providers).reverse()),
+    platforms: {
+      ...Object.fromEntries(Object.entries(fixture.platforms).reverse()),
+      baidu: {
+        ...fixture.platforms.baidu,
+        representativeRankings: [...fixture.platforms.baidu.representativeRankings].reverse(),
+      },
+    },
+    notifications: Object.fromEntries(Object.entries(fixture.notifications).reverse()),
     contentChanges: [...fixture.contentChanges].reverse(),
     issues: [...fixture.issues].reverse(),
   };
@@ -41,13 +82,38 @@ test('buildMonthlyReport renders deterministic provider sections and never equat
   assert.equal(report, buildMonthlyReport(reversed));
   assert.match(report, /^# SEO 月度健康报告：2026-08/m);
   assert.match(report, /## 生产 SEO 检查/);
-  assert.ok(report.indexOf('### baidu') < report.indexOf('### indexnow'));
+  assert.match(report, /## 搜索平台指标/);
+  assert.ok(report.indexOf('### Baidu') < report.indexOf('### Google'));
+  assert.ok(report.indexOf('### Google') < report.indexOf('### Bing'));
+  assert.match(report, /已收录页面 \| 6/);
+  assert.match(report, /曝光 \| 120/);
+  assert.match(report, /点击 \| 12/);
+  assert.match(report, /代表性排名 \| 乐可开源: 3 \(https:\/\/lekeopen\.com\/\)/);
+  assert.match(report, /抓取错误 \| 1/);
+  assert.match(report, /Sitemap 状态 \| accepted/);
+  assert.match(report, /### Google[\s\S]*已收录页面 \| 未提供[\s\S]*曝光 \| 未提供[\s\S]*点击 \| 未提供/);
+  assert.match(report, /## URL 通知状态/);
+  assert.ok(report.indexOf('### Baidu URL 提交') < report.indexOf('### IndexNow'));
+  assert.match(report, /通知状态 \| partial-acceptance/);
+  assert.match(report, /已接受 URL \| 6/);
   assert.match(report, /提交被平台接受仅表示已进入处理流程，不代表页面已经被收录或建立索引。/);
-  assert.match(report, /已接受提交 \| 6/);
-  assert.match(report, /已收录或已建立索引 \| 未提供/);
   assert.match(report, /内容负责人/);
   assert.match(report, /2026-08-15/);
   assert.match(report, /未提供/);
+});
+
+test('buildMonthlyReport always includes Baidu, Google, Bing, Baidu submission, and IndexNow sections', () => {
+  const report = buildMonthlyReport({
+    period: '2026-08',
+    inspection: {},
+    contentChanges: [],
+    issues: [],
+  });
+
+  for (const heading of ['### Baidu', '### Google', '### Bing', '### Baidu URL 提交', '### IndexNow']) {
+    assert.match(report, new RegExp(`^${heading}$`, 'm'));
+  }
+  assert.ok((report.match(/未提供/g) || []).length >= 20);
 });
 
 test('buildMonthlyReport rejects credential-shaped keys and configured known secret values', () => {

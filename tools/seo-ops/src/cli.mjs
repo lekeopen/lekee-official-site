@@ -14,10 +14,35 @@ import { acceptedUrls, loadState } from './state.mjs';
 const CREDENTIAL_NAME_PATTERN = /(token|secret|password|authorization|credential|api[_-]?key)/i;
 
 function parseSubmissionOptions(args) {
-  const dryRun = args.includes('--dry-run');
-  const execute = args.includes('--execute');
+  let dryRun = false;
+  let execute = false;
+  let resubmitUrl;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const flag = args[index];
+    if (flag === '--dry-run') {
+      if (dryRun) throw new Error('--dry-run may be specified only once');
+      dryRun = true;
+      continue;
+    }
+    if (flag === '--execute') {
+      if (execute) throw new Error('--execute may be specified only once');
+      execute = true;
+      continue;
+    }
+    if (flag === '--resubmit') {
+      const value = args[index + 1];
+      if (!value || value.startsWith('--') || resubmitUrl) {
+        throw new Error('--resubmit requires one canonical URL');
+      }
+      resubmitUrl = value;
+      index += 1;
+      continue;
+    }
+    throw new Error(`Unknown submission option: ${flag}`);
+  }
   if (dryRun && execute) throw new Error('Use either --dry-run or --execute, not both');
-  return { dryRun: dryRun || !execute, execute };
+  return { dryRun: dryRun || !execute, execute, resubmitUrl };
 }
 
 function providerConfig(provider, env) {
@@ -29,6 +54,24 @@ function providerConfig(provider, env) {
 
 function writeSummary(output, summary) {
   output(`${summary.provider}: ${summary.status}; URLs: ${summary.urlCount}`);
+  if (summary.errorClass) {
+    output(`error class: ${summary.errorClass}; retry: ${summary.retryEligible ? 'yes' : 'no'}; guidance: ${summary.retryGuidance}`);
+  }
+}
+
+export function submissionExitCode(result) {
+  return ['rejected', 'retry-eligible', 'partial-acceptance'].includes(result?.status) ? 1 : 0;
+}
+
+function selectedSubmissionUrls(urls, successfulUrls, resubmitUrl, provider) {
+  if (resubmitUrl === undefined) return notificationDelta(urls, successfulUrls);
+  if (!urls.includes(resubmitUrl)) {
+    throw new Error('--resubmit URL must exactly match the current published canonical inventory');
+  }
+  if (!successfulUrls.includes(resubmitUrl)) {
+    throw new Error(`--resubmit URL must already have an accepted ${provider} result`);
+  }
+  return [resubmitUrl];
 }
 
 function writeInspection(output, report, json) {
@@ -140,16 +183,23 @@ export async function main({
   }
 
   if (command !== 'submit' || !['baidu', 'indexnow'].includes(provider)) {
-    errorOutput('Usage: seo:inventory | seo:submit -- <baidu|indexnow> [--dry-run|--execute] | seo:report --input <sanitized.json> --output <report.md> [--force]');
+    errorOutput('Usage: seo:inventory | seo:submit -- <baidu|indexnow> [--resubmit <canonical-url>] [--dry-run|--execute] | seo:report --input <sanitized.json> --output <report.md> [--force]');
     throw new Error('Invalid SEO operations command');
   }
 
   const options = parseSubmissionOptions(flags);
   const statePath = path.join(rootDir, '.seo-ops', 'state.json');
   const state = await loadState(statePath);
-  const pendingUrls = notificationDelta(urls, acceptedUrls(state, provider));
+  const pendingUrls = selectedSubmissionUrls(
+    urls,
+    acceptedUrls(state, provider),
+    options.resubmitUrl,
+    provider,
+  );
   output(`Eligible canonical URLs: ${urls.length}`);
-  output(`URLs pending ${provider}: ${pendingUrls.length}`);
+  output(options.resubmitUrl
+    ? `Explicit resubmit URLs: ${pendingUrls.length}`
+    : `URLs pending ${provider}: ${pendingUrls.length}`);
   pendingUrls.forEach((url) => output(url));
   const result = await submitProvider(provider, pendingUrls, {
     ...options,
@@ -166,7 +216,7 @@ const isDirectExecution = process.argv[1]
 
 if (isDirectExecution) {
   main().then((result) => {
-    if (result?.summary?.releaseBlocking) process.exitCode = 1;
+    if (result?.summary?.releaseBlocking || submissionExitCode(result) !== 0) process.exitCode = 1;
   }).catch((error) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

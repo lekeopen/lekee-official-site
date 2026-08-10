@@ -24,7 +24,14 @@ function page({ canonical, links = [] }) {
   </head><body><main><h1>Page</h1>${links.map((href) => `<a href="${href}">Link</a>`).join('')}</main></body></html>`;
 }
 
-async function createFixtureFetch({ brokenLink = false, throwSecret = false, extraLinks = [], sitemapUrls } = {}) {
+async function createFixtureFetch({
+  brokenLink = false,
+  throwSecret = false,
+  extraLinks = [],
+  sitemapUrls,
+  sitemapXml,
+  robotsText,
+} = {}) {
   const routes = await loadSeoRoutes(process.cwd());
   const article = routes.find((route) => route.kind === 'article');
   const project = routes.find((route) => route.kind === 'project');
@@ -45,9 +52,9 @@ async function createFixtureFetch({ brokenLink = false, throwSecret = false, ext
       assert.equal(init.method, 'GET');
       if (throwSecret && url.pathname === '/about/') throw new Error('token=fixture-secret');
       if (url.pathname === '/sitemap.xml') {
-        return response(`<?xml version="1.0"?><urlset>${canonicals.map((canonical) => `<url><loc>${canonical}</loc></url>`).join('')}</urlset>`, 200, url.href);
+        return response(sitemapXml ?? `<?xml version="1.0"?><urlset>${canonicals.map((canonical) => `<url><loc>${canonical}</loc></url>`).join('')}</urlset>`, 200, url.href);
       }
-      if (url.pathname === '/robots.txt') return response(`User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 200, url.href);
+      if (url.pathname === '/robots.txt') return response(robotsText ?? `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 200, url.href);
       if (url.pathname === '/rss.xml') return response('<?xml version="1.0"?><rss version="2.0"/>', 200, url.href);
       if (url.pathname === '/not-found/') return response('<meta name="robots" content="noindex, nofollow"><h1>Not found</h1>', 404, url.href);
       if (url.pathname === '/broken-link/') return response('<h1>Not found</h1>', 404, url.href);
@@ -74,7 +81,9 @@ test('inspectProduction validates representative production SEO artifacts with b
   assert.ok(report.checks.some((check) => check.name === 'single-canonical'));
   assert.ok(report.checks.some((check) => check.name === 'json-ld-parseable'));
   assert.ok(report.checks.some((check) => check.name === 'sitemap-coverage'));
+  assert.ok(report.checks.some((check) => check.name === 'sitemap-xml-valid'));
   assert.ok(report.checks.some((check) => check.name === 'robots-sitemap-discovery'));
+  assert.ok(report.checks.some((check) => check.name === 'robots-crawl-permission'));
   assert.ok(report.checks.some((check) => check.name === 'rss-available'));
   assert.ok(report.checks.some((check) => check.name === 'not-found-noindex'));
   assert.ok(report.checks.some((check) => check.name === 'same-origin-link-status'));
@@ -118,6 +127,20 @@ test('inspectProduction rejects sitemap entries that use a non-production host',
   assert.ok(report.failures.some((failure) => failure.check === 'sitemap-coverage'));
 });
 
+test('inspectProduction accepts a valid namespace-prefixed sitemap structure', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const sitemapXml = `<?xml version="1.0"?>
+    <sm:urlset xmlns:sm="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${routes.map((route) => `<sm:url><sm:loc>${route.canonical}</sm:loc></sm:url>`).join('')}
+    </sm:urlset>`;
+  const { fetchImpl } = await createFixtureFetch({ sitemapXml });
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+  assert.ok(report.checks.some((check) => check.name === 'sitemap-xml-valid' && check.passed));
+  assert.ok(report.checks.some((check) => check.name === 'sitemap-coverage' && check.passed));
+});
+
 test('inspectProduction fetches same-origin links with their original query string', async () => {
   const { fetchImpl, calls } = await createFixtureFetch({ extraLinks: ['/query-target/?page=2'] });
 
@@ -152,6 +175,83 @@ test('inspectProduction reports malformed sitemap locations without exposing the
     actual: '[invalid sitemap location]',
   });
   assert.equal(JSON.stringify(report).includes('fixture-secret'), false);
+});
+
+test('inspectProduction blocks a global wildcard robots disallow', async () => {
+  const { fetchImpl } = await createFixtureFetch({
+    robotsText: `User-agent: *\nDisallow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`,
+  });
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+  const failure = report.failures.find((item) => item.check === 'robots-crawl-permission');
+
+  assert.ok(failure);
+  assert.match(JSON.stringify(failure.actual), /https:\/\/lekeopen\.com\//);
+});
+
+test('inspectProduction blocks a wildcard robots rule that disallows an inspected route', async () => {
+  const { fetchImpl } = await createFixtureFetch({
+    robotsText: `User-agent: *\nDisallow: /news/\nSitemap: ${ORIGIN}/sitemap.xml\n`,
+  });
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+  const failure = report.failures.find((item) => item.check === 'robots-crawl-permission');
+
+  assert.ok(failure);
+  assert.ok(failure.actual.every((url) => new URL(url).pathname.startsWith('/news/')));
+});
+
+test('inspectProduction applies longest-match allow rules for wildcard robots groups', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const article = routes.find((route) => route.kind === 'article');
+  const { fetchImpl } = await createFixtureFetch({
+    robotsText: `User-agent: *\nDisallow: /news/\nAllow: ${article.path}\nSitemap: ${ORIGIN}/sitemap.xml\n`,
+  });
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+  assert.ok(
+    report.checks.some((item) => item.name === 'robots-crawl-permission' && item.passed),
+    JSON.stringify(report.failures),
+  );
+});
+
+test('inspectProduction rejects malformed, truncated, or mismatched sitemap XML before coverage', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const url = routes[0].canonical;
+  const malformedDocuments = [
+    `<urlset><url><loc>${url}</loc></url>`,
+    `<urlset><url><loc>${url}</url></loc></urlset>`,
+    `<urlset><url><loc>${url}</loc></url></urlset`,
+  ];
+
+  for (const sitemapXml of malformedDocuments) {
+    const { fetchImpl } = await createFixtureFetch({ sitemapXml });
+    const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+    assert.ok(report.failures.some((item) => item.check === 'sitemap-xml-valid'));
+    assert.equal(report.checks.some((item) => item.check === 'sitemap-coverage'), false);
+  }
+});
+
+test('inspectProduction rejects invalid sitemap roots and URL structures before coverage', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const url = routes[0].canonical;
+  const invalidDocuments = [
+    `<sitemapindex><sitemap><loc>${url}</loc></sitemap></sitemapindex>`,
+    `<urlset><loc>${url}</loc></urlset>`,
+    '<urlset><url></url></urlset>',
+    `<urlset><url><loc>${url}</loc><loc>${url}</loc></url></urlset>`,
+    `<urlset>unexpected text<url><loc>${url}</loc></url></urlset>`,
+  ];
+
+  for (const sitemapXml of invalidDocuments) {
+    const { fetchImpl } = await createFixtureFetch({ sitemapXml });
+    const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+    assert.ok(report.failures.some((item) => item.check === 'sitemap-xml-valid'));
+    assert.equal(report.checks.some((item) => item.check === 'sitemap-coverage'), false);
+  }
 });
 
 test('inspectProduction records missing published article and project representatives as blocking failures', async () => {
