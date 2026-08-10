@@ -9,6 +9,46 @@ const rootDir = process.cwd();
 const distDir = path.join(rootDir, 'dist');
 const ssrDir = path.join(rootDir, '.seo-ssr');
 
+const verificationProviders = [
+  ['BAIDU_SITE_VERIFICATION', 'baidu-site-verification'],
+  ['GOOGLE_SITE_VERIFICATION', 'google-site-verification'],
+  ['BING_SITE_VERIFICATION', 'msvalidate.01'],
+];
+
+function configuredPublicValue(env, name) {
+  const value = env?.[name];
+  if (value === undefined || value === '') return undefined;
+  if (typeof value !== 'string') throw new TypeError(`${name} must be a string`);
+  if (/[\u0000-\u001F\u007F]/.test(value)) throw new Error(`${name} must not contain control characters`);
+  return value;
+}
+
+function escapeHtmlAttribute(value) {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  })[character]);
+}
+
+export function verificationMeta(env = {}) {
+  return verificationProviders.flatMap(([environmentName, metaName]) => {
+    const value = configuredPublicValue(env, environmentName);
+    return value === undefined ? [] : [`<meta name="${metaName}" content="${escapeHtmlAttribute(value)}">`];
+  }).join('\n');
+}
+
+export function indexNowKeyFile(env = {}) {
+  const key = configuredPublicValue(env, 'INDEXNOW_KEY');
+  if (key === undefined) return undefined;
+  if (!/^[A-Za-z0-9-]{8,128}$/.test(key)) {
+    throw new Error('INDEXNOW_KEY must contain 8 to 128 letters, numbers, or hyphens');
+  }
+  return { key, filename: `${key}.txt` };
+}
+
 function imageType(url) {
   if (/\.jpe?g($|\?)/i.test(url)) return 'image/jpeg';
   if (/\.webp($|\?)/i.test(url)) return 'image/webp';
@@ -40,7 +80,7 @@ function structuredData(route) {
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-async function applyRoute(template, route, body) {
+async function applyRoute(template, route, body, env) {
   const $ = cheerio.load(template);
   const dimensions = await imageDimensions(route.image);
   $('html').attr('lang', 'zh-CN');
@@ -51,6 +91,8 @@ async function applyRoute(template, route, body) {
   $('script[type="application/ld+json"]').remove();
   $('head').append(`<meta name="description" content="${route.description}">`);
   $('head').append(`<link rel="canonical" href="${route.canonical}">`);
+  const ownershipVerification = verificationMeta(env);
+  if (ownershipVerification) $('head').append(ownershipVerification);
   $('head').append(`<script type="application/ld+json">${JSON.stringify(structuredData(route)).replace(/</g, '\\u003c')}</script>`);
   const properties = {
     'fb:app_id': '1202485368502369', 'og:site_name': '乐可开源',
@@ -80,7 +122,7 @@ async function main() {
   const { renderPath } = await import(`${pathToFileURL(path.join(ssrDir, 'entry-server.js')).href}?v=${Date.now()}`);
   const routes = await loadSeoRoutes(rootDir);
   for (const route of routes) {
-    await writeRoute(route.path, await applyRoute(template, route, renderPath(route.path)));
+    await writeRoute(route.path, await applyRoute(template, route, renderPath(route.path), process.env));
     console.log(`SEO rendered: ${route.path}`);
   }
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((route) => `  <url><loc>${route.canonical}</loc></url>`).join('\n')}\n</urlset>\n`;
@@ -89,9 +131,13 @@ async function main() {
   await fs.writeFile(path.join(distDir, '404.html'), `<!doctype html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>页面未找到 | 乐可开源</title></head>
 <body><main><h1>页面未找到</h1><p>你访问的页面不存在或已经移动。</p><a href="/">返回首页</a></main></body></html>\n`);
+  const keyFile = indexNowKeyFile(process.env);
+  if (keyFile) await fs.writeFile(path.join(distDir, keyFile.filename), keyFile.key, 'utf8');
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-}).finally(() => fs.rm(ssrDir, { recursive: true, force: true }));
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  }).finally(() => fs.rm(ssrDir, { recursive: true, force: true }));
+}
