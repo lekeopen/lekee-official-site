@@ -8,6 +8,7 @@ import { DEFAULT_IMAGE, SITE_URL, loadSeoRoutes } from './seo-routes.mjs';
 const rootDir = process.cwd();
 const distDir = path.join(rootDir, 'dist');
 const ssrDir = path.join(rootDir, '.seo-ssr');
+const indexNowStateFilename = '.indexnow-key-state.json';
 
 const verificationProviders = [
   ['BAIDU_SITE_VERIFICATION', 'baidu-site-verification'],
@@ -19,7 +20,7 @@ function configuredPublicValue(env, name) {
   const value = env?.[name];
   if (value === undefined || value === '') return undefined;
   if (typeof value !== 'string') throw new TypeError(`${name} must be a string`);
-  if (/[\u0000-\u001F\u007F]/.test(value)) throw new Error(`${name} must not contain control characters`);
+  if (/\p{Cc}/u.test(value)) throw new Error(`${name} must not contain control characters`);
   return value;
 }
 
@@ -47,6 +48,50 @@ export function indexNowKeyFile(env = {}) {
     throw new Error('INDEXNOW_KEY must contain 8 to 128 letters, numbers, or hyphens');
   }
   return { key, filename: `${key}.txt` };
+}
+
+function indexNowKeyFromFilename(filename) {
+  if (typeof filename !== 'string' || !filename.endsWith('.txt')) return undefined;
+  const key = filename.slice(0, -'.txt'.length);
+  const keyFile = indexNowKeyFile({ INDEXNOW_KEY: key });
+  return keyFile.filename === filename ? keyFile : undefined;
+}
+
+async function recordedIndexNowKeyFile(outputDir) {
+  try {
+    const state = JSON.parse(await fs.readFile(path.join(outputDir, indexNowStateFilename), 'utf8'));
+    return indexNowKeyFromFilename(state?.filename);
+  } catch {
+    return undefined;
+  }
+}
+
+async function removeRecordedIndexNowKeyFile(outputDir, keyFile) {
+  if (!keyFile) return;
+  const filePath = path.join(outputDir, keyFile.filename);
+  try {
+    if (await fs.readFile(filePath, 'utf8') === keyFile.key) await fs.rm(filePath, { force: true });
+  } catch {
+    // A missing or modified file was not safely removable.
+  }
+}
+
+export async function syncIndexNowKeyFile(outputDir, env = {}) {
+  const previousKeyFile = await recordedIndexNowKeyFile(outputDir);
+  const nextKeyFile = indexNowKeyFile(env);
+
+  if (previousKeyFile?.filename !== nextKeyFile?.filename) {
+    await removeRecordedIndexNowKeyFile(outputDir, previousKeyFile);
+  }
+
+  const statePath = path.join(outputDir, indexNowStateFilename);
+  if (!nextKeyFile) {
+    if (previousKeyFile) await fs.rm(statePath, { force: true });
+    return;
+  }
+
+  await fs.writeFile(path.join(outputDir, nextKeyFile.filename), nextKeyFile.key, 'utf8');
+  await fs.writeFile(statePath, JSON.stringify({ filename: nextKeyFile.filename }), 'utf8');
 }
 
 function imageType(url) {
@@ -131,8 +176,7 @@ async function main() {
   await fs.writeFile(path.join(distDir, '404.html'), `<!doctype html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>页面未找到 | 乐可开源</title></head>
 <body><main><h1>页面未找到</h1><p>你访问的页面不存在或已经移动。</p><a href="/">返回首页</a></main></body></html>\n`);
-  const keyFile = indexNowKeyFile(process.env);
-  if (keyFile) await fs.writeFile(path.join(distDir, keyFile.filename), keyFile.key, 'utf8');
+  await syncIndexNowKeyFile(distDir, process.env);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
