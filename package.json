@@ -19,6 +19,7 @@
     "check:bundle": "node scripts/check-bundle-budget.mjs",
     "check:seo": "node scripts/validate-seo-build.mjs",
     "seo:inventory": "node tools/seo-ops/src/cli.mjs inventory",
+    "seo:inspect": "node tools/seo-ops/src/cli.mjs inspect",
     "seo:submit": "node tools/seo-ops/src/cli.mjs submit",
     "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js",

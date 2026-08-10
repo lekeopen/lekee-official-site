@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { loadSeoRoutes } from '../../../scripts/seo-routes.mjs';
+import { inspectProduction } from './inspect.mjs';
 import { canonicalUrls, notificationDelta } from './inventory.mjs';
 import { submitProvider } from './providers.mjs';
 import { acceptedUrls, loadState } from './state.mjs';
@@ -26,6 +27,14 @@ function writeSummary(output, summary) {
   output(`${summary.provider}: ${summary.status}; URLs: ${summary.urlCount}`);
 }
 
+function writeInspection(output, report, json) {
+  if (json) {
+    output(JSON.stringify(report));
+    return;
+  }
+  output(`SEO inspection: ${report.summary.passed}/${report.summary.total} checks passed; failures: ${report.summary.failed}`);
+}
+
 export async function main({
   argv = process.argv.slice(2),
   env = process.env,
@@ -35,6 +44,17 @@ export async function main({
   fetchImpl,
 } = {}) {
   const [command, provider, ...flags] = argv;
+  if (command === 'inspect') {
+    const inspectFlags = [provider, ...flags].filter(Boolean);
+    if (inspectFlags.some((flag) => flag !== '--json')) {
+      errorOutput('Usage: seo:inspect [--json]');
+      throw new Error('Invalid SEO inspection command');
+    }
+    const report = await inspectProduction({ rootDir, fetchImpl });
+    writeInspection(output, report, inspectFlags.includes('--json'));
+    return report;
+  }
+
   const routes = await loadSeoRoutes(rootDir);
   const urls = canonicalUrls(routes);
 
@@ -70,7 +90,9 @@ const isDirectExecution = process.argv[1]
   && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
 if (isDirectExecution) {
-  main().catch((error) => {
+  main().then((result) => {
+    if (result?.summary?.releaseBlocking) process.exitCode = 1;
+  }).catch((error) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   });
