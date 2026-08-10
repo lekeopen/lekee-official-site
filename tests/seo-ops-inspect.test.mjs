@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { mkdtemp } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 
 import { main as runCli } from '../tools/seo-ops/src/cli.mjs';
@@ -121,6 +124,46 @@ test('inspectProduction fetches same-origin links with their original query stri
   await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
 
   assert.ok(calls.some((call) => call.url === `${ORIGIN}/query-target/?page=2`));
+});
+
+test('inspectProduction ignores only Cloudflare email-protection placeholder links', async () => {
+  const { fetchImpl, calls } = await createFixtureFetch({
+    extraLinks: ['/cdn-cgi/l/email-protection#encoded', '/cdn-cgi/other'],
+  });
+
+  await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+  assert.equal(calls.some((call) => new URL(call.url).pathname === '/cdn-cgi/l/email-protection'), false);
+  assert.equal(calls.some((call) => new URL(call.url).pathname === '/cdn-cgi/other'), true);
+});
+
+test('inspectProduction reports malformed sitemap locations without exposing their contents', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const sitemapUrls = [...routes.map((route) => route.canonical), '%%%token=fixture-secret'];
+  const { fetchImpl } = await createFixtureFetch({ sitemapUrls });
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+
+  const failure = report.failures.find((item) => item.check === 'sitemap-coverage');
+  assert.deepEqual(failure, {
+    url: `${ORIGIN}/sitemap.xml`,
+    check: 'sitemap-coverage',
+    expected: routes.map((route) => route.canonical).sort(),
+    actual: '[invalid sitemap location]',
+  });
+  assert.equal(JSON.stringify(report).includes('fixture-secret'), false);
+});
+
+test('inspectProduction records missing published article and project representatives as blocking failures', async () => {
+  const { fetchImpl } = await createFixtureFetch();
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-empty-content-'));
+
+  const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir });
+
+  assert.deepEqual(report.failures.filter((item) => item.check.startsWith('representative-')).map((item) => item.check), [
+    'representative-article',
+    'representative-project',
+  ]);
 });
 
 test('inspectProduction reports broken links and request errors as sanitized structured failures', async () => {

@@ -147,9 +147,12 @@ export async function inspectProduction({
   }
 
   const routes = await loadSeoRoutes(rootDir);
+  const homepage = routes.find((route) => route.path === '/');
   const article = routes.find((route) => route.kind === 'article');
   const project = routes.find((route) => route.kind === 'project');
-  const representativeRoutes = [routes.find((route) => route.path === '/'), article, project].filter(Boolean);
+  if (!article) record('representative-article', normalizedOrigin, 'published article route', 'missing', false);
+  if (!project) record('representative-project', normalizedOrigin, 'published project route', 'missing', false);
+  const representativeRoutes = [homepage, article, project].filter(Boolean);
   const linkedHrefs = [];
   for (const route of representativeRoutes) linkedHrefs.push(...await inspectPage(route));
 
@@ -161,6 +164,15 @@ export async function inspectProduction({
     const rawSitemapUrls = $xml('url > loc').map((_, element) => $xml(element).text()).get();
     const sitemapUrls = parseSitemap(xml).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
     const expectedUrls = canonicalUrls(routes).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
+    let hasMalformedSitemapUrl = false;
+    const safeSitemapUrls = rawSitemapUrls.map((value) => {
+      try {
+        return safeUrl(value);
+      } catch {
+        hasMalformedSitemapUrl = true;
+        return null;
+      }
+    });
     const rawUrlsAreCanonical = rawSitemapUrls.every((value) => {
       try {
         const url = new URL(value);
@@ -174,8 +186,9 @@ export async function inspectProduction({
       'sitemap-coverage',
       sitemapUrl,
       expectedUrls,
-      rawSitemapUrls.map(safeUrl),
-      rawUrlsAreCanonical
+      hasMalformedSitemapUrl ? '[invalid sitemap location]' : safeSitemapUrls,
+      !hasMalformedSitemapUrl
+        && rawUrlsAreCanonical
         && rawSitemapUrls.length === sitemapUrls.length
         && JSON.stringify(sitemapUrls) === JSON.stringify(expectedUrls),
     );
@@ -209,6 +222,7 @@ export async function inspectProduction({
       continue;
     }
     if (url.origin !== normalizedOrigin || url.username || url.password || !['http:', 'https:'].includes(url.protocol)) continue;
+    if (url.pathname === '/cdn-cgi/l/email-protection') continue;
     url.hash = '';
     const target = requestUrl(url.href);
     const dedupeKey = linkDedupeKey(target);
