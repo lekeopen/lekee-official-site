@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "records": [
+    {
+      "path": "/",
+      "primaryIntent": "乐可开源 AI 与工程实践",
+      "supportingTerms": ["人工智能", "工程实践", "技术团队"],
+      "relatedPaths": ["/services", "/products", "/solutions"]
+    },
+    {
+      "path": "/services",
+      "primaryIntent": "AI 与复杂系统工程服务",
+      "supportingTerms": ["产品工程化", "系统重构", "AI 智能体落地"],
+      "relatedPaths": ["/solutions", "/contact", "/products"]
+    },
+    {
+      "path": "/products",
+      "primaryIntent": "乐可开源产品与项目",
+      "supportingTerms": ["自研产品", "工程项目", "技术实践"],
+      "relatedPaths": ["/projects/lejiaoku-platform", "/projects/leke-insight", "/projects/xiaole-agent"]
+    },
+    {
+      "path": "/solutions",
+      "primaryIntent": "企业效率协作与知识管理解决方案",
+      "supportingTerms": ["系统集成", "知识管理", "数据资产化"],
+      "relatedPaths": ["/services", "/projects/lejiaoku-platform", "/projects/xiaole-agent"]
+    },
+    {
+      "path": "/about",
+      "primaryIntent": "乐可开源技术团队介绍",
+      "supportingTerms": ["AI", "复杂系统", "定制开发"],
+      "relatedPaths": ["/services", "/contact"]
+    },
+    {
+      "path": "/contact",
+      "primaryIntent": "联系乐可开源技术团队",
+      "supportingTerms": ["业务目标", "技术落地", "合作咨询"],
+      "relatedPaths": ["/services", "/about"]
+    },
+    {
+      "path": "/news",
+      "primaryIntent": "乐可开源技术动态",
+      "supportingTerms": ["工程实践", "项目里程碑", "团队动态"],
+      "relatedPaths": ["/products", "/news/2026-07-21-leke-insight", "/news/lejiaoku-refactor"]
+    },
+    {
+      "path": "/privacy",
+      "primaryIntent": "乐可开源隐私政策",
+      "supportingTerms": ["个人信息", "隐私保护"],
+      "relatedPaths": ["/about", "/contact"]
+    },
+    {
+      "path": "/news/2025-12-18-xiaole-stage-update",
+      "primaryIntent": "小乐 AI 智能体阶段性说明",
+      "supportingTerms": ["任务协作", "信息整理", "持续演进"],
+      "relatedPaths": ["/projects/xiaole-agent", "/news/xiaole-ai-iteration"]
+    },
+    {
+      "path": "/news/2025-12-19-brand-seo-optimization",
+      "primaryIntent": "乐可开源品牌与 SEO 优化动态",
+      "supportingTerms": ["品牌统一", "网站优化"],
+      "relatedPaths": ["/", "/news/site-refactor-2025"]
+    },
+    {
+      "path": "/news/2025-12-30-lejiaoku-official-launch",
+      "primaryIntent": "乐教库正式上线动态",
+      "supportingTerms": ["教育资源", "数字化平台"],
+      "relatedPaths": ["/projects/lejiaoku-platform", "/news/lejiaoku-refactor"]
+    },
+    {
+      "path": "/news/2026-01-01-new-year-greeting",
+      "primaryIntent": "乐可开源 2026 新年动态",
+      "supportingTerms": ["团队感谢", "新年"],
+      "relatedPaths": ["/", "/news"]
+    },
+    {
+      "path": "/news/2026-03-19-openclaw-adoption",
+      "primaryIntent": "OpenClaw AI 智能体协作实战",
+      "supportingTerms": ["团队协作", "AI 智能体", "工程实践"],
+      "relatedPaths": ["/services", "/solutions"]
+    },
+    {
+      "path": "/news/2026-06-27-geogenius-launch",
+      "primaryIntent": "GeoGenius AI 几何学习助手上线",
+      "supportingTerms": ["几何学习", "动态演示", "AI 教育"],
+      "relatedPaths": ["/projects/lab-projects", "/products"]
+    },
+    {
+      "path": "/news/2026-07-16-free-e-gaoyuanwai",
+      "primaryIntent": "高源外个人技术博客上线",
+      "supportingTerms": ["技术博客", "个人写作"],
+      "relatedPaths": ["/projects/free-e-gaoyuanwai", "/products"]
+    },
+    {
+      "path": "/news/2026-07-18-boral-wang",
+      "primaryIntent": "边大夫口腔官网改版动态",
+      "supportingTerms": ["静态优先", "本地 SEO", "官网改版"],
+      "relatedPaths": ["/projects/boral-wang", "/solutions"]
+    },
+    {
+      "path": "/news/2026-07-21-leke-insight",
+      "primaryIntent": "乐可观澜项目经营决策驾驶舱上线",
+      "supportingTerms": ["项目运营", "数据看板", "行动建议"],
+      "relatedPaths": ["/projects/leke-insight", "/news"]
+    },
+    {
+      "path": "/news/lejiaoku-refactor",
+      "primaryIntent": "乐教库平台重构动态",
+      "supportingTerms": ["教育产品", "AI Agent", "资源共享"],
+      "relatedPaths": ["/projects/lejiaoku-platform", "/news/2025-12-30-lejiaoku-official-launch"]
+    },
+    {
+      "path": "/news/site-refactor-2025",
+      "primaryIntent": "乐可开源官网重构动态",
+      "supportingTerms": ["网站重构", "AI 驱动"],
+      "relatedPaths": ["/", "/news/2025-12-19-brand-seo-optimization"]
+    },
+    {
+      "path": "/news/xiaole-ai-iteration",
+      "primaryIntent": "小乐 AI 智能体持续迭代",
+      "supportingTerms": ["Agent", "任务协作", "信息整理"],
+      "relatedPaths": ["/projects/xiaole-agent", "/news/2025-12-18-xiaole-stage-update"]
+    },
+    {
+      "path": "/projects/boral-wang",
+      "primaryIntent": "边大夫口腔本地 SEO 官网",
+      "supportingTerms": ["静态优先", "口腔官网", "本地搜索"],
+      "relatedPaths": ["/news/2026-07-18-boral-wang", "/solutions"]
+    },
+    {
+      "path": "/projects/free-e-gaoyuanwai",
+      "primaryIntent": "高源外个人技术博客",
+      "supportingTerms": ["技术写作", "个人博客"],
+      "relatedPaths": ["/news/2026-07-16-free-e-gaoyuanwai", "/products"]
+    },
+    {
+      "path": "/projects/lab-projects",
+      "primaryIntent": "GeoGenius AI 几何学习助手",
+      "supportingTerms": ["几何直观", "动态演示", "学习助手"],
+      "relatedPaths": ["/news/2026-06-27-geogenius-launch", "/products"]
+    },
+    {
+      "path": "/projects/lejiaoku-platform",
+      "primaryIntent": "乐教库教育资源知识管理平台",
+      "supportingTerms": ["教学资源", "智能检索", "数字化管理"],
+      "relatedPaths": ["/news/lejiaoku-refactor", "/news/2025-12-30-lejiaoku-official-launch", "/solutions"]
+    },
+    {
+      "path": "/projects/leke-insight",
+      "primaryIntent": "乐可观澜项目经营决策驾驶舱",
+      "supportingTerms": ["访问监测", "趋势判断", "项目运营"],
+      "relatedPaths": ["/news/2026-07-21-leke-insight", "/products"]
+    },
+    {
+      "path": "/projects/xiaole-agent",
+      "primaryIntent": "小乐 AI 智能体任务协作实践",
+      "supportingTerms": ["任务管理", "信息整理", "RAG"],
+      "relatedPaths": ["/news/xiaole-ai-iteration", "/news/2025-12-18-xiaole-stage-update", "/solutions"]
+    }
+  ]
+}

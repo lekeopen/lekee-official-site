@@ -18,6 +18,7 @@
     "check": "tsc -b --noEmit",
     "check:bundle": "node scripts/check-bundle-budget.mjs",
     "check:seo": "node scripts/validate-seo-build.mjs",
+    "check:seo-keywords": "node scripts/validate-seo-keywords.mjs",
     "seo:inventory": "node tools/seo-ops/src/cli.mjs inventory",
     "seo:inspect": "node tools/seo-ops/src/cli.mjs inspect",
     "seo:submit": "node tools/seo-ops/src/cli.mjs submit",
