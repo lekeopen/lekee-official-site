@@ -15,4 +15,5 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run verify
+      - name: Run deterministic quality and SEO operations gates
+        run: npm run verify

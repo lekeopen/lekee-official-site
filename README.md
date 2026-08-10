@@ -283,6 +283,29 @@ git checkout develop
 
 通过 React Helmet Async 保持客户端导航的页面元数据，并在生产构建时输出完整静态正文、canonical、JSON-LD、sitemap、robots 和 404 页面。静态路由清单只收录已发布的新闻与项目内容，以中国搜索引擎直接抓取为优先，同时兼容 Google 与 Bing。
 
+### SEO 运营命令
+
+本地和 CI 的 `npm run verify` 包含确定性的 SEO 运营门禁：URL 清单、关键词治理校验和 SEO 运营测试。在线生产巡检和搜索平台提交不在 CI 中执行，避免网络波动或生产写操作进入质量门禁。
+
+```bash
+# 查看可提交的 canonical URL 清单
+npm run seo:inventory
+
+# 只读检查线上页面、sitemap、robots、RSS、404 与站内链接
+npm run seo:inspect
+
+# 明确 dry-run；不会调用平台，也不会写入提交状态
+npm run seo:submit -- baidu --dry-run
+npm run seo:submit -- indexnow --dry-run
+
+# 生成月度报告；输入必须是脱敏后的汇总 JSON
+npm run seo:report -- --input /absolute/path/sanitized-monthly-seo.json --output /absolute/path/monthly-seo-report.md
+```
+
+只有人工确认 URL 清单、平台凭据和发布状态后，才可把 `--dry-run` 改为 `--execute`。百度执行环境需要 `BAIDU_SITE` 与私密的 `BAIDU_SUBMIT_TOKEN`；IndexNow 需要公开所有权 key `INDEXNOW_KEY`，可选 `INDEXNOW_KEY_LOCATION`。站长平台 HTML 验证构建可分别使用 `BAIDU_SITE_VERIFICATION`、`GOOGLE_SITE_VERIFICATION` 与 `BING_SITE_VERIFICATION`。不得把 token、Cookie、认证请求头或平台原始导出放入仓库、日志、截图或月报输入。
+
+成功接受的提交状态保存在 gitignored 的 `.seo-ops/state.json`。它不保存凭据，但用于避免重复提交：修复或回滚前先在仓库外备份，不能把删除状态文件当作撤回提交；平台已接受的请求无法由本工具撤销。需要停止运营写入时，先停止 `--execute`，再按平台要求轮换或撤销凭据。站点所有权、sitemap 和人工平台检查点见 [`docs/seo/platform-setup.md`](./docs/seo/platform-setup.md)，本版本工程验收与发布后待办见 [`docs/seo/v1.4-acceptance.md`](./docs/seo/v1.4-acceptance.md)。
+
 ## 📦 部署
 
 构建完成后，将 `dist/` 目录部署到任何静态托管服务：
