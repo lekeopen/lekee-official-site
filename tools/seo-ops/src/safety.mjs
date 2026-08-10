@@ -35,7 +35,13 @@ function redactValue(value, secrets, seen) {
   if (seen.has(value)) return seen.get(value);
 
   if (value instanceof URL) {
-    const redacted = new URL(redactString(value.href, secrets));
+    const href = redactString(value.href, secrets);
+    let redacted;
+    try {
+      redacted = new URL(href);
+    } catch {
+      return href;
+    }
     seen.set(value, redacted);
     return redacted;
   }

@@ -23,6 +23,12 @@ test('redact recursively replaces exact secret substrings in objects, arrays, UR
   assert.equal(result.error.stack, 'Error: request failed: [REDACTED]');
 });
 
+test('redact returns a safe string when redacting a complete URL would make it invalid', () => {
+  const url = new URL('https://example.test/?token=secret');
+
+  assert.equal(redact(url, [url.href]), '[REDACTED]');
+});
+
 test('isRetryableStatus identifies only 429 and server errors as retryable HTTP statuses', () => {
   assert.equal(isRetryableStatus(429), true);
   assert.equal(isRetryableStatus(500), true);
@@ -80,6 +86,23 @@ test('requestWithRetry returns non-retryable responses without retrying', async 
 
     assert.equal(response.status, status);
     assert.equal(calls, 1);
+  }
+});
+
+test('requestWithRetry rejects invalid or unbounded attempt counts before fetching', async () => {
+  for (const attempts of [0, -1, NaN, Infinity, 1.5, '3']) {
+    let calls = 0;
+    await assert.rejects(
+      requestWithRetry('https://example.test/invalid-attempts', {}, {
+        fetchImpl: async () => {
+          calls += 1;
+          return new Response(null, { status: 200 });
+        },
+        attempts,
+      }),
+      TypeError,
+    );
+    assert.equal(calls, 0);
   }
 });
 
