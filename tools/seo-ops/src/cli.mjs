@@ -8,7 +8,7 @@ import { loadSeoRoutes } from '../../../scripts/seo-routes.mjs';
 import { inspectProduction } from './inspect.mjs';
 import { canonicalUrls, notificationDelta } from './inventory.mjs';
 import { submitProvider } from './providers.mjs';
-import { buildMonthlyReport } from './report.mjs';
+import { buildMonthlyReport, DEFAULT_CREDENTIAL_NAMES } from './report.mjs';
 import { acceptedUrls, loadState } from './state.mjs';
 
 const CREDENTIAL_NAME_PATTERN = /(token|secret|password|authorization|credential|api[_-]?key)/i;
@@ -70,7 +70,10 @@ function parseReportOptions(args) {
 }
 
 function reportSecrets(env) {
-  const credentialNames = Object.keys(env).filter((name) => CREDENTIAL_NAME_PATTERN.test(name));
+  const credentialNames = [...new Set([
+    ...DEFAULT_CREDENTIAL_NAMES,
+    ...Object.keys(env).filter((name) => CREDENTIAL_NAME_PATTERN.test(name)),
+  ])];
   return {
     credentialNames,
     knownSecretValues: credentialNames.map((name) => env[name]).filter((value) => (

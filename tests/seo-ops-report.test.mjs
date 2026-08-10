@@ -110,3 +110,53 @@ test('direct report CLI rejects secrets supplied through configured environment 
   assert.match(result.stderr, /known secret value/i);
   assert.equal(result.stderr.includes('env-secret-value'), false);
 });
+
+test('report CLI preserves default credential names and rejects configured IndexNow values without echoing them', async () => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-report-indexnow-'));
+  const inputPath = path.join(rootDir, 'sanitized.json');
+  const outputPath = path.join(rootDir, 'report.md');
+  const secret = 'indexnow-secret-value';
+
+  await writeFile(inputPath, JSON.stringify({ ...fixture, INDEXNOW_KEY: 'not-a-secret' }), 'utf8');
+  await assert.rejects(
+    runCli({
+      argv: ['report', '--input', inputPath, '--output', outputPath],
+      rootDir,
+      env: {},
+      output: () => {},
+    }),
+    /sensitive credential key/i,
+  );
+
+  await writeFile(inputPath, JSON.stringify({ ...fixture, issues: [{ title: secret }] }), 'utf8');
+  await assert.rejects(
+    runCli({
+      argv: ['report', '--input', inputPath, '--output', outputPath],
+      rootDir,
+      env: { INDEXNOW_KEY: secret },
+      output: () => {},
+    }),
+    (error) => /known secret value/i.test(error.message) && !error.message.includes(secret),
+  );
+});
+
+test('buildMonthlyReport rejects known secret values in scalar output fields and object keys', () => {
+  assert.throws(
+    () => buildMonthlyReport({ ...fixture, issues: [{ title: 12345678 }] }, {
+      knownSecretValues: ['12345678'],
+    }),
+    /known secret value/i,
+  );
+  assert.throws(
+    () => buildMonthlyReport({ ...fixture, issues: [{ title: true }] }, {
+      knownSecretValues: ['true'],
+    }),
+    /known secret value/i,
+  );
+  assert.throws(
+    () => buildMonthlyReport({ ...fixture, issues: [{ 'known-secret-value': 'safe' }] }, {
+      knownSecretValues: ['known-secret-value'],
+    }),
+    /known secret value/i,
+  );
+});

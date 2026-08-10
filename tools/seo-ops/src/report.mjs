@@ -33,11 +33,17 @@ function assertSafeInput(value, { credentialNames, knownSecretValues }) {
   const knownValues = new Set(knownSecretValues.filter((item) => typeof item === 'string' && item.length > 0));
   const visited = new WeakSet();
 
+  function containsKnownSecret(value) {
+    const text = String(value);
+    for (const secret of knownValues) {
+      if (text === secret || (typeof value === 'string' && text.includes(secret))) return true;
+    }
+    return false;
+  }
+
   function visit(current) {
-    if (typeof current === 'string') {
-      for (const secret of knownValues) {
-        if (current.includes(secret)) throw new Error('Report input contains a known secret value');
-      }
+    if (typeof current === 'string' || typeof current === 'number' || typeof current === 'boolean') {
+      if (containsKnownSecret(current)) throw new Error('Report input contains a known secret value');
       return;
     }
     if (current === null || typeof current !== 'object') return;
@@ -49,6 +55,7 @@ function assertSafeInput(value, { credentialNames, knownSecretValues }) {
       return;
     }
     for (const [key, entry] of Object.entries(current)) {
+      if (containsKnownSecret(key)) throw new Error('Report input contains a known secret value');
       if (configuredCredentialKey(key, credentialNames)) {
         throw new Error('Report input contains a sensitive credential key');
       }
