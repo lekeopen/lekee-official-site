@@ -44,6 +44,13 @@ test('parseSitemap rejects malformed XML and invalid sitemap structures', () => 
     `<urlset><loc>${url}</loc></urlset>`,
     '<urlset><url></url></urlset>',
     `<urlset>unexpected text<url><loc>${url}</loc></url></urlset>`,
+    `<urlset><![CDATA[unexpected text]]><url><loc>${url}</loc></url></urlset>`,
+    `<urlset><url><loc><x>${url}</x></loc></url></urlset>`,
+    `<urlset><url><loc>${url}</loc></url></urlset><?xml version="1.0"?>`,
+    `<?xml version="1.0"?><urlset><?xml version="1.0"?><url><loc>${url}</loc></url></urlset>`,
+    `<urlset><?audit invalid?><url><loc>${url}</loc></url></urlset>`,
+    `<urlset><url><loc>${url}<?audit invalid?></loc></url></urlset>`,
+    `<!DOCTYPE urlset><urlset><url><loc>${url}</loc></url></urlset>`,
   ];
 
   for (const xml of invalidDocuments) {

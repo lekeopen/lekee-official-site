@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile } from 'node:fs/promises';
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -145,6 +153,148 @@ test('accepted submissions persist only safe state fields atomically', async () 
   assert.equal(JSON.stringify(state).includes('aB3-4567'), false);
 });
 
+test('provider request runs while the state transaction lock is held and records state before cleanup', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-request-transaction-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+  const lockPath = `${statePath}.lock`;
+  let observedLock = false;
+
+  const result = await submitProvider('indexnow', URLS, {
+    execute: true,
+    config: { key: 'aB3-4567' },
+    fetchImpl: async () => {
+      try {
+        await access(lockPath);
+        observedLock = true;
+      } catch {
+        observedLock = false;
+      }
+      return new Response(null, { status: 202 });
+    },
+    statePath,
+  });
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.equal(observedLock, true);
+  assert.equal(result.status, 'accepted-for-processing');
+  assert.ok(state.records.every((record) => record.resultClass === 'accepted-for-processing'));
+  assert.ok(state.attempts.every((attempt) => attempt.resultClass === 'accepted-for-processing'));
+  await assert.rejects(access(lockPath), { code: 'ENOENT' });
+});
+
+test('state transaction cleans up its lock after a provider request failure is recorded', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-request-failure-lock-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+  const lockPath = `${statePath}.lock`;
+  let observedLock = false;
+
+  const result = await submitProvider('indexnow', URLS, {
+    execute: true,
+    config: { key: 'aB3-4567' },
+    fetchImpl: async () => {
+      try {
+        await access(lockPath);
+        observedLock = true;
+      } catch {
+        observedLock = false;
+      }
+      throw new Error('fixture transport failure');
+    },
+    statePath,
+    requestOptions: { attempts: 1, timeoutMs: 100 },
+  });
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.equal(observedLock, true);
+  assert.equal(result.status, 'retry-eligible');
+  assert.equal(result.errorClass, 'network-error');
+  assert.ok(state.attempts.every((attempt) => attempt.errorClass === 'network-error'));
+  await assert.rejects(access(lockPath), { code: 'ENOENT' });
+});
+
+test('state transaction removes its lock and atomic temp file after persistence failure', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-persist-failure-lock-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+  const stateDirectory = path.dirname(statePath);
+  const lockPath = `${statePath}.lock`;
+  let observedLock = false;
+
+  await assert.rejects(submitProvider('indexnow', URLS, {
+    execute: true,
+    config: { key: 'aB3-4567' },
+    fetchImpl: async () => {
+      try {
+        await access(lockPath);
+        observedLock = true;
+      } catch {
+        observedLock = false;
+      }
+      await mkdir(statePath);
+      return new Response(null, { status: 202 });
+    },
+    statePath,
+  }));
+
+  assert.equal(observedLock, true);
+  assert.deepEqual(await readdir(stateDirectory), ['state.json']);
+  await assert.rejects(access(lockPath), { code: 'ENOENT' });
+});
+
+test('malformed state lock fails closed before any provider request', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-malformed-lock-request-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+  const lockPath = `${statePath}.lock`;
+  await mkdir(path.dirname(statePath), { recursive: true });
+  await writeFile(lockPath, 'malformed lock metadata\n', 'utf8');
+  let fetchCalls = 0;
+
+  const pending = submitProvider('indexnow', URLS, {
+    execute: true,
+    config: { key: 'aB3-4567' },
+    fetchImpl: async () => {
+      fetchCalls += 1;
+      return new Response(null, { status: 202 });
+    },
+    statePath,
+    stateOptions: { lockTimeoutMs: 30 },
+  });
+  const outcome = await Promise.race([
+    pending.then(() => 'completed', (error) => error),
+    new Promise((resolve) => setTimeout(() => resolve('waiting'), 100)),
+  ]);
+  if (outcome === 'waiting') {
+    await rm(lockPath);
+    await pending;
+  }
+
+  assert.ok(outcome instanceof Error);
+  assert.match(outcome.message, /malformed SEO state lock/i);
+  assert.equal(fetchCalls, 0);
+  assert.equal(await readFile(lockPath, 'utf8'), 'malformed lock metadata\n');
+});
+
+test('provider dry-run creates neither state nor lock artifacts', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-dry-run-artifacts-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const statePath = path.join(root, '.seo-ops', 'state.json');
+  const lockPath = `${statePath}.lock`;
+
+  const result = await submitProvider('indexnow', URLS, {
+    dryRun: true,
+    config: {},
+    fetchImpl: async () => assert.fail('dry-run must not request the provider'),
+    statePath,
+  });
+
+  assert.equal(result.status, 'dry-run');
+  await assert.rejects(access(statePath), { code: 'ENOENT' });
+  await assert.rejects(access(lockPath), { code: 'ENOENT' });
+});
+
 test('Baidu partial success records listed failures as rejected and only mapped successes as accepted', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'leke-baidu-partial-state-'));
   const statePath = path.join(root, '.seo-ops', 'state.json');
@@ -165,6 +315,81 @@ test('Baidu partial success records listed failures as rejected and only mapped 
     { url: 'https://lekeopen.com/news/a/', resultClass: 'accepted-for-processing' },
     { url: 'https://lekeopen.com/news/b/', resultClass: 'rejected' },
   ]);
+});
+
+test('Baidu full URL rejections return deterministic actionable classifications without leaking provider data', async (t) => {
+  const cases = [
+    {
+      label: 'invalid URLs',
+      payloadFor: (urls) => ({ success: 0, not_valid: urls }),
+      errorClass: 'url-validation-error',
+      attemptClassesFor: (urls) => urls.map(() => 'url-validation-error'),
+      guidancePattern: /canonical URLs/i,
+    },
+    {
+      label: 'site mismatch',
+      payloadFor: (urls) => ({ success: 0, not_same_site: urls }),
+      errorClass: 'site-mismatch-error',
+      attemptClassesFor: (urls) => urls.map(() => 'site-mismatch-error'),
+      guidancePattern: /site ownership|configured Baidu site/i,
+    },
+    {
+      label: 'mixed rejection arrays',
+      payloadFor: (urls) => ({
+        success: 0,
+        not_valid: urls.slice(0, 1),
+        not_same_site: urls.slice(1),
+      }),
+      errorClass: 'url-validation-and-site-mismatch',
+      attemptClassesFor: (urls) => [
+        'url-validation-error',
+        ...urls.slice(1).map(() => 'site-mismatch-error'),
+      ],
+      guidancePattern: /canonical URLs.*site|site.*canonical URLs/i,
+    },
+  ];
+
+  for (const scenario of cases) {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-baidu-full-rejection-'));
+    t.after(() => import('node:fs/promises').then(({ rm }) => rm(rootDir, { recursive: true, force: true })));
+    const token = 'baidu-test-token';
+    const rawBody = 'raw-provider-body-secret';
+    const output = [];
+    let submittedUrls;
+
+    const result = await runCli({
+      argv: ['submit', 'baidu', '--execute'],
+      rootDir,
+      env: { BAIDU_SITE: 'https://lekeopen.com', BAIDU_SUBMIT_TOKEN: token },
+      fetchImpl: async (_url, init) => {
+        submittedUrls = init.body.split('\n');
+        return new Response(JSON.stringify({
+          ...scenario.payloadFor(submittedUrls),
+          message: rawBody,
+        }), { status: 200 });
+      },
+      output: (line) => output.push(line),
+    });
+    const stateText = await readFile(path.join(rootDir, '.seo-ops', 'state.json'), 'utf8');
+    const state = JSON.parse(stateText);
+    const display = JSON.stringify({ result, output });
+
+    assert.equal(result.status, 'rejected', scenario.label);
+    assert.equal(result.errorClass, scenario.errorClass, scenario.label);
+    assert.equal(result.retryEligible, false, scenario.label);
+    assert.match(result.retryGuidance, scenario.guidancePattern, scenario.label);
+    assert.equal(cli.submissionExitCode(result), 1, scenario.label);
+    assert.ok(output.some((line) => line.includes(`error class: ${scenario.errorClass}`)), scenario.label);
+    assert.deepEqual(
+      state.attempts.map((attempt) => attempt.errorClass),
+      scenario.attemptClassesFor(submittedUrls),
+      scenario.label,
+    );
+    assert.equal(display.includes(token), false, scenario.label);
+    assert.equal(display.includes(rawBody), false, scenario.label);
+    assert.equal(stateText.includes(token), false, scenario.label);
+    assert.equal(stateText.includes(rawBody), false, scenario.label);
+  }
 });
 
 test('Baidu fails closed when partial response counts and failure arrays cannot map URLs safely', async () => {
@@ -407,6 +632,83 @@ test('explicit accepted-URL resubmit performs a network write only with --execut
   assert.equal(fetchCalls, 1);
   assert.deepEqual(submittedUrls, [selectedUrl]);
   assert.equal(result.status, 'accepted-for-processing');
+});
+
+test('rejected accepted-URL resubmit keeps effective acceptance and records sanitized attempt history', async () => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-resubmit-rejected-'));
+  const selectedUrl = 'https://lekeopen.com/about/';
+  const statePath = path.join(rootDir, '.seo-ops', 'state.json');
+  const key = 'aB3-4567';
+  const rawBody = 'raw-provider-body-secret';
+  const accepted = {
+    provider: 'indexnow',
+    url: selectedUrl,
+    acceptedAt: '2026-08-11T00:00:00.000Z',
+    resultClass: 'accepted-for-processing',
+    retryEligible: false,
+  };
+  await recordSubmission(statePath, [accepted]);
+
+  const result = await runCli({
+    argv: ['submit', 'indexnow', '--resubmit', selectedUrl, '--execute'],
+    rootDir,
+    env: { INDEXNOW_KEY: key },
+    fetchImpl: async () => new Response(rawBody, { status: 400 }),
+    output: () => {},
+  });
+  const stateText = await readFile(statePath, 'utf8');
+  const state = JSON.parse(stateText);
+  const ordinaryOutput = [];
+  await runCli({
+    argv: ['submit', 'indexnow', '--dry-run'],
+    rootDir,
+    env: {},
+    fetchImpl: async () => assert.fail('ordinary dry-run must not request the provider'),
+    output: (line) => ordinaryOutput.push(line),
+  });
+
+  assert.equal(result.status, 'rejected');
+  assert.deepEqual(state.records, [accepted]);
+  assert.deepEqual(state.attempts.map(({ provider, url, resultClass, retryEligible }) => ({
+    provider,
+    url,
+    resultClass,
+    retryEligible,
+  })), [
+    {
+      provider: 'indexnow',
+      url: selectedUrl,
+      resultClass: 'accepted-for-processing',
+      retryEligible: false,
+    },
+    {
+      provider: 'indexnow',
+      url: selectedUrl,
+      resultClass: 'rejected',
+      retryEligible: false,
+    },
+  ]);
+  assert.deepEqual(Object.keys(state.attempts[0]).sort(), [
+    'attemptedAt',
+    'provider',
+    'resultClass',
+    'retryEligible',
+    'url',
+  ]);
+  assert.deepEqual(Object.keys(state.attempts[1]).sort(), [
+    'attemptedAt',
+    'errorClass',
+    'provider',
+    'resultClass',
+    'retryEligible',
+    'retryGuidance',
+    'url',
+  ]);
+  assert.equal(state.attempts[1].errorClass, 'validation-error');
+  assert.match(state.attempts[1].retryGuidance, /canonical URLs|configuration/i);
+  assert.equal(ordinaryOutput.includes(selectedUrl), false);
+  assert.equal(stateText.includes(key), false);
+  assert.equal(stateText.includes(rawBody), false);
 });
 
 test('inventory prints each canonical URL once without callback metadata', async () => {

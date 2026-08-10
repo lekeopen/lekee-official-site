@@ -254,6 +254,35 @@ test('inspectProduction rejects invalid sitemap roots and URL structures before 
   }
 });
 
+test('inspectProduction returns structured blocking failures for strict sitemap XML violations', async () => {
+  const routes = await loadSeoRoutes(process.cwd());
+  const url = routes[0].canonical;
+  const invalidDocuments = [
+    `<urlset><url><loc><x>${url}</x></loc></url></urlset>`,
+    `<urlset><![CDATA[unexpected text]]><url><loc>${url}</loc></url></urlset>`,
+    `<urlset>unexpected text<url><loc>${url}</loc></url></urlset>`,
+    `<urlset><url><loc>${url}</loc></url></urlset><?xml version="1.0"?>`,
+    `<?xml version="1.0"?><urlset><?audit invalid?><url><loc>${url}</loc></url></urlset>`,
+    `<urlset><url><loc>${url}<?audit invalid?></loc></url></urlset>`,
+    `<!DOCTYPE urlset><urlset><url><loc>${url}</loc></url></urlset>`,
+  ];
+
+  for (const sitemapXml of invalidDocuments) {
+    const { fetchImpl } = await createFixtureFetch({ sitemapXml });
+    const report = await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd() });
+    const failure = report.failures.find((item) => item.check === 'sitemap-xml-valid');
+
+    assert.deepEqual(failure, {
+      url: `${ORIGIN}/sitemap.xml`,
+      check: 'sitemap-xml-valid',
+      expected: 'well-formed urlset with one loc per URL',
+      actual: 'invalid XML or sitemap structure',
+    });
+    assert.equal(report.summary.releaseBlocking, true);
+    assert.equal(report.checks.some((item) => item.name === 'sitemap-coverage'), false);
+  }
+});
+
 test('inspectProduction records missing published article and project representatives as blocking failures', async () => {
   const { fetchImpl } = await createFixtureFetch();
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-empty-content-'));

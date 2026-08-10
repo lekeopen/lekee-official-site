@@ -53,6 +53,7 @@ function assertWellFormedXml(xml) {
   if (typeof xml !== 'string' || xml.trim().length === 0) throw sitemapError();
   const stack = [];
   let rootName;
+  let seenXmlDeclaration = false;
   let index = 0;
 
   while (index < xml.length) {
@@ -70,6 +71,8 @@ function assertWellFormedXml(xml) {
     }
     if (xml.startsWith('<![CDATA[', open)) {
       if (stack.length === 0) throw sitemapError();
+      const parentName = String(stack.at(-1)).split(':').at(-1);
+      if (parentName === 'urlset' || parentName === 'url') throw sitemapError();
       const end = xml.indexOf(']]>', open + 9);
       if (end < 0) throw sitemapError();
       index = end + 3;
@@ -78,6 +81,18 @@ function assertWellFormedXml(xml) {
     if (xml.startsWith('<?', open)) {
       const end = xml.indexOf('?>', open + 2);
       if (end < 0) throw sitemapError();
+      const instruction = xml.slice(open + 2, end).trim();
+      const target = instruction.match(/^([A-Za-z_][\w:.-]*)/)?.[1];
+      if (!target) throw sitemapError();
+      if (target.toLowerCase() === 'xml') {
+        const declarationOffset = xml.charCodeAt(0) === 0xFEFF ? 1 : 0;
+        if (target !== 'xml' || seenXmlDeclaration || rootName !== undefined
+          || stack.length > 0 || open !== declarationOffset) throw sitemapError();
+        assertValidAttributes(instruction.slice(target.length));
+        seenXmlDeclaration = true;
+      } else if (stack.length > 0) {
+        throw sitemapError();
+      }
       index = end + 2;
       continue;
     }
@@ -139,7 +154,8 @@ function sitemapLocations(xml) {
     const children = elementChildren(urlElement);
     if (hasUnexpectedText(urlElement)) throw sitemapError();
     const locations = children.filter((element) => localName(element) === 'loc');
-    if (locations.length !== 1 || $(locations[0]).text().trim().length === 0) throw sitemapError();
+    if (locations.length !== 1 || elementChildren(locations[0]).length > 0
+      || $(locations[0]).text().trim().length === 0) throw sitemapError();
     if (children.some((element) => (
       !String(element.name).includes(':') && !STANDARD_URL_CHILDREN.has(localName(element))
     ))) throw sitemapError();

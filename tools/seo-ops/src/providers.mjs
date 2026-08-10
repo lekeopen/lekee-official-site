@@ -1,7 +1,7 @@
 import { canonicalUrls } from './inventory.mjs';
 import { RequestTimeoutError, requestWithRetry } from './request.mjs';
 import { redact } from './safety.mjs';
-import { recordSubmission } from './state.mjs';
+import { withStateTransaction } from './state.mjs';
 
 const BAIDU_ENDPOINT = 'https://data.zz.baidu.com/urls';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
@@ -187,9 +187,9 @@ function uniformResults(urls, result) {
   return urls.map((url) => ({ url, ...result }));
 }
 
-function baiduFailureUrls(payload, urls) {
+function baiduFailures(payload, urls) {
   const submitted = new Set(urls);
-  const failed = new Set();
+  const failed = new Map();
 
   for (const field of ['not_same_site', 'not_valid']) {
     const value = payload[field];
@@ -198,7 +198,9 @@ function baiduFailureUrls(payload, urls) {
 
     for (const url of value) {
       if (typeof url !== 'string' || !submitted.has(url)) return null;
-      failed.add(url);
+      const fields = failed.get(url) ?? new Set();
+      fields.add(field);
+      failed.set(url, fields);
     }
   }
 
@@ -212,6 +214,33 @@ function rejectedBaiduOutcome(errorClass, retryGuidance) {
     errorClass,
     retryGuidance,
   };
+}
+
+function baiduUrlRejection(fields) {
+  if (fields.has('not_valid') && fields.has('not_same_site')) {
+    return rejectedBaiduOutcome(
+      'url-validation-and-site-mismatch',
+      'Correct the rejected canonical URLs and the configured Baidu site scope or ownership before retrying.',
+    );
+  }
+  if (fields.has('not_same_site')) {
+    return rejectedBaiduOutcome(
+      'site-mismatch-error',
+      'Submit only URLs within the configured Baidu site and verify site ownership before retrying.',
+    );
+  }
+  return rejectedBaiduOutcome(
+    'url-validation-error',
+    'Correct the rejected canonical URLs before retrying.',
+  );
+}
+
+function combinedBaiduRejection(failures) {
+  const fields = new Set();
+  for (const urlFields of failures.values()) {
+    for (const field of urlFields) fields.add(field);
+  }
+  return baiduUrlRejection(fields);
 }
 
 async function outcomeForBaidu(response, urls) {
@@ -241,9 +270,9 @@ async function outcomeForBaidu(response, urls) {
   }
 
   const successCount = Number(payload?.success);
-  const failedUrls = baiduFailureUrls(payload, urls);
-  if (!Number.isSafeInteger(successCount) || successCount < 0 || failedUrls === null
-    || successCount + failedUrls.size !== urls.length) {
+  const failures = baiduFailures(payload, urls);
+  if (!Number.isSafeInteger(successCount) || successCount < 0 || failures === null
+    || successCount + failures.size !== urls.length) {
     const failure = rejectedBaiduOutcome(
       'provider-response-error',
       'Inspect provider availability and retry only after confirming the response contract.',
@@ -251,9 +280,12 @@ async function outcomeForBaidu(response, urls) {
     return { ...failure, results: uniformResults(urls, failure) };
   }
 
-  const results = urls.map((url) => (failedUrls.has(url)
-    ? { url, resultClass: 'rejected', retryEligible: false }
-    : { url, resultClass: 'accepted-for-processing', retryEligible: false }));
+  const results = urls.map((url) => {
+    const fields = failures.get(url);
+    return fields
+      ? { url, ...baiduUrlRejection(fields) }
+      : { url, resultClass: 'accepted-for-processing', retryEligible: false };
+  });
   const status = overallStatus(results);
   if (status === 'partial-acceptance') {
     return {
@@ -264,6 +296,7 @@ async function outcomeForBaidu(response, urls) {
       retryGuidance: 'Correct the rejected URLs, then explicitly retry only those canonical URLs.',
     };
   }
+  if (status === 'rejected') return { results, ...combinedBaiduRejection(failures) };
   return { results, resultClass: status, retryEligible: false };
 }
 
@@ -297,12 +330,22 @@ function transportFailure(error) {
 }
 
 function stateRecords(provider, results, now) {
-  return results.map(({ url, resultClass, retryEligible }) => ({
-    provider,
+  const attemptedAt = now();
+  return results.map(({
     url,
-    acceptedAt: resultClass === 'accepted-for-processing' ? now() : null,
     resultClass,
     retryEligible,
+    errorClass,
+    retryGuidance,
+  }) => ({
+    provider,
+    url,
+    attemptedAt,
+    acceptedAt: resultClass === 'accepted-for-processing' ? attemptedAt : null,
+    resultClass,
+    retryEligible,
+    ...(errorClass ? { errorClass } : {}),
+    ...(retryGuidance ? { retryGuidance } : {}),
   }));
 }
 
@@ -312,6 +355,7 @@ export async function submitProvider(provider, urls, {
   config = {},
   fetchImpl,
   statePath = '.seo-ops/state.json',
+  stateOptions = {},
   requestOptions = {},
   now = () => new Date().toISOString(),
 } = {}) {
@@ -329,19 +373,20 @@ export async function submitProvider(provider, urls, {
   }
 
   let outcome;
-  try {
-    const response = await requestWithRetry(request.url, request.init, { fetchImpl, ...requestOptions });
-    if (provider === 'baidu') {
-      outcome = await outcomeForBaidu(response, eligible);
-    } else {
-      const result = resultForIndexNow(response);
-      outcome = { ...result, results: uniformResults(eligible, result) };
+  await withStateTransaction(statePath, async ({ recordSubmission: persist }) => {
+    try {
+      const response = await requestWithRetry(request.url, request.init, { fetchImpl, ...requestOptions });
+      if (provider === 'baidu') {
+        outcome = await outcomeForBaidu(response, eligible);
+      } else {
+        const result = resultForIndexNow(response);
+        outcome = { ...result, results: uniformResults(eligible, result) };
+      }
+    } catch (error) {
+      const failure = transportFailure(error);
+      outcome = { ...failure, results: uniformResults(eligible, failure) };
     }
-  } catch (error) {
-    const failure = transportFailure(error);
-    outcome = { ...failure, results: uniformResults(eligible, failure) };
-  }
-
-  await recordSubmission(statePath, stateRecords(provider, outcome.results, now));
+    await persist(stateRecords(provider, outcome.results, now));
+  }, stateOptions);
   return displaySummary(provider, eligible.length, outcome, request.secretValues);
 }
