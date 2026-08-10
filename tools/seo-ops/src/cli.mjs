@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
 import path from 'node:path';
+import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
 import { loadSeoRoutes } from '../../../scripts/seo-routes.mjs';
 import { inspectProduction } from './inspect.mjs';
 import { canonicalUrls, notificationDelta } from './inventory.mjs';
 import { submitProvider } from './providers.mjs';
+import { buildMonthlyReport } from './report.mjs';
 import { acceptedUrls, loadState } from './state.mjs';
+
+const CREDENTIAL_NAME_PATTERN = /(token|secret|password|authorization|credential|api[_-]?key)/i;
 
 function parseSubmissionOptions(args) {
   const dryRun = args.includes('--dry-run');
@@ -35,6 +39,70 @@ function writeInspection(output, report, json) {
   output(`SEO inspection: ${report.summary.passed}/${report.summary.total} checks passed; failures: ${report.summary.failed}`);
 }
 
+function parseReportOptions(args) {
+  let inputPath;
+  let outputPath;
+  let force = false;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const flag = args[index];
+    if (flag === '--force') {
+      if (force) throw new Error('Usage: seo:report --input <sanitized.json> --output <report.md> [--force]');
+      force = true;
+      continue;
+    }
+    if (flag !== '--input' && flag !== '--output') {
+      throw new Error('Usage: seo:report --input <sanitized.json> --output <report.md> [--force]');
+    }
+    const value = args[index + 1];
+    if (!value || value.startsWith('--') || (flag === '--input' ? inputPath : outputPath)) {
+      throw new Error('Usage: seo:report --input <sanitized.json> --output <report.md> [--force]');
+    }
+    if (flag === '--input') inputPath = value;
+    else outputPath = value;
+    index += 1;
+  }
+
+  if (!inputPath || !outputPath) {
+    throw new Error('Usage: seo:report --input <sanitized.json> --output <report.md> [--force]');
+  }
+  return { inputPath, outputPath, force };
+}
+
+function reportSecrets(env) {
+  const credentialNames = Object.keys(env).filter((name) => CREDENTIAL_NAME_PATTERN.test(name));
+  return {
+    credentialNames,
+    knownSecretValues: credentialNames.map((name) => env[name]).filter((value) => (
+      typeof value === 'string' && value.length > 0
+    )),
+  };
+}
+
+async function createMonthlyReport({ flags, rootDir, env, output }) {
+  const options = parseReportOptions(flags);
+  const inputPath = path.resolve(rootDir, options.inputPath);
+  const outputPath = path.resolve(rootDir, options.outputPath);
+  let input;
+
+  try {
+    input = JSON.parse(await readFile(inputPath, 'utf8'));
+  } catch (error) {
+    if (error instanceof SyntaxError) throw new Error('Monthly report input must be valid JSON');
+    throw error;
+  }
+
+  const report = buildMonthlyReport(input, reportSecrets(env));
+  try {
+    await writeFile(outputPath, report, { encoding: 'utf8', flag: options.force ? 'w' : 'wx' });
+  } catch (error) {
+    if (error?.code === 'EEXIST') throw new Error('Report output already exists; use --force to overwrite');
+    throw error;
+  }
+  output(`SEO monthly report written: ${outputPath}`);
+  return { status: 'report-written', outputPath };
+}
+
 export async function main({
   argv = process.argv.slice(2),
   env = process.env,
@@ -55,6 +123,10 @@ export async function main({
     return report;
   }
 
+  if (command === 'report') {
+    return createMonthlyReport({ flags: [provider, ...flags].filter(Boolean), rootDir, env, output });
+  }
+
   const routes = await loadSeoRoutes(rootDir);
   const urls = canonicalUrls(routes);
 
@@ -65,7 +137,7 @@ export async function main({
   }
 
   if (command !== 'submit' || !['baidu', 'indexnow'].includes(provider)) {
-    errorOutput('Usage: seo:inventory | seo:submit -- <baidu|indexnow> [--dry-run|--execute]');
+    errorOutput('Usage: seo:inventory | seo:submit -- <baidu|indexnow> [--dry-run|--execute] | seo:report --input <sanitized.json> --output <report.md> [--force]');
     throw new Error('Invalid SEO operations command');
   }
 

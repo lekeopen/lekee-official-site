@@ -22,6 +22,7 @@
     "seo:inventory": "node tools/seo-ops/src/cli.mjs inventory",
     "seo:inspect": "node tools/seo-ops/src/cli.mjs inspect",
     "seo:submit": "node tools/seo-ops/src/cli.mjs submit",
+    "seo:report": "node tools/seo-ops/src/cli.mjs report",
     "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js",
     "wechat": "node tools/wechat-admin/src/cli.mjs",
