@@ -16,9 +16,11 @@ import test from 'node:test';
 import {
   buildBaiduRequest,
   buildIndexNowRequest,
+  stateOptionsForProviderRequest,
   submitProvider,
 } from '../tools/seo-ops/src/providers.mjs';
 import * as cli from '../tools/seo-ops/src/cli.mjs';
+import { requestRetryBudgetMs } from '../tools/seo-ops/src/request.mjs';
 import { recordSubmission } from '../tools/seo-ops/src/state.mjs';
 
 const { main: runCli } = cli;
@@ -126,6 +128,47 @@ test('IndexNow keyLocation must be an absolute scoped HTTPS URL on the productio
   }));
 });
 
+test('ordinary CLI execute validates IndexNow keyLocation against the locked pending delta', async (t) => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-pending-key-location-'));
+  t.after(() => rm(rootDir, { recursive: true, force: true }));
+  const statePath = path.join(rootDir, '.seo-ops', 'state.json');
+  const pendingUrl = 'https://lekeopen.com/news/';
+  const acceptedUrls = [
+    'https://lekeopen.com/',
+    'https://lekeopen.com/about/',
+    'https://lekeopen.com/contact/',
+    'https://lekeopen.com/privacy/',
+    'https://lekeopen.com/products/',
+    'https://lekeopen.com/services/',
+    'https://lekeopen.com/solutions/',
+  ];
+  await recordSubmission(statePath, acceptedUrls.map((url) => ({
+    provider: 'indexnow',
+    url,
+    acceptedAt: '2026-08-11T00:00:00.000Z',
+    resultClass: 'accepted-for-processing',
+    retryEligible: false,
+  })));
+  let submittedUrls;
+
+  const result = await runCli({
+    argv: ['submit', 'indexnow', '--execute'],
+    rootDir,
+    env: {
+      INDEXNOW_KEY: 'aB3-4567',
+      INDEXNOW_KEY_LOCATION: 'https://lekeopen.com/news/key.txt',
+    },
+    fetchImpl: async (_url, init) => {
+      submittedUrls = JSON.parse(init.body).urlList;
+      return new Response(null, { status: 202 });
+    },
+    output: () => {},
+  });
+
+  assert.equal(result.status, 'accepted-for-processing');
+  assert.deepEqual(submittedUrls, [pendingUrl]);
+});
+
 test('IndexNow rejects requests larger than 10,000 URLs', () => {
   const urls = Array.from({ length: 10_001 }, (_, index) => `https://lekeopen.com/news/${index}/`);
   assert.throws(() => buildIndexNowRequest(urls, { key: 'aB3-4567' }), /10,000/);
@@ -181,6 +224,189 @@ test('provider request runs while the state transaction lock is held and records
   assert.ok(state.records.every((record) => record.resultClass === 'accepted-for-processing'));
   assert.ok(state.attempts.every((attempt) => attempt.resultClass === 'accepted-for-processing'));
   await assert.rejects(access(lockPath), { code: 'ENOENT' });
+});
+
+test('provider lock wait budget covers the complete configured request retry budget', () => {
+  const defaultStateOptions = stateOptionsForProviderRequest();
+  assert.ok(defaultStateOptions.lockTimeoutMs > requestRetryBudgetMs());
+
+  const requestOptions = { attempts: 2, timeoutMs: 20, baseDelayMs: 3 };
+  const derivedStateOptions = stateOptionsForProviderRequest(requestOptions, { lockRetryMs: 2 });
+  assert.ok(derivedStateOptions.lockTimeoutMs > requestRetryBudgetMs(requestOptions));
+  assert.equal(derivedStateOptions.lockRetryMs, 2);
+
+  assert.deepEqual(
+    stateOptionsForProviderRequest(requestOptions, { lockTimeoutMs: 17 }),
+    { lockTimeoutMs: 17 },
+  );
+});
+
+test('explicit lock timeout cannot bypass request retry option validation', async (t) => {
+  const cases = [
+    { requestOptions: { attempts: 0 }, pattern: /attempts must be a finite positive integer/ },
+    { requestOptions: { timeoutMs: 0 }, pattern: /timeoutMs must be a finite positive number/ },
+    { requestOptions: { baseDelayMs: -1 }, pattern: /baseDelayMs must be a finite non-negative number/ },
+  ];
+  let fetchCalls = 0;
+
+  for (const [index, scenario] of cases.entries()) {
+    const root = await mkdtemp(path.join(os.tmpdir(), `leke-seo-invalid-request-options-${index}-`));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    const statePath = path.join(root, '.seo-ops', 'state.json');
+
+    await assert.rejects(
+      submitProvider('indexnow', URLS, {
+        execute: true,
+        config: { key: 'aB3-4567' },
+        fetchImpl: async () => {
+          fetchCalls += 1;
+          return new Response(null, { status: 202 });
+        },
+        requestOptions: scenario.requestOptions,
+        stateOptions: { lockTimeoutMs: 17 },
+        statePath,
+      }),
+      scenario.pattern,
+    );
+    await assert.rejects(access(statePath), { code: 'ENOENT' });
+  }
+
+  assert.equal(fetchCalls, 0);
+});
+
+test('concurrent ordinary CLI executes revalidate pending URLs under the state lock', { timeout: 2_000 }, async (t) => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-concurrent-execute-'));
+  t.after(() => rm(rootDir, { recursive: true, force: true }));
+  const statePath = path.join(rootDir, '.seo-ops', 'state.json');
+  let fetchCalls = 0;
+  let releaseFirstRequest;
+  let signalFirstRequest;
+  const firstRequestStarted = new Promise((resolve) => {
+    signalFirstRequest = resolve;
+  });
+  const firstRequestReleased = new Promise((resolve) => {
+    releaseFirstRequest = resolve;
+  });
+  const fetchImpl = async () => {
+    fetchCalls += 1;
+    if (fetchCalls === 1) {
+      signalFirstRequest();
+      await firstRequestReleased;
+    }
+    return new Response(null, { status: 202 });
+  };
+  const firstOutput = [];
+  const secondOutput = [];
+  let signalSecondPrepared;
+  const secondPrepared = new Promise((resolve) => {
+    signalSecondPrepared = resolve;
+  });
+  const options = {
+    argv: ['submit', 'indexnow', '--execute'],
+    rootDir,
+    env: { INDEXNOW_KEY: 'aB3-4567' },
+    fetchImpl,
+  };
+
+  const first = runCli({ ...options, output: (line) => firstOutput.push(line) });
+  await firstRequestStarted;
+  const second = runCli({
+    ...options,
+    output: (line) => {
+      secondOutput.push(line);
+      if (line === 'Eligible canonical URLs: 8') signalSecondPrepared();
+    },
+  });
+  await secondPrepared;
+  releaseFirstRequest();
+
+  const results = await Promise.all([first, second]);
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.equal(fetchCalls, 1);
+  assert.deepEqual(results.map(({ status }) => status).sort(), [
+    'accepted-for-processing',
+    'nothing-to-submit',
+  ]);
+  assert.ok(firstOutput.includes('URLs pending indexnow: 8'));
+  assert.ok(secondOutput.includes('URLs pending indexnow: 0'));
+  assert.equal(state.records.length, 8);
+  assert.equal(state.attempts.length, 8);
+});
+
+test('concurrent explicit resubmits remain independent forced retries and run serially', { timeout: 2_000 }, async (t) => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'leke-seo-concurrent-resubmit-'));
+  t.after(() => rm(rootDir, { recursive: true, force: true }));
+  const selectedUrl = 'https://lekeopen.com/about/';
+  const statePath = path.join(rootDir, '.seo-ops', 'state.json');
+  await recordSubmission(statePath, [{
+    provider: 'indexnow',
+    url: selectedUrl,
+    acceptedAt: '2026-08-11T00:00:00.000Z',
+    resultClass: 'accepted-for-processing',
+    retryEligible: false,
+  }]);
+  let fetchCalls = 0;
+  let inFlight = 0;
+  let maxInFlight = 0;
+  let releaseFirstRequest;
+  let signalFirstRequest;
+  const firstRequestStarted = new Promise((resolve) => {
+    signalFirstRequest = resolve;
+  });
+  const firstRequestReleased = new Promise((resolve) => {
+    releaseFirstRequest = resolve;
+  });
+  const submittedUrlLists = [];
+  const fetchImpl = async (_url, init) => {
+    fetchCalls += 1;
+    inFlight += 1;
+    maxInFlight = Math.max(maxInFlight, inFlight);
+    submittedUrlLists.push(JSON.parse(init.body).urlList);
+    if (fetchCalls === 1) {
+      signalFirstRequest();
+      await firstRequestReleased;
+    }
+    inFlight -= 1;
+    return new Response(null, { status: 202 });
+  };
+  const output = [[], []];
+  let signalSecondPrepared;
+  const secondPrepared = new Promise((resolve) => {
+    signalSecondPrepared = resolve;
+  });
+  const options = {
+    argv: ['submit', 'indexnow', '--resubmit', selectedUrl, '--execute'],
+    rootDir,
+    env: { INDEXNOW_KEY: 'aB3-4567' },
+    fetchImpl,
+  };
+
+  const first = runCli({ ...options, output: (line) => output[0].push(line) });
+  await firstRequestStarted;
+  const second = runCli({
+    ...options,
+    output: (line) => {
+      output[1].push(line);
+      if (line === 'Eligible canonical URLs: 8') signalSecondPrepared();
+    },
+  });
+  await secondPrepared;
+  releaseFirstRequest();
+
+  const results = await Promise.all([first, second]);
+  const state = JSON.parse(await readFile(statePath, 'utf8'));
+
+  assert.equal(fetchCalls, 2);
+  assert.equal(maxInFlight, 1);
+  assert.deepEqual(submittedUrlLists, [[selectedUrl], [selectedUrl]]);
+  assert.deepEqual(results.map(({ status }) => status), [
+    'accepted-for-processing',
+    'accepted-for-processing',
+  ]);
+  assert.ok(output.every((lines) => lines.includes('Explicit resubmit URLs: 1')));
+  assert.equal(state.records.length, 1);
+  assert.equal(state.attempts.length, 3);
 });
 
 test('state transaction cleans up its lock after a provider request failure is recorded', async (t) => {

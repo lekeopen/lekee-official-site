@@ -1,12 +1,17 @@
-import { canonicalUrls } from './inventory.mjs';
-import { RequestTimeoutError, requestWithRetry } from './request.mjs';
+import { canonicalUrls, notificationDelta } from './inventory.mjs';
+import {
+  RequestTimeoutError,
+  requestRetryBudgetMs,
+  requestWithRetry,
+} from './request.mjs';
 import { redact } from './safety.mjs';
-import { withStateTransaction } from './state.mjs';
+import { acceptedUrls, withStateTransaction } from './state.mjs';
 
 const BAIDU_ENDPOINT = 'https://data.zz.baidu.com/urls';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 const INDEXNOW_KEY_PATTERN = /^[A-Za-z0-9-]{8,128}$/;
 const INDEXNOW_URL_LIMIT = 10_000;
+const STATE_LOCK_COMPLETION_BUFFER_MS = 5_000;
 
 function eligibleUrls(urls) {
   if (!Array.isArray(urls)) throw new TypeError('urls must be an array');
@@ -130,6 +135,30 @@ function assertSupportedProvider(provider) {
   if (!['baidu', 'indexnow'].includes(provider)) {
     throw new Error(`Unsupported provider: ${provider}`);
   }
+}
+
+export function submissionUrlsForState(provider, urls, state, resubmitUrl) {
+  const eligible = eligibleUrls(urls);
+  assertSupportedProvider(provider);
+  const accepted = acceptedUrls(state, provider);
+  if (resubmitUrl === undefined) return notificationDelta(eligible, accepted);
+  if (!eligible.includes(resubmitUrl)) {
+    throw new Error('--resubmit URL must exactly match the current published canonical inventory');
+  }
+  if (!accepted.includes(resubmitUrl)) {
+    throw new Error(`--resubmit URL must already have an accepted ${provider} result`);
+  }
+  return [resubmitUrl];
+}
+
+export function stateOptionsForProviderRequest(requestOptions = {}, stateOptions = {}) {
+  const requestBudgetMs = requestRetryBudgetMs(requestOptions);
+  if (stateOptions.lockTimeoutMs !== undefined) return { ...stateOptions };
+  const lockTimeoutMs = requestBudgetMs + STATE_LOCK_COMPLETION_BUFFER_MS;
+  if (!Number.isSafeInteger(lockTimeoutMs)) {
+    throw new RangeError('SEO provider state lock budget exceeds the safe timer range');
+  }
+  return { ...stateOptions, lockTimeoutMs };
 }
 
 function httpFailure(status) {
@@ -352,41 +381,56 @@ function stateRecords(provider, results, now) {
 export async function submitProvider(provider, urls, {
   execute = false,
   dryRun = !execute,
+  resubmitUrl,
   config = {},
   fetchImpl,
   statePath = '.seo-ops/state.json',
   stateOptions = {},
   requestOptions = {},
+  onPendingUrls,
   now = () => new Date().toISOString(),
 } = {}) {
   const eligible = eligibleUrls(urls);
   assertSupportedProvider(provider);
+  if (onPendingUrls !== undefined && typeof onPendingUrls !== 'function') {
+    throw new TypeError('onPendingUrls must be a function');
+  }
   if (dryRun || !execute) return displaySummary(provider, eligible.length, { resultClass: 'dry-run' });
-  validateProviderConfig(provider, config, eligible);
+  // Check credential shape before creating a lock; URL scope is checked against the locked delta below.
+  validateProviderConfig(provider, config, []);
   if (eligible.length === 0) return displaySummary(provider, 0, { resultClass: 'nothing-to-submit' });
 
   let request;
-  try {
-    request = requestFor(provider, eligible, config);
-  } catch (error) {
-    throw new Error(redact(error instanceof Error ? error.message : String(error), request?.secretValues || []));
-  }
-
+  let pendingUrls = eligible;
   let outcome;
-  await withStateTransaction(statePath, async ({ recordSubmission: persist }) => {
+  await withStateTransaction(statePath, async ({ state, recordSubmission: persist }) => {
+    pendingUrls = submissionUrlsForState(provider, eligible, state, resubmitUrl);
+    await onPendingUrls?.(pendingUrls);
+    if (pendingUrls.length === 0) {
+      outcome = { resultClass: 'nothing-to-submit' };
+      return;
+    }
+
+    validateProviderConfig(provider, config, pendingUrls);
+    try {
+      request = requestFor(provider, pendingUrls, config);
+    } catch (error) {
+      throw new Error(redact(error instanceof Error ? error.message : String(error), request?.secretValues || []));
+    }
+
     try {
       const response = await requestWithRetry(request.url, request.init, { fetchImpl, ...requestOptions });
       if (provider === 'baidu') {
-        outcome = await outcomeForBaidu(response, eligible);
+        outcome = await outcomeForBaidu(response, pendingUrls);
       } else {
         const result = resultForIndexNow(response);
-        outcome = { ...result, results: uniformResults(eligible, result) };
+        outcome = { ...result, results: uniformResults(pendingUrls, result) };
       }
     } catch (error) {
       const failure = transportFailure(error);
-      outcome = { ...failure, results: uniformResults(eligible, failure) };
+      outcome = { ...failure, results: uniformResults(pendingUrls, failure) };
     }
     await persist(stateRecords(provider, outcome.results, now));
-  }, stateOptions);
-  return displaySummary(provider, eligible.length, outcome, request.secretValues);
+  }, stateOptionsForProviderRequest(requestOptions, stateOptions));
+  return displaySummary(provider, pendingUrls.length, outcome, request?.secretValues);
 }

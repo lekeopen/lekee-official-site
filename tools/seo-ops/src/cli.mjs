@@ -6,10 +6,10 @@ import { pathToFileURL } from 'node:url';
 
 import { loadSeoRoutes } from '../../../scripts/seo-routes.mjs';
 import { inspectProduction } from './inspect.mjs';
-import { canonicalUrls, notificationDelta } from './inventory.mjs';
-import { submitProvider } from './providers.mjs';
+import { canonicalUrls } from './inventory.mjs';
+import { submissionUrlsForState, submitProvider } from './providers.mjs';
 import { buildMonthlyReport, DEFAULT_CREDENTIAL_NAMES } from './report.mjs';
-import { acceptedUrls, loadState } from './state.mjs';
+import { loadState } from './state.mjs';
 
 const CREDENTIAL_NAME_PATTERN = /(token|secret|password|authorization|credential|api[_-]?key)/i;
 
@@ -63,15 +63,11 @@ export function submissionExitCode(result) {
   return ['rejected', 'retry-eligible', 'partial-acceptance'].includes(result?.status) ? 1 : 0;
 }
 
-function selectedSubmissionUrls(urls, successfulUrls, resubmitUrl, provider) {
-  if (resubmitUrl === undefined) return notificationDelta(urls, successfulUrls);
-  if (!urls.includes(resubmitUrl)) {
-    throw new Error('--resubmit URL must exactly match the current published canonical inventory');
-  }
-  if (!successfulUrls.includes(resubmitUrl)) {
-    throw new Error(`--resubmit URL must already have an accepted ${provider} result`);
-  }
-  return [resubmitUrl];
+function writeSubmissionUrls(output, provider, resubmitUrl, urls) {
+  output(resubmitUrl
+    ? `Explicit resubmit URLs: ${urls.length}`
+    : `URLs pending ${provider}: ${urls.length}`);
+  urls.forEach((url) => output(url));
 }
 
 function writeInspection(output, report, json) {
@@ -189,23 +185,21 @@ export async function main({
 
   const options = parseSubmissionOptions(flags);
   const statePath = path.join(rootDir, '.seo-ops', 'state.json');
-  const state = await loadState(statePath);
-  const pendingUrls = selectedSubmissionUrls(
-    urls,
-    acceptedUrls(state, provider),
-    options.resubmitUrl,
-    provider,
-  );
+  let submissionUrls = urls;
+  if (options.dryRun || options.resubmitUrl) {
+    const state = await loadState(statePath);
+    submissionUrls = submissionUrlsForState(provider, urls, state, options.resubmitUrl);
+  }
   output(`Eligible canonical URLs: ${urls.length}`);
-  output(options.resubmitUrl
-    ? `Explicit resubmit URLs: ${pendingUrls.length}`
-    : `URLs pending ${provider}: ${pendingUrls.length}`);
-  pendingUrls.forEach((url) => output(url));
-  const result = await submitProvider(provider, pendingUrls, {
+  if (options.dryRun) writeSubmissionUrls(output, provider, options.resubmitUrl, submissionUrls);
+  const result = await submitProvider(provider, submissionUrls, {
     ...options,
     config: providerConfig(provider, env),
     statePath,
     fetchImpl,
+    onPendingUrls: options.execute
+      ? (pendingUrls) => writeSubmissionUrls(output, provider, options.resubmitUrl, pendingUrls)
+      : undefined,
   });
   writeSummary(output, result);
   return result;

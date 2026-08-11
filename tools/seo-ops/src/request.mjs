@@ -2,8 +2,33 @@ function defaultDelay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+const DEFAULT_ATTEMPTS = 3;
+const DEFAULT_BASE_DELAY_MS = 500;
 const DEFAULT_TIMEOUT_MS = 10_000;
 const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);
+
+export function requestRetryBudgetMs({
+  attempts = DEFAULT_ATTEMPTS,
+  baseDelayMs = DEFAULT_BASE_DELAY_MS,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+} = {}) {
+  if (!Number.isInteger(attempts) || attempts < 1) {
+    throw new TypeError('attempts must be a finite positive integer');
+  }
+  if (typeof timeoutMs !== 'number' || !Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError('timeoutMs must be a finite positive number');
+  }
+  if (typeof baseDelayMs !== 'number' || !Number.isFinite(baseDelayMs) || baseDelayMs < 0) {
+    throw new TypeError('baseDelayMs must be a finite non-negative number');
+  }
+
+  const retryDelayMs = baseDelayMs * ((2 ** (attempts - 1)) - 1);
+  const budgetMs = Math.ceil((attempts * timeoutMs) + retryDelayMs);
+  if (!Number.isSafeInteger(budgetMs)) {
+    throw new RangeError('request retry budget exceeds the safe timer range');
+  }
+  return budgetMs;
+}
 
 export class RequestTimeoutError extends Error {
   constructor(timeoutMs) {
@@ -57,16 +82,11 @@ export function isRetryableStatus(status) {
 export async function requestWithRetry(url, init, {
   fetchImpl = globalThis.fetch,
   delay = defaultDelay,
-  attempts = 3,
-  baseDelayMs = 500,
+  attempts = DEFAULT_ATTEMPTS,
+  baseDelayMs = DEFAULT_BASE_DELAY_MS,
   timeoutMs = DEFAULT_TIMEOUT_MS,
 } = {}) {
-  if (!Number.isInteger(attempts) || attempts < 1) {
-    throw new TypeError('attempts must be a finite positive integer');
-  }
-  if (typeof timeoutMs !== 'number' || !Number.isFinite(timeoutMs) || timeoutMs <= 0) {
-    throw new TypeError('timeoutMs must be a finite positive number');
-  }
+  requestRetryBudgetMs({ attempts, baseDelayMs, timeoutMs });
 
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
