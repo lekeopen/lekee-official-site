@@ -12,6 +12,8 @@ const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 const News = lazy(() => import('./pages/News'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
 const Privacy = lazy(() => import('./pages/Privacy'));
+const LekePickerProduct = lazy(() => import('./pages/LekePickerProduct'));
+const GuigeleiProduct = lazy(() => import('./pages/GuigeleiProduct'));
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="services" element={<Services />} />
           <Route path="products" element={<Products />} />
+          <Route path="products/leke-picker" element={<LekePickerProduct />} />
+          <Route path="products/guigelei" element={<GuigeleiProduct />} />
           <Route path="solutions" element={<Solutions />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />

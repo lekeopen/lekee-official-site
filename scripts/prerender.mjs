@@ -121,6 +121,14 @@ function structuredData(route) {
   ];
   if (route.kind === 'article') graph.push({ '@type': 'Article', headline: route.label, description: route.description, image: route.image, datePublished: route.date, mainEntityOfPage: route.canonical, author: { '@id': organizationId }, publisher: { '@id': organizationId }, inLanguage: 'zh-CN' });
   if (route.kind === 'project') graph.push({ '@type': 'CreativeWork', name: route.label, description: route.description, image: route.image, url: route.canonical, creator: { '@id': organizationId }, inLanguage: 'zh-CN' });
+  if (route.kind === 'software') graph.push({
+    '@type': 'SoftwareApplication', name: route.label, description: route.description,
+    image: route.image, url: route.canonical, softwareVersion: route.software.version,
+    operatingSystem: route.software.operatingSystem,
+    applicationCategory: route.software.applicationCategory,
+    downloadUrl: route.software.downloadUrl, isAccessibleForFree: true,
+    publisher: { '@id': organizationId }, inLanguage: 'zh-CN',
+  });
   if (route.breadcrumbs.length) graph.push({ '@type': 'BreadcrumbList', itemListElement: route.breadcrumbs.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, item: item.url })) });
   return { '@context': 'https://schema.org', '@graph': graph };
 }

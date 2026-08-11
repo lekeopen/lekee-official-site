@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import frontMatter from 'front-matter';
+import ts from 'typescript';
 
 const NEWS_STATUSES = new Set(['draft', 'published']);
 const PROJECT_STATUSES = new Set(['Live', 'Production', 'Alpha', 'Beta', 'Internal', 'Concept']);
@@ -76,6 +77,27 @@ const markdownFiles = async (directory) => {
   }
 };
 
+const validateProducts = async (rootDir) => {
+  const catalogPath = path.join(rootDir, 'src/products/catalog.ts');
+  let source;
+  try {
+    source = await readFile(catalogPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') return [];
+    throw error;
+  }
+
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+    },
+    fileName: catalogPath,
+  });
+  const module = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
+  return module.validateProductCatalog(module.PRODUCTS);
+};
+
 export const validateContent = async (rootDir) => {
   const contentTypes = [
     { directory: 'content/news', validate: validateNews },
@@ -99,6 +121,8 @@ export const validateContent = async (rootDir) => {
       }
     }
   }
+
+  errors.push(...await validateProducts(rootDir));
 
   return errors.sort();
 };

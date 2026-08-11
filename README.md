@@ -12,7 +12,8 @@
 
 - 🏠 **首页展示** - 技术能力、开源项目、工程动态（支持在线状态实时显示）
 - 💼 **服务介绍** - AI 应用开发、定制软件开发、技术咨询
-- 🚀 **产品展示** - 项目详情页面，支持 Markdown 内容渲染与交互式状态指示
+- 🚀 **产品展示** - 独立产品页承接在线使用、正式下载、版本要求、隐私说明、FAQ、更新记录与下载统计
+- 🧪 **工程项目** - Markdown 项目详情页展示长期工程实践与技术能力
 - 📰 **技术动态** - 项目进展与技术分享
 - 📧 **联系表单** - 集成 EmailJS 的在线联系功能
 - 📡 **RSS 订阅** - 自动生成 RSS feed
@@ -25,6 +26,8 @@
 - [版本路线图](./ROADMAP.md)
 - [技术架构](./technical_architecture_document.md)
 - [V1.0 产品需求与验收](./product_requirements_document.md)
+- [产品承接设计](./docs/superpowers/specs/2026-08-12-product-hub-leke-picker-guigelei-design.md)
+- [产品承接工程验收](./docs/product-hub-acceptance.md)
 
 ## 🛠️ 技术栈
 

@@ -3,9 +3,10 @@ import { ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAllProjects } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
+import { PRODUCTS } from '../products/catalog';
 
 const Products: React.FC = () => {
-  const products = getAllProjects();
+  const projects = getAllProjects();
 
   const experiences = [
     { title: '政务 / 行业系统', desc: '深度参与复杂业务逻辑梳理与系统实现，确保数据安全与流程合规。' },
@@ -32,9 +33,41 @@ const Products: React.FC = () => {
           </p>
         </div>
 
-        {/* 核心项目展示 */}
-        <div className="space-y-12 mb-20">
-          {products.map((product) => (
+        <section className="mb-20" aria-labelledby="official-products-title">
+          <div className="mb-8">
+            <p className="text-sm font-semibold tracking-wide text-blue-700">乐可产品</p>
+            <h2 id="official-products-title" className="mt-2 text-3xl font-bold text-gray-950">让日常工作更简单、更可靠</h2>
+            <p className="mt-3 max-w-3xl text-lg leading-8 text-gray-600">两款真实可用的本地优先工具，官网提供完整说明、使用入口、下载与更新记录。</p>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {PRODUCTS.map((product) => (
+              <Link
+                key={product.slug}
+                to={`/products/${product.slug}`}
+                className="group flex min-w-0 flex-col rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+              >
+                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gray-600">
+                  <span className="rounded-full bg-gray-100 px-3 py-1">v{product.version}</span>
+                  {product.platforms.map((platform) => <span key={platform} className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">{platform}</span>)}
+                </div>
+                <h3 className="mt-5 break-words text-2xl font-bold text-gray-950 transition-colors group-hover:text-blue-700">{product.name}</h3>
+                <p className="mt-2 text-lg font-semibold text-gray-700">{product.tagline}</p>
+                <p className="mt-4 flex-1 leading-7 text-gray-600">{product.summary}</p>
+                <span className="mt-6 inline-flex items-center font-semibold text-blue-700">
+                  了解产品 <ExternalLink size={16} className="ml-1 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-20" aria-labelledby="engineering-projects-title">
+          <div className="mb-8">
+            <p className="text-sm font-semibold tracking-wide text-gray-500">工程实践</p>
+            <h2 id="engineering-projects-title" className="mt-2 text-3xl font-bold text-gray-950">工程项目与实践</h2>
+          </div>
+          <div className="space-y-12">
+          {projects.map((product) => (
             <Link 
               key={product.id} 
               to={`/projects/${product.id}`}
@@ -107,7 +140,8 @@ const Products: React.FC = () => {
               </div>
             </Link>
           ))}
-        </div>
+          </div>
+        </section>
 
         {/* 过往项目经验 */}
         <div className="bg-gray-50 rounded-2xl p-8 md:p-12 border border-gray-100">
