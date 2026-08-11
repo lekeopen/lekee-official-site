@@ -28,4 +28,4 @@ cover: /images/news/xiaole-ai-iteration.png
 后续进展将通过官网动态持续公开。
 
 ### 相关链接
-- [查看小乐 AI 智能体实践项目](/projects/xiaole-agent)，了解当前项目阶段与技术探索方向。
+- [查看小乐 AI 智能体实践项目](/projects/xiaole-agent/)，了解当前项目阶段与技术探索方向。

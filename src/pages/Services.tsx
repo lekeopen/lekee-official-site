@@ -171,13 +171,13 @@ const Services: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             <Link
-              to="/contact"
+              to="/contact/"
               className="inline-flex items-center bg-white text-gray-900 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm"
             >
               咨询部署服务
             </Link>
             <Link
-              to="/news/2026-03-19-openclaw-adoption"
+              to="/news/2026-03-19-openclaw-adoption/"
               className="inline-flex items-center text-gray-400 hover:text-white transition-colors text-sm font-medium py-3"
             >
               了解我们的使用实践 →

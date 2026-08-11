@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import * as cheerio from 'cheerio';
@@ -19,3 +19,36 @@ for (const [route, expected] of [
     assert.doesNotMatch(rootText, /^\s*页面加载中…\s*$/);
   });
 }
+
+test('rendered internal links use the indexed canonical trailing-slash URL', async () => {
+  const distRoot = path.join(process.cwd(), 'dist');
+  const sitemap = await readFile(path.join(distRoot, 'sitemap.xml'), 'utf8');
+  const indexedPaths = new Set(
+    [...sitemap.matchAll(/<loc>https:\/\/lekeopen\.com([^<]*)<\/loc>/g)].map((match) => match[1]),
+  );
+  const entries = await readdir(distRoot, { recursive: true, withFileTypes: true });
+  const htmlFiles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
+    .map((entry) => path.join(entry.parentPath, entry.name));
+  const nonCanonicalLinks = [];
+
+  for (const htmlFile of htmlFiles) {
+    const $ = cheerio.load(await readFile(htmlFile, 'utf8'));
+    for (const element of $('a[href]').toArray()) {
+      const href = $(element).attr('href');
+      if (!href) continue;
+
+      const url = new URL(href, 'https://lekeopen.com/');
+      const canonicalPath = url.pathname === '/' ? '/' : `${url.pathname.replace(/\/+$/, '')}/`;
+      if (
+        url.origin === 'https://lekeopen.com'
+        && indexedPaths.has(canonicalPath)
+        && url.pathname !== canonicalPath
+      ) {
+        nonCanonicalLinks.push(`${path.relative(distRoot, htmlFile)}: ${href}`);
+      }
+    }
+  }
+
+  assert.deepEqual(nonCanonicalLinks, []);
+});

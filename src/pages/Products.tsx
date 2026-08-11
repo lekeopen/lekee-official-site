@@ -43,7 +43,7 @@ const Products: React.FC = () => {
             {PRODUCTS.map((product) => (
               <Link
                 key={product.slug}
-                to={`/products/${product.slug}`}
+                to={`/products/${product.slug}/`}
                 className="group flex min-w-0 flex-col rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-md"
               >
                 <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gray-600">
@@ -70,7 +70,7 @@ const Products: React.FC = () => {
           {projects.map((product) => (
             <Link 
               key={product.id} 
-              to={`/projects/${product.id}`}
+              to={`/projects/${product.id}/`}
               className="block bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-md transition-all flex flex-col lg:flex-row group"
             >
               {/* 左侧：项目预览占位 */}

@@ -93,13 +93,13 @@ test('validator reports a missing public route from the keyword map', async () =
 
 test('paired project and news content link naturally to each other\'s canonical route', async () => {
   const pairs = [
-    ['content/projects/lejiaoku-platform.md', /\[[^\]]*乐教库[^\]]*\]\(\/news\/lejiaoku-refactor\)/u, '乐教库项目页'],
-    ['content/news/lejiaoku-refactor.md', /\[[^\]]*乐教库[^\]]*\]\(\/projects\/lejiaoku-platform\)/u, '乐教库动态页'],
-    ['content/projects/leke-insight.md', /\[[^\]]*乐可观澜[^\]]*\]\(\/news\/2026-07-21-leke-insight\)/u, '乐可观澜项目页'],
-    ['content/news/2026-07-21-leke-insight.md', /\[[^\]]*乐可观澜[^\]]*\]\(\/projects\/leke-insight\)/u, '乐可观澜动态页'],
-    ['content/projects/xiaole-agent.md', /\[[^\]]*小乐[^\]]*\]\(\/news\/xiaole-ai-iteration\)/u, '小乐项目页'],
-    ['content/news/xiaole-ai-iteration.md', /\[[^\]]*小乐[^\]]*\]\(\/projects\/xiaole-agent\)/u, '小乐动态页'],
-    ['content/news/2025-12-18-xiaole-stage-update.md', /\[[^\]]*小乐[^\]]*\]\(\/projects\/xiaole-agent\)/u, '小乐阶段说明'],
+    ['content/projects/lejiaoku-platform.md', /\[[^\]]*乐教库[^\]]*\]\(\/news\/lejiaoku-refactor\/\)/u, '乐教库项目页'],
+    ['content/news/lejiaoku-refactor.md', /\[[^\]]*乐教库[^\]]*\]\(\/projects\/lejiaoku-platform\/\)/u, '乐教库动态页'],
+    ['content/projects/leke-insight.md', /\[[^\]]*乐可观澜[^\]]*\]\(\/news\/2026-07-21-leke-insight\/\)/u, '乐可观澜项目页'],
+    ['content/news/2026-07-21-leke-insight.md', /\[[^\]]*乐可观澜[^\]]*\]\(\/projects\/leke-insight\/\)/u, '乐可观澜动态页'],
+    ['content/projects/xiaole-agent.md', /\[[^\]]*小乐[^\]]*\]\(\/news\/xiaole-ai-iteration\/\)/u, '小乐项目页'],
+    ['content/news/xiaole-ai-iteration.md', /\[[^\]]*小乐[^\]]*\]\(\/projects\/xiaole-agent\/\)/u, '小乐动态页'],
+    ['content/news/2025-12-18-xiaole-stage-update.md', /\[[^\]]*小乐[^\]]*\]\(\/projects\/xiaole-agent\/\)/u, '小乐阶段说明'],
   ];
 
   for (const [relativePath, expectedLink, label] of pairs) {

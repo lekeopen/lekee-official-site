@@ -36,7 +36,7 @@ const News: React.FC = () => {
           {newsData.map((news) => (
             <Link 
               key={news.id} 
-              to={`/news/${news.id}`}
+              to={`/news/${news.id}/`}
               className="group flex flex-col md:flex-row gap-6 p-6 rounded-lg border border-gray-100 bg-white hover:border-blue-200 hover:shadow-md transition-all items-start"
             >
               {/* Content */}

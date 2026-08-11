@@ -31,9 +31,9 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">快速导航</h3>
             <ul className="space-y-3">
               <li><Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">首页</Link></li>
-              <li><Link to="/news" className="text-gray-400 hover:text-white transition-colors text-sm">公司动态</Link></li>
-              <li><Link to="/products" className="text-gray-400 hover:text-white transition-colors text-sm">产品与项目</Link></li>
-              <li><Link to="/services" className="text-gray-400 hover:text-white transition-colors text-sm">能力与服务</Link></li>
+              <li><Link to="/news/" className="text-gray-400 hover:text-white transition-colors text-sm">公司动态</Link></li>
+              <li><Link to="/products/" className="text-gray-400 hover:text-white transition-colors text-sm">产品与项目</Link></li>
+              <li><Link to="/services/" className="text-gray-400 hover:text-white transition-colors text-sm">能力与服务</Link></li>
             </ul>
           </div>
 
@@ -41,9 +41,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">资源与支持</h3>
             <ul className="space-y-3">
-              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm">关于我们</Link></li>
-              <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">隐私政策</Link></li>
-              <li><Link to="/solutions" className="text-gray-400 hover:text-white transition-colors text-sm">解决方案</Link></li>
+              <li><Link to="/about/" className="text-gray-400 hover:text-white transition-colors text-sm">关于我们</Link></li>
+              <li><Link to="/privacy/" className="text-gray-400 hover:text-white transition-colors text-sm">隐私政策</Link></li>
+              <li><Link to="/solutions/" className="text-gray-400 hover:text-white transition-colors text-sm">解决方案</Link></li>
             </ul>
           </div>
 

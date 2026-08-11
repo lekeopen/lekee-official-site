@@ -75,14 +75,14 @@ const Home: React.FC = () => {
               className="flex flex-col sm:flex-row justify-center items-center gap-4"
             >
               <Link
-                to="/contact"
+                to="/contact/"
                 className="group relative px-8 py-3.5 bg-blue-600 text-white rounded-lg font-medium text-lg overflow-hidden transition-all hover:bg-blue-500 hover:scale-105 shadow-lg shadow-blue-500/25"
               >
                 <span className="relative z-10">联系我们</span>
               </Link>
               
               <Link
-                to="/services"
+                to="/services/"
                 className="group px-8 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg font-medium text-lg hover:bg-white/20 transition-all hover:scale-105"
               >
                 了解更多
@@ -140,7 +140,7 @@ const Home: React.FC = () => {
               <p className="text-gray-600 mb-6 leading-relaxed">
                 {item.desc}
               </p>
-              <Link to="/services" className="inline-flex items-center text-blue-600 font-medium group-hover:translate-x-1 transition-transform">
+              <Link to="/services/" className="inline-flex items-center text-blue-600 font-medium group-hover:translate-x-1 transition-transform">
                 了解详情 <ArrowRight size={16} className="ml-1" />
               </Link>
             </motion.div>
@@ -156,7 +156,7 @@ const Home: React.FC = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">产品与实验室</h2>
               <p className="text-gray-500">探索我们的创新产品与实验性项目</p>
             </div>
-            <Link to="/products" className="hidden md:inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
+            <Link to="/products/" className="hidden md:inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
               查看全部 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -171,7 +171,7 @@ const Home: React.FC = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Link 
-                  to={`/projects/${project.id}`} 
+                  to={`/projects/${project.id}/`}
                   className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col h-full border border-gray-100 hover:border-blue-100"
                 >
                   <div className={`h-48 ${project.image_bg || 'bg-gray-100'} flex items-center justify-center relative overflow-hidden`}>
@@ -218,7 +218,7 @@ const Home: React.FC = () => {
           </div>
           
           <div className="mt-8 text-center md:hidden">
-            <Link to="/products" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/products/" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
               查看全部 <ChevronRight size={20} />
             </Link>
           </div>
@@ -247,7 +247,7 @@ const Home: React.FC = () => {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <Link 
-                      to={`/news/${news.id}`}
+                      to={`/news/${news.id}/`}
                       className="group flex flex-col md:flex-row gap-6 p-6 rounded-2xl border border-gray-100 bg-white hover:border-blue-100 hover:shadow-lg transition-all items-start"
                     >
                       {/* Content */}
@@ -294,7 +294,7 @@ const Home: React.FC = () => {
               </div>
               
               <div className="mt-8 text-left">
-                <Link to="/news" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors group">
+                <Link to="/news/" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors group">
                   查看全部动态 <ArrowRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -318,7 +318,7 @@ const Home: React.FC = () => {
                      </div>
                      <span className="text-sm font-medium">GitHub / lekeopen</span>
                    </a>
-                   <Link to="/contact" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors group p-2 hover:bg-gray-50 rounded-lg -mx-2">
+                   <Link to="/contact/" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors group p-2 hover:bg-gray-50 rounded-lg -mx-2">
                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
                        <Mail size={16} />
                      </div>
@@ -372,7 +372,7 @@ const Home: React.FC = () => {
               欢迎与我们联系，一起把想法变成现实。
             </p>
             <Link
-              to="/contact"
+              to="/contact/"
               className="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all hover:shadow-lg hover:shadow-blue-600/30 inline-block hover:-translate-y-1"
             >
               立即联系我们

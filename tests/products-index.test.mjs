@@ -9,8 +9,8 @@ test('产品与项目页优先展示两款正式产品并保留工程项目入�
 
   const productSection = $('[aria-labelledby="official-products-title"]');
   assert.equal(productSection.length, 1);
-  assert.equal(productSection.find('a[href="/products/leke-picker"]').length, 1);
-  assert.equal(productSection.find('a[href="/products/guigelei"]').length, 1);
+  assert.equal(productSection.find('a[href="/products/leke-picker/"]').length, 1);
+  assert.equal(productSection.find('a[href="/products/guigelei/"]').length, 1);
   assert.match(productSection.text(), /Windows/);
   assert.match(productSection.text(), /macOS/);
 
