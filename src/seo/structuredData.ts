@@ -5,8 +5,14 @@ export interface StructuredDataInput {
   description: string;
   canonical: string;
   image: string;
-  kind?: 'page' | 'article' | 'project';
+  kind?: 'page' | 'article' | 'project' | 'software';
   datePublished?: string;
+  software?: {
+    version: string;
+    operatingSystem: string;
+    applicationCategory: string;
+    downloadUrl?: string;
+  };
 }
 
 export function buildStructuredData(input: StructuredDataInput) {
@@ -38,11 +44,28 @@ export function buildStructuredData(input: StructuredDataInput) {
       '@type': 'CreativeWork', name: input.title, description: input.description,
       image: input.image, url: input.canonical, creator: { '@id': organizationId }, inLanguage: 'zh-CN',
     });
+  } else if (input.kind === 'software' && input.software) {
+    graph.push({
+      '@type': 'SoftwareApplication', name: input.title, description: input.description,
+      image: input.image, url: input.canonical, softwareVersion: input.software.version,
+      operatingSystem: input.software.operatingSystem,
+      applicationCategory: input.software.applicationCategory,
+      downloadUrl: input.software.downloadUrl,
+      isAccessibleForFree: true,
+      publisher: { '@id': organizationId }, inLanguage: 'zh-CN',
+    });
   }
 
   if (input.canonical !== `${SITE_URL}/`) {
-    const segment = new URL(input.canonical).pathname.split('/').filter(Boolean)[0];
-    const parent = segment === 'news' ? ['公司动态', `${SITE_URL}/news/`] : segment === 'projects' ? ['产品与项目', `${SITE_URL}/products/`] : null;
+    const segments = new URL(input.canonical).pathname.split('/').filter(Boolean);
+    const segment = segments[0];
+    const parent = segments.length > 1
+      ? segment === 'news'
+        ? ['公司动态', `${SITE_URL}/news/`]
+        : segment === 'projects' || segment === 'products'
+          ? ['产品与项目', `${SITE_URL}/products/`]
+          : null
+      : null;
     const items = [{ '@type': 'ListItem', position: 1, name: '首页', item: `${SITE_URL}/` }];
     if (parent) items.push({ '@type': 'ListItem', position: 2, name: parent[0], item: parent[1] });
     items.push({ '@type': 'ListItem', position: items.length + 1, name: input.title.replace(/ \| 乐可开源$/, ''), item: input.canonical });

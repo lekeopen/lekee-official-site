@@ -11,6 +11,8 @@ import News from '../pages/News';
 import NewsDetail from '../pages/NewsDetail';
 import ProjectDetail from '../pages/ProjectDetail';
 import Privacy from '../pages/Privacy';
+import LekePickerProduct from '../pages/LekePickerProduct';
+import GuigeleiProduct from '../pages/GuigeleiProduct';
 
 export default function ServerApp() {
   return (
@@ -19,6 +21,8 @@ export default function ServerApp() {
         <Route index element={<Home />} />
         <Route path="services" element={<Services />} />
         <Route path="products" element={<Products />} />
+        <Route path="products/leke-picker" element={<LekePickerProduct />} />
+        <Route path="products/guigelei" element={<GuigeleiProduct />} />
         <Route path="solutions" element={<Solutions />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />

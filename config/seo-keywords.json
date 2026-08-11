@@ -17,7 +17,19 @@
       "path": "/products",
       "primaryIntent": "乐可开源产品与项目",
       "supportingTerms": ["自研产品", "工程项目", "技术实践"],
-      "relatedPaths": ["/projects/lejiaoku-platform", "/projects/leke-insight", "/projects/xiaole-agent"]
+      "relatedPaths": ["/products/leke-picker", "/products/guigelei", "/projects/lejiaoku-platform"]
+    },
+    {
+      "path": "/products/leke-picker",
+      "primaryIntent": "课堂随机点名工具",
+      "supportingTerms": ["随机点名", "课堂点名", "Windows 点名软件", "在线点名"],
+      "relatedPaths": ["/products", "/products/guigelei"]
+    },
+    {
+      "path": "/products/guigelei",
+      "primaryIntent": "macOS 本地文件整理工具",
+      "supportingTerms": ["文件分类", "文件整理", "本地整理", "一键撤销"],
+      "relatedPaths": ["/products", "/products/leke-picker"]
     },
     {
       "path": "/solutions",

@@ -7,7 +7,7 @@
 - 第一阶段 正式上线 -> V1.0 -> 已完成
 - 第二阶段 工程成熟 -> V1.1-V1.3 -> 已完成
 - 第三阶段 搜索发现 -> V1.4 -> 进行中（工程与生产发布完成，平台运营验收中）
-- 第四阶段 信任与转化 -> V1.5-V1.6 候选 -> 未开始
+- 第四阶段 信任与转化 -> V1.5 产品承接工程候选 -> 工程制作中，待人工发布确认
 - 第五阶段 持续运营 -> V2.x 或持续运营版本 -> 未开始
 
 未来版本只有在其所属蓝图阶段的进入条件满足后，才可以正式启动。
@@ -177,3 +177,28 @@ V1.4 是 V1.3 完整技术 SEO 上线后的下一阶段工作计划。它不是�
 - [ ] 完成首个完整观察周期并形成实际脱敏 SEO 健康报告。
 
 工程验收证据、运营边界和发布后检查清单见 `docs/seo/v1.4-acceptance.md`。平台接受 URL 或 sitemap 只代表进入处理流程，不等于页面已经建立索引。
+
+## V1.5 候选：产品承接工程
+
+**状态：🟨 工程制作中，待人工确认；未发布**
+
+### 目标
+
+以 `lekeopen.com` 为唯一宣传主阵地，为“乐可点名 v1.1”和“归个类 v1.5”建立可信、可维护、可统计的官方产品入口。
+
+### 范围
+
+- 在“产品与项目”中把乐可产品与工程项目分区展示；
+- 建立 `/products/leke-picker/` 与 `/products/guigelei/` 独立产品页；
+- 产品页覆盖核心价值、真实界面、下载、版本与系统要求、隐私、FAQ、更新记录与下载统计；
+- 乐可点名保留 `/products/leke-picker/app/` 在线应用路径；
+- 乐可点名采用审计后公开源码，归个类保持私有源码并使用独立公开发布仓库；
+- 保留人工确认、发布授权和生产巡检门禁。
+
+详细设计、分仓实施计划和工程验收见：
+
+- `docs/superpowers/specs/2026-08-12-product-hub-leke-picker-guigelei-design.md`
+- `docs/superpowers/plans/2026-08-12-product-hub-website.md`
+- `docs/superpowers/plans/2026-08-12-leke-picker-publication.md`
+- `docs/superpowers/plans/2026-08-12-guigelei-release-distribution.md`
+- `docs/product-hub-acceptance.md`

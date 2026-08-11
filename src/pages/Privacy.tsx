@@ -12,7 +12,7 @@ const Privacy: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         <div className="bg-white p-8 md:p-12 rounded-lg shadow-sm border border-gray-100 prose prose-blue max-w-none">
           <h1>隐私政策</h1>
-          <p className="text-gray-500 text-sm">更新日期：{new Date().toLocaleDateString()}</p>
+          <p className="text-gray-500 text-sm">更新日期：2026 年 8 月 12 日</p>
 
           <p>
             天水乐可信息技术有限公司（以下简称“我们”）非常重视用户的隐私保护。本隐私政策旨在向您说明我们如何收集、使用和保护您的个人信息。
@@ -35,6 +35,16 @@ const Privacy: React.FC = () => {
             <li>记住您的浏览偏好（如语言设置）。</li>
             <li>分析网站流量与访问统计（匿名数据），帮助我们改进内容。</li>
           </ul>
+          <p>
+            官网使用 Microsoft Clarity 统计匿名页面访问和产品按钮点击，用于判断内容与下载入口是否易用。统计事件只包含预先定义的产品与操作名称，
+            <strong>不会传递学生名单、文件名、文件路径或文件内容。</strong>
+            乐可点名的名单和归个类处理的文件均在本机完成；产品运行数据不进入官网统计。
+          </p>
+          <p>
+            产品页会自动请求 GitHub Release API，以读取当前正式版本中指定安装包的公开下载次数。该请求由浏览器直接发送给 GitHub，
+            GitHub 可能接收到您的 IP 地址和浏览器请求信息；官网不附加账号、名单、文件信息或其他产品本地数据，也不会在我们的服务器保存该请求结果。
+            如果请求失败，页面仅显示“下载统计暂不可用”，不影响产品说明和下载链接。
+          </p>
           <p>您可以通过浏览器设置拒绝 Cookie，但这可能会影响网站的部分功能体验。</p>
 
           <h3>3. 第三方链接</h3>

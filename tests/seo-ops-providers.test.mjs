@@ -139,6 +139,8 @@ test('ordinary CLI execute validates IndexNow keyLocation against the locked pen
     'https://lekeopen.com/contact/',
     'https://lekeopen.com/privacy/',
     'https://lekeopen.com/products/',
+    'https://lekeopen.com/products/guigelei/',
+    'https://lekeopen.com/products/leke-picker/',
     'https://lekeopen.com/services/',
     'https://lekeopen.com/solutions/',
   ];
@@ -314,7 +316,7 @@ test('concurrent ordinary CLI executes revalidate pending URLs under the state l
     ...options,
     output: (line) => {
       secondOutput.push(line);
-      if (line === 'Eligible canonical URLs: 8') signalSecondPrepared();
+      if (line === 'Eligible canonical URLs: 10') signalSecondPrepared();
     },
   });
   await secondPrepared;
@@ -328,10 +330,10 @@ test('concurrent ordinary CLI executes revalidate pending URLs under the state l
     'accepted-for-processing',
     'nothing-to-submit',
   ]);
-  assert.ok(firstOutput.includes('URLs pending indexnow: 8'));
+  assert.ok(firstOutput.includes('URLs pending indexnow: 10'));
   assert.ok(secondOutput.includes('URLs pending indexnow: 0'));
-  assert.equal(state.records.length, 8);
-  assert.equal(state.attempts.length, 8);
+  assert.equal(state.records.length, 10);
+  assert.equal(state.attempts.length, 10);
 });
 
 test('concurrent explicit resubmits remain independent forced retries and run serially', { timeout: 2_000 }, async (t) => {
@@ -388,7 +390,7 @@ test('concurrent explicit resubmits remain independent forced retries and run se
     ...options,
     output: (line) => {
       output[1].push(line);
-      if (line === 'Eligible canonical URLs: 8') signalSecondPrepared();
+      if (line === 'Eligible canonical URLs: 10') signalSecondPrepared();
     },
   });
   await secondPrepared;
@@ -958,17 +960,19 @@ test('Baidu dry-run prints the exact pending URL set without its token', async (
   });
 
   assert.deepEqual(output, [
-    'Eligible canonical URLs: 8',
-    'URLs pending baidu: 8',
+    'Eligible canonical URLs: 10',
+    'URLs pending baidu: 10',
     'https://lekeopen.com/',
     'https://lekeopen.com/about/',
     'https://lekeopen.com/contact/',
     'https://lekeopen.com/news/',
     'https://lekeopen.com/privacy/',
     'https://lekeopen.com/products/',
+    'https://lekeopen.com/products/guigelei/',
+    'https://lekeopen.com/products/leke-picker/',
     'https://lekeopen.com/services/',
     'https://lekeopen.com/solutions/',
-    'baidu: dry-run; URLs: 8',
+    'baidu: dry-run; URLs: 10',
   ]);
   assert.equal(JSON.stringify(output).includes(token), false);
 });

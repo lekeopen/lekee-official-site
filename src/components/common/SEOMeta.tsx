@@ -10,8 +10,14 @@ interface SEOMetaProps {
   image?: string;
   type?: 'website' | 'article';
   siteName?: string;
-  kind?: 'page' | 'article' | 'project';
+  kind?: 'page' | 'article' | 'project' | 'software';
   datePublished?: string;
+  software?: {
+    version: string;
+    operatingSystem: string;
+    applicationCategory: string;
+    downloadUrl?: string;
+  };
 }
 
 const SEOMeta: React.FC<SEOMetaProps> = ({
@@ -23,6 +29,7 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
   siteName = '乐可开源',
   kind = type === 'article' ? 'article' : 'page',
   datePublished,
+  software,
 }) => {
   const detectImageType = (value: string) => {
     if (/\.png($|\?)/i.test(value)) return 'image/png';
@@ -50,7 +57,7 @@ const SEOMeta: React.FC<SEOMetaProps> = ({
       <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={fullUrl} />
       <script type="application/ld+json">
-        {JSON.stringify(buildStructuredData({ title, description: truncatedDesc, canonical: fullUrl, image: ogImage, kind, datePublished }))}
+        {JSON.stringify(buildStructuredData({ title, description: truncatedDesc, canonical: fullUrl, image: ogImage, kind, datePublished, software }))}
       </script>
       
       {/* OpenGraph Meta */}

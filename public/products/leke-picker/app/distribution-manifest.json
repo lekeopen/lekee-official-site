@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "product": "leke-picker",
+  "version": "1.1.0",
+  "base": "/products/leke-picker/app/",
+  "sourceCommit": "c45c7b1db9174cd98386768bc4207092cf1dde36",
+  "sourceDirty": false,
+  "files": [
+    {
+      "path": "assets/index-CE4gMTN9.css",
+      "size": 8980,
+      "sha256": "e32acc3d372dc4a2b71a42004d02e0c0da392e8e2ce2264a07f8d053207a3b7e"
+    },
+    {
+      "path": "assets/index-Ckjyn7MV.js",
+      "size": 206652,
+      "sha256": "5c3071d258162723aea8e7e6e7543b25e2087ec0e1a349c3978bcf33d839cfd0"
+    },
+    {
+      "path": "brand/leke-picker-mark.svg",
+      "size": 818,
+      "sha256": "e594ac438ebac8d816810bddeba3f706e97333041f29cfbdbb4478adc4588767"
+    },
+    {
+      "path": "favicon.svg",
+      "size": 742,
+      "sha256": "cbd3f84c1f0395c31b351349331af31cb8698b52fa597798075bd4ea853579e4"
+    },
+    {
+      "path": "index.html",
+      "size": 776,
+      "sha256": "1f90f0a640f59a833c42c0d6006ac8ffa6c1d510894adda184b3b51f215057ed"
+    }
+  ]
+}
