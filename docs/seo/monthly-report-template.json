@@ -1,0 +1,68 @@
+{
+  "period": "YYYY-MM",
+  "inspection": {
+    "startedAt": "YYYY-MM-DDTHH:mm:ss.sssZ",
+    "summary": {
+      "total": null,
+      "passed": null,
+      "failed": null
+    }
+  },
+  "platforms": {
+    "baidu": {
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
+    },
+    "google": {
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
+    },
+    "bing": {
+      "indexedPages": null,
+      "impressions": null,
+      "clicks": null,
+      "representativeRankings": null,
+      "crawlErrors": null,
+      "sitemapStatus": null
+    }
+  },
+  "notifications": {
+    "baiduUrlSubmission": {
+      "status": null,
+      "submittedUrls": null,
+      "acceptedUrls": null,
+      "lastSubmittedAt": null,
+      "retryEligible": null
+    },
+    "indexNow": {
+      "status": null,
+      "submittedUrls": null,
+      "acceptedUrls": null,
+      "lastSubmittedAt": null,
+      "retryEligible": null
+    }
+  },
+  "contentChanges": [
+    {
+      "date": "YYYY-MM-DD",
+      "title": "已发布内容标题",
+      "url": "https://lekeopen.com/news/example/"
+    }
+  ],
+  "issues": [
+    {
+      "status": "open",
+      "title": "待处理问题",
+      "owner": "负责人",
+      "dueDate": "YYYY-MM-DD"
+    }
+  ]
+}

@@ -80,8 +80,8 @@ lekee-official-site/
 
 ### 环境要求
 
-- Node.js >= 18
-- npm >= 9
+- Node.js 24.x
+- npm >= 11
 
 ### 安装依赖
 
@@ -282,6 +282,34 @@ git checkout develop
 ### SEO 优化
 
 通过 React Helmet Async 保持客户端导航的页面元数据，并在生产构建时输出完整静态正文、canonical、JSON-LD、sitemap、robots 和 404 页面。静态路由清单只收录已发布的新闻与项目内容，以中国搜索引擎直接抓取为优先，同时兼容 Google 与 Bing。
+
+### SEO 运营命令
+
+本地和 CI 的 `npm run verify` 包含确定性的 SEO 运营门禁：URL 清单、关键词治理校验和 SEO 运营测试。在线生产巡检和搜索平台提交不在 CI 中执行，避免网络波动或生产写操作进入质量门禁。
+
+```bash
+# 查看可提交的 canonical URL 清单
+npm run seo:inventory
+
+# 只读检查线上页面、sitemap、robots、RSS、404 与站内链接
+npm run seo:inspect
+
+# 明确 dry-run；不会调用平台，也不会写入提交状态
+npm run seo:submit -- baidu --dry-run
+npm run seo:submit -- indexnow --dry-run
+
+# 内容发生实质变化时，显式选择一个已接受的 published canonical URL 重提；仍默认为 dry-run
+npm run seo:submit -- indexnow --resubmit https://lekeopen.com/about/ --dry-run
+
+# 生成月度报告；输入必须是脱敏后的汇总 JSON
+npm run seo:report -- --input /absolute/path/sanitized-monthly-seo.json --output /absolute/path/monthly-seo-report.md
+```
+
+只有人工确认本次精确 URL 清单、平台凭据和发布状态后，才可把 `--dry-run` 改为 `--execute`；`--resubmit` 不能绕过该审批边界。百度执行环境需要 `BAIDU_SITE` 与私密的 `BAIDU_SUBMIT_TOKEN`；IndexNow 需要公开所有权 key `INDEXNOW_KEY`，可选 `INDEXNOW_KEY_LOCATION`。后者必须是无凭据、query 或 hash 的绝对 HTTPS URL，必须与待提交 URL 使用同一生产 host，且 key 文件目录必须覆盖全部待提交 URL 的路径范围。站长平台 HTML 验证构建可分别使用 `BAIDU_SITE_VERIFICATION`、`GOOGLE_SITE_VERIFICATION` 与 `BING_SITE_VERIFICATION`。不得把 token、Cookie、认证请求头或平台原始导出放入仓库、日志、截图或月报输入。
+
+gitignored 的 `.seo-ops/state.json` 将“有效状态”和“尝试历史”分开保存：`records` 保留每个 provider/URL 的有效结果，既有 `accepted-for-processing` 不会被后到失败覆盖并继续从普通 URL delta 中排除；`attempts` 追加每次 accepted、rejected、retry-eligible 等脱敏结果及可操作分类。普通 `--execute` 会在取得状态事务锁后重读 accepted 状态并计算最终 delta，因此并发执行中后取得锁的一方会在没有待提交 URL 时直接结束，不发送重复请求或追加重复 attempt。内容发生实质变化时必须使用显式 `--resubmit <canonical-url>`；它是绕过普通 accepted 抑制的单 URL 强制重试，每一次 `--execute` 都是独立外部写入，必须分别获批。若两个相同 resubmit 被并发启动，事务锁会让它们串行并分别记录 attempt，但不会合并或取消任一已授权重试。真实请求会在状态事务锁持有期间完成读取、请求、合并和原子保存；provider 提交路径的默认锁等待会覆盖完整请求超时与退避预算并额外预留 5 秒收尾时间，显式编程接口覆盖则保持 fail-closed 语义。只有锁已超过一分钟且 owner PID 已确认不存在时才恢复，存活或畸形锁均失败关闭。状态不保存凭据或 provider 原始响应。修复或回滚前先在仓库外备份，不能把删除状态文件当作撤回提交；平台已接受的请求无法由本工具撤销。需要停止运营写入时，先停止 `--execute`，再按平台要求轮换或撤销凭据。
+
+百度单次提交上限为 2,000 个 URL；当前 canonical inventory 为 26 个，V1.4 暂不引入批处理。若 inventory 接近或超过 2,000，必须先停止真实执行并增加经过测试的分批提交，再恢复运营写入。站点所有权、sitemap 和人工平台检查点见 [`docs/seo/platform-setup.md`](./docs/seo/platform-setup.md)，本版本工程验收与发布后待办见 [`docs/seo/v1.4-acceptance.md`](./docs/seo/v1.4-acceptance.md)。
 
 ## 📦 部署
 
