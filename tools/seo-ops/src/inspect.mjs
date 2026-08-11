@@ -5,7 +5,17 @@ import { canonicalUrls, parseSitemap } from './inventory.mjs';
 
 const DEFAULT_ORIGIN = 'https://lekeopen.com';
 const DEFAULT_MAX_REQUESTS = 24;
+const DEFAULT_TIMEOUT_MS = 10_000;
 const LOCATOR_SELECTOR = '[data-locator], [data-source-location], [data-component-path]';
+const PRODUCTION_CRAWLERS = ['baiduspider', 'googlebot', 'bingbot'];
+const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);
+
+class InspectionTimeoutError extends Error {
+  constructor(timeoutMs) {
+    super(`SEO inspection request timed out after ${timeoutMs}ms`);
+    this.name = 'InspectionTimeoutError';
+  }
+}
 
 function normalizeOrigin(value) {
   const origin = new URL(value);
@@ -60,7 +70,46 @@ function isSuccessStatus(status) {
   return status >= 200 && status < 400;
 }
 
-function wildcardRobotRules(robots) {
+function bufferedResponse(response, body) {
+  const result = new Response(NULL_BODY_STATUSES.has(response.status) ? null : body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+  if (response.url) Object.defineProperty(result, 'url', { value: response.url });
+  return result;
+}
+
+async function fetchAndBuffer(url, init, fetchImpl, timeoutMs) {
+  const controller = new AbortController();
+  const timeoutError = new InspectionTimeoutError(timeoutMs);
+  let timedOut = false;
+  let timeoutId;
+
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort(timeoutError);
+      reject(timeoutError);
+    }, timeoutMs);
+  });
+  const request = (async () => {
+    const response = await fetchImpl(url, { ...init, signal: controller.signal });
+    const body = await response.arrayBuffer();
+    return bufferedResponse(response, body);
+  })();
+
+  try {
+    return await Promise.race([request, timeout]);
+  } catch (error) {
+    if (timedOut) throw timeoutError;
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function robotGroups(robots) {
   const groups = [];
   let group;
   let hasRules = false;
@@ -94,9 +143,21 @@ function wildcardRobotRules(robots) {
   }
   finishGroup();
 
-  return groups
-    .filter((candidate) => candidate.agents.includes('*'))
-    .flatMap((candidate) => candidate.rules);
+  return groups;
+}
+
+function robotRulesForCrawler(groups, crawler) {
+  const matches = groups.map((group) => ({
+    group,
+    specificity: Math.max(...group.agents.map((agent) => (
+      agent === '*' ? 0 : crawler.includes(agent) ? agent.length : -1
+    ))),
+  }));
+  const specificity = Math.max(-1, ...matches.map((match) => match.specificity));
+  if (specificity < 0) return [];
+  return matches
+    .filter((match) => match.specificity === specificity)
+    .flatMap((match) => match.group.rules);
 }
 
 function robotsPattern(pattern) {
@@ -141,9 +202,13 @@ export async function inspectProduction({
   fetchImpl = globalThis.fetch,
   rootDir = process.cwd(),
   maxRequests = DEFAULT_MAX_REQUESTS,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
 } = {}) {
   if (typeof fetchImpl !== 'function') throw new TypeError('Inspection fetchImpl must be a function');
   if (!Number.isInteger(maxRequests) || maxRequests < 1) throw new TypeError('Inspection maxRequests must be a positive integer');
+  if (typeof timeoutMs !== 'number' || !Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError('Inspection timeoutMs must be a finite positive number');
+  }
 
   const normalizedOrigin = normalizeOrigin(origin);
   const startedAt = new Date().toISOString();
@@ -166,15 +231,16 @@ export async function inspectProduction({
     }
     requestCount += 1;
     try {
-      const response = await fetchImpl(targetUrl, {
+      const response = await fetchAndBuffer(targetUrl, {
         method: 'GET',
         redirect: 'follow',
         headers: { accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-      });
+      }, fetchImpl, timeoutMs);
       record(checkName, targetUrl, expected, response.status, predicate(response.status));
+      record('exact-final-url', targetUrl, targetUrl, response.url || null, response.url === targetUrl);
       return response;
-    } catch {
-      record(checkName, targetUrl, expected, 'request failed', false);
+    } catch (error) {
+      record(checkName, targetUrl, expected, error instanceof InspectionTimeoutError ? 'request timed out' : 'request failed', false);
       return null;
     }
   }
@@ -237,6 +303,7 @@ export async function inspectProduction({
         && String(element.parent?.name || '').split(':').at(-1) === 'url'
       )).map((_, element) => $xml(element).text()).get();
       const expectedUrls = canonicalUrls(routes).map((url) => routeUrl(normalizedOrigin, new URL(url).pathname));
+      const sortedRawSitemapUrls = [...rawSitemapUrls].sort();
       let hasMalformedSitemapUrl = false;
       const safeSitemapUrls = rawSitemapUrls.map((value) => {
         try {
@@ -260,10 +327,10 @@ export async function inspectProduction({
         sitemapUrl,
         expectedUrls,
         hasMalformedSitemapUrl ? '[invalid sitemap location]' : safeSitemapUrls,
-        !hasMalformedSitemapUrl
+          !hasMalformedSitemapUrl
           && rawUrlsAreCanonical
           && rawSitemapUrls.length === sitemapUrls.length
-          && JSON.stringify(sitemapUrls) === JSON.stringify(expectedUrls),
+          && JSON.stringify(sortedRawSitemapUrls) === JSON.stringify(expectedUrls),
       );
     }
   }
@@ -274,13 +341,16 @@ export async function inspectProduction({
     const robots = await robotsResponse.text();
     const expectedSitemap = `${normalizedOrigin}/sitemap.xml`;
     record('robots-sitemap-discovery', robotsUrl, expectedSitemap, robots.match(/^Sitemap:\s*(.+)$/mi)?.[1] ?? null, new RegExp(`^Sitemap:\\s*${expectedSitemap.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi').test(robots));
-    const rules = wildcardRobotRules(robots);
+    const groups = robotGroups(robots);
     const inspectedUrls = representativeRoutes.map((route) => routeUrl(normalizedOrigin, route.path));
-    const blockedUrls = inspectedUrls.filter((url) => !robotsAllows(url, rules));
+    const blockedUrls = [...new Set(PRODUCTION_CRAWLERS.flatMap((crawler) => {
+      const rules = robotRulesForCrawler(groups, crawler);
+      return inspectedUrls.filter((url) => !robotsAllows(url, rules));
+    }))];
     record(
       'robots-crawl-permission',
       robotsUrl,
-      'all inspected canonical routes allowed for User-agent: *',
+      'all inspected canonical routes allowed for Baiduspider, Googlebot, and bingbot',
       blockedUrls.length === 0 ? 'allowed' : blockedUrls,
       blockedUrls.length === 0,
     );

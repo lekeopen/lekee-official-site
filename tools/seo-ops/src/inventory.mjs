@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import { canonicalUrl as routeCanonicalUrl, SITE_URL } from '../../../scripts/seo-routes.mjs';
 
 const STANDARD_URL_CHILDREN = new Set(['loc', 'lastmod', 'changefreq', 'priority']);
+const SITEMAP_NAMESPACE = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 
 function sitemapError() {
   return new TypeError('Expected valid sitemap XML with one urlset root and url/loc structure');
@@ -140,15 +141,31 @@ function localName(element) {
   return String(element?.name || '').split(':').at(-1);
 }
 
+function namespaceUri($, element) {
+  const name = String(element?.name || '');
+  const separator = name.indexOf(':');
+  const attribute = separator < 0 ? 'xmlns' : `xmlns:${name.slice(0, separator)}`;
+  let current = element;
+  while (current?.type === 'tag') {
+    const value = $(current).attr(attribute);
+    if (value !== undefined) return value;
+    current = current.parent;
+  }
+  return null;
+}
+
 function sitemapLocations(xml) {
   assertWellFormedXml(xml);
   const $ = cheerio.load(xml, { xmlMode: true });
   const roots = $.root().children().toArray().filter((child) => child.type === 'tag');
   if (roots.length !== 1 || localName(roots[0]) !== 'urlset') throw sitemapError();
+  const sitemapNamespace = namespaceUri($, roots[0]);
+  if (sitemapNamespace !== SITEMAP_NAMESPACE) throw sitemapError();
   if (hasUnexpectedText(roots[0])) throw sitemapError();
 
   const urlElements = elementChildren(roots[0]);
   if (urlElements.some((element) => localName(element) !== 'url')) throw sitemapError();
+  if (urlElements.some((element) => namespaceUri($, element) !== sitemapNamespace)) throw sitemapError();
 
   return urlElements.map((urlElement) => {
     const children = elementChildren(urlElement);
@@ -156,6 +173,7 @@ function sitemapLocations(xml) {
     const locations = children.filter((element) => localName(element) === 'loc');
     if (locations.length !== 1 || elementChildren(locations[0]).length > 0
       || $(locations[0]).text().trim().length === 0) throw sitemapError();
+    if (namespaceUri($, locations[0]) !== sitemapNamespace) throw sitemapError();
     if (children.some((element) => (
       !String(element.name).includes(':') && !STANDARD_URL_CHILDREN.has(localName(element))
     ))) throw sitemapError();

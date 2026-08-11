@@ -22,7 +22,7 @@ test('canonicalUrls keeps sorted unique production canonicals without queries', 
 
 test('parseSitemap returns canonical loc values and excludes invalid variants', () => {
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url><loc>https://lekeopen.com/news/b/</loc></url>
       <url><loc>https://lekeopen.com/news/a/#fragment</loc></url>
       <url><loc>https://lekeopen.com/news/a/?page=2</loc></url>
@@ -38,6 +38,7 @@ test('parseSitemap returns canonical loc values and excludes invalid variants', 
 test('parseSitemap rejects malformed XML and invalid sitemap structures', () => {
   const url = 'https://lekeopen.com/news/a/';
   const invalidDocuments = [
+    `<urlset><url><loc>${url}</loc></url></urlset>`,
     `<urlset><url><loc>${url}</loc></url>`,
     `<urlset><url><loc>${url}</url></loc></urlset>`,
     `<sitemapindex><sitemap><loc>${url}</loc></sitemap></sitemapindex>`,
