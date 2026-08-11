@@ -12,11 +12,11 @@ const Header: React.FC = () => {
 
   const navItems = [
     { name: '首页', path: '/' },
-    { name: '能力与服务', path: '/services' },
-    { name: '产品与项目', path: '/products' },
-    { name: '解决方案', path: '/solutions' },
-    { name: '关于我们', path: '/about' },
-    { name: '联系我们', path: '/contact' },
+    { name: '能力与服务', path: '/services/' },
+    { name: '产品与项目', path: '/products/' },
+    { name: '解决方案', path: '/solutions/' },
+    { name: '关于我们', path: '/about/' },
+    { name: '联系我们', path: '/contact/' },
   ];
 
   return (

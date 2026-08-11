@@ -40,4 +40,4 @@ links:
 
 已正式上线（Live）。核心对话与任务创建流程稳定运行，正在重点优化多轮对话中的上下文保持能力。
 
-项目从 MVP 验证转入持续优化的过程，记录在[小乐 AI 智能体持续迭代动态](/news/xiaole-ai-iteration)中。
+项目从 MVP 验证转入持续优化的过程，记录在[小乐 AI 智能体持续迭代动态](/news/xiaole-ai-iteration/)中。

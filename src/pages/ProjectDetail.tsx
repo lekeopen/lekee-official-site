@@ -14,7 +14,7 @@ const ProjectDetail: React.FC = () => {
   const project = projects.find(p => p.id === id);
 
   if (!project) {
-    return <Navigate to="/products" replace />;
+    return <Navigate to="/products/" replace />;
   }
 
   // 自定义 ReactMarkdown 组件，区分站内外链接
@@ -51,7 +51,7 @@ const ProjectDetail: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Back Link */}
         <Link 
-          to="/products" 
+          to="/products/"
           className="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors mb-8 font-medium text-sm group"
         >
           <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />

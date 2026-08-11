@@ -38,4 +38,4 @@ cover: /images/projects/leke-insight-overview.png
 
 乐可观澜已经支持多项目访问排名、趋势分析、周期对比、项目动态、行动建议，以及小可任务与业务自动化状态展示。它会作为乐可开源后续项目运营和内容复盘的基础看板持续迭代。
 
-查看[乐可观澜项目经营决策驾驶舱](/projects/leke-insight)，了解其数据口径与实现方式。
+查看[乐可观澜项目经营决策驾驶舱](/projects/leke-insight/)，了解其数据口径与实现方式。

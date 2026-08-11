@@ -36,5 +36,4 @@ cover: /images/news/lejiaoku-launch-cover.png
 ## 相关连接
 
 - [乐教库官网](https://lejiaoku.com)
-- [产品页面](/projects/lejiaoku-platform)
-
+- [产品页面](/projects/lejiaoku-platform/)
