@@ -17,6 +17,15 @@
 - 📧 **联系表单** - 集成 EmailJS 的在线联系功能
 - 📡 **RSS 订阅** - 自动生成 RSS feed
 
+## 项目文档
+
+公司官网长期蓝图负责长期阶段与阶段门槛，版本路线图负责具体版本范围与状态。
+
+- [公司官网长期蓝图](./WEBSITE_BLUEPRINT.md)
+- [版本路线图](./ROADMAP.md)
+- [技术架构](./technical_architecture_document.md)
+- [V1.0 产品需求与验收](./product_requirements_document.md)
+
 ## 🛠️ 技术栈
 
 ### 核心框架
