@@ -246,7 +246,7 @@ export async function inspectProduction({
   }
 
   async function inspectPage(route) {
-    const url = routeUrl(normalizedOrigin, route.path);
+    const url = expectedCanonical(normalizedOrigin, route);
     const response = await get(url, 'expected-status', 200);
     if (!response) return [];
 
@@ -342,7 +342,7 @@ export async function inspectProduction({
     const expectedSitemap = `${normalizedOrigin}/sitemap.xml`;
     record('robots-sitemap-discovery', robotsUrl, expectedSitemap, robots.match(/^Sitemap:\s*(.+)$/mi)?.[1] ?? null, new RegExp(`^Sitemap:\\s*${expectedSitemap.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi').test(robots));
     const groups = robotGroups(robots);
-    const inspectedUrls = representativeRoutes.map((route) => routeUrl(normalizedOrigin, route.path));
+    const inspectedUrls = representativeRoutes.map((route) => expectedCanonical(normalizedOrigin, route));
     const blockedUrls = [...new Set(PRODUCTION_CRAWLERS.flatMap((crawler) => {
       const rules = robotRulesForCrawler(groups, crawler);
       return inspectedUrls.filter((url) => !robotsAllows(url, rules));
@@ -366,7 +366,7 @@ export async function inspectProduction({
     record('not-found-noindex', notFoundUrl, 'contains noindex', robots, typeof robots === 'string' && /\bnoindex\b/i.test(robots));
   }
 
-  const visitedLinks = new Set(representativeRoutes.map((route) => linkDedupeKey(routeUrl(normalizedOrigin, route.path))));
+  const visitedLinks = new Set(representativeRoutes.map((route) => linkDedupeKey(expectedCanonical(normalizedOrigin, route))));
   for (const href of linkedHrefs) {
     if (requestCount >= maxRequests) break;
     let url;
