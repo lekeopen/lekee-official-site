@@ -51,7 +51,7 @@ async function createFixtureFetch({
   const project = routes.find((route) => route.kind === 'project');
   const canonicals = sitemapUrls ?? routes.map((route) => route.canonical);
   const representative = [routes[0], article, project];
-  const pages = new Map(representative.map((route) => [route.path, page({
+  const pages = new Map(representative.map((route) => [new URL(route.canonical).pathname, page({
     canonical: route.canonical,
     links: route.path === '/' ? [article.path, project.path, '/about/', ...extraLinks, ...(brokenLink ? ['/broken-link/'] : [])] : [],
   })]));
@@ -104,6 +104,18 @@ test('inspectProduction validates representative production SEO artifacts with b
   assert.ok(report.checks.some((check) => check.name === 'development-locator-attributes'));
   assert.ok(calls.length <= 12);
   assert.ok(calls.every((call) => call.method === 'GET'));
+});
+
+test('inspectProduction requests representative pages at their canonical trailing-slash URLs', async () => {
+  const { fetchImpl, calls } = await createFixtureFetch();
+
+  await inspectProduction({ origin: ORIGIN, fetchImpl, rootDir: process.cwd(), maxRequests: 12 });
+
+  assert.deepEqual(calls.slice(0, 3).map((call) => new URL(call.url).pathname), [
+    '/',
+    '/news/2025-12-18-xiaole-stage-update/',
+    '/projects/boral-wang/',
+  ]);
 });
 
 test('inspectProduction reserves bounded requests for sitemap, robots, RSS, and 404 checks before link crawling', async () => {
