@@ -64,7 +64,8 @@ async function getJsapiTicket(accessToken) {
   return cachedJsapiTicket.value;
 }
 
-export async function onRequestGet({ request, env }) {
+export function onRequestGet(context) {
+  const { request, env } = context;
   const appId = env.WECHAT_APP_ID;
   const appSecret = env.WECHAT_APP_SECRET;
   if (!appId || !appSecret) return json({ error: 'WeChat credentials are not configured' }, 503);
@@ -87,21 +88,24 @@ export async function onRequestGet({ request, env }) {
   try {
     const timestamp = Math.floor(Date.now() / 1000);
     const nonceStr = randomNonce();
-    const accessToken = await getAccessToken(appId, appSecret);
-    const ticket = await getJsapiTicket(accessToken);
-    const signatureBase = [
-      `jsapi_ticket=${ticket}`,
-      `noncestr=${nonceStr}`,
-      `timestamp=${timestamp}`,
-      `url=${parsedTarget.href.split('#')[0]}`,
-    ].join('&');
+    return getAccessToken(appId, appSecret)
+      .then(getJsapiTicket)
+      .then(async (ticket) => {
+        const signatureBase = [
+          `jsapi_ticket=${ticket}`,
+          `noncestr=${nonceStr}`,
+          `timestamp=${timestamp}`,
+          `url=${parsedTarget.href.split('#')[0]}`,
+        ].join('&');
 
-    return json({
-      appId,
-      timestamp,
-      nonceStr,
-      signature: await sha1(signatureBase),
-    });
+        return json({
+          appId,
+          timestamp,
+          nonceStr,
+          signature: await sha1(signatureBase),
+        });
+      })
+      .catch(() => json({ error: 'Failed to create WeChat JS signature' }, 502));
   } catch {
     return json({ error: 'Failed to create WeChat JS signature' }, 502);
   }
