@@ -28,7 +28,6 @@ const GuigeleiProduct: React.FC = () => (
     <ProductHero
       product={product}
       primaryAction={{ label: '下载 macOS 版', href: '#downloads', analyticsEvent: 'product_guigelei_download_section' }}
-      secondaryAction={{ label: '查看更新记录', href: product.releaseNotes, analyticsEvent: 'product_guigelei_release_notes' }}
     />
 
     <section className="py-16" aria-labelledby="guigelei-value-title">
@@ -69,12 +68,12 @@ const GuigeleiProduct: React.FC = () => (
 
     <DownloadSection
       title="macOS 下载"
-      intro="当前正式版本为 v1.5.0，仅支持 macOS 12 及以上、Apple Silicon（M1/M2/M3/M4）。请从官方 Release 下载并核对 SHA-256。"
+      intro={`当前正式版本为 v${product.version}，仅支持 macOS 12 及以上、Apple Silicon（M1/M2/M3/M4）。请从官方 Release 下载并核对 SHA-256。`}
       downloads={[...product.downloads]}
       stats={{
         owner: 'lekeopen',
         repo: 'guigelei-releases',
-        tag: 'v1.5.0',
+        tag: `v${product.version}`,
         allowedAssets: product.downloads.map((download) => download.assetName),
       }}
     />
@@ -103,7 +102,7 @@ const GuigeleiProduct: React.FC = () => (
       { question: '为什么 macOS 会阻止首次打开？', answer: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请只从乐可开源官方 Release 下载，核对 SHA-256 后在 Finder 中选择“打开”，并按系统提示人工确认；不要关闭 Gatekeeper。' },
       { question: '应用会读取或上传文件内容吗？', answer: '不会。分类依据扩展名和文件元数据，不读取文件正文，也不向服务器或第三方上传文件。' },
       { question: '会不会覆盖或删除我的文件？', answer: '移动遇到同名时会自动增加序号，不覆盖原文件。空目录清理是独立、默认关闭且需要二次确认的操作，不会递归删除目录内容。' },
-      { question: 'Intel Mac 或 Windows 可以使用吗？', answer: '当前 v1.5.0 只支持 Apple Silicon Mac。Intel Mac 和 Windows 均不在本次正式支持范围内。' },
+      { question: 'Intel Mac 或 Windows 可以使用吗？', answer: `当前 v${product.version} 只支持 Apple Silicon Mac。Intel Mac 和 Windows 均不在本次正式支持范围内。` },
     ]} />
 
     <section className="py-12">

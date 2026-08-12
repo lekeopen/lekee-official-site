@@ -20,10 +20,11 @@ async function loadCatalog() {
 
 test('catalog exposes the two approved products in their launch order', async () => {
   const { PRODUCTS } = await loadCatalog();
-  assert.deepEqual(PRODUCTS.map(({ slug, name, version }) => ({ slug, name, version })), [
-    { slug: 'leke-picker', name: '乐可点名', version: '1.1.0' },
-    { slug: 'guigelei', name: '归个类', version: '1.5.0' },
+  assert.deepEqual(PRODUCTS.map(({ slug, name }) => ({ slug, name })), [
+    { slug: 'leke-picker', name: '乐可点名' },
+    { slug: 'guigelei', name: '归个类' },
   ]);
+  assert.equal(PRODUCTS.every(({ version }) => /^\d+\.\d+\.\d+$/.test(version)), true);
 });
 
 test('available downloads have complete immutable release identity', async () => {
@@ -50,17 +51,17 @@ test('乐可点名 uses only the audited public source and release repository', 
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
 });
 
-test('归个类 exposes only the frozen public release asset', async () => {
+test('归个类 exposes only the monitored public release asset', async () => {
   const { getProduct } = await loadCatalog();
   const guigelei = getProduct('guigelei');
   assert.equal(guigelei.downloads.length, 1);
   assert.equal(guigelei.downloads[0].availability, 'available');
+  assert.equal(guigelei.releaseNotes, `https://github.com/lekeopen/guigelei-releases/releases/tag/v${guigelei.version}`);
+  assert.equal(guigelei.downloads[0].assetName, `guigelei-${guigelei.version}-arm64.dmg`);
   assert.equal(
     guigelei.downloads[0].url,
-    'https://github.com/lekeopen/guigelei-releases/releases/download/v1.5.0/guigelei-1.5.0-arm64.dmg',
+    `https://github.com/lekeopen/guigelei-releases/releases/download/v${guigelei.version}/guigelei-${guigelei.version}-arm64.dmg`,
   );
-  assert.equal(guigelei.downloads[0].sizeBytes, 120968070);
-  assert.equal(guigelei.downloads[0].sha256, '655daf297121b2fcff8ef56c25e7745c41a381667d58728e87abdd4a2a83834a');
   assert.equal(JSON.stringify(guigelei).includes('lekeopen/ai-file-organizer'), false);
 });
 
