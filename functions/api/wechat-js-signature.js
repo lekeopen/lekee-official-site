@@ -1,14 +1,9 @@
-export type WechatSignatureEnv = {
-  WECHAT_APP_ID?: string;
-  WECHAT_APP_SECRET?: string;
-};
-
 const textEncoder = new TextEncoder();
-let cachedAccessToken: { value: string; expiresAt: number } | undefined;
-let cachedJsapiTicket: { value: string; expiresAt: number } | undefined;
+let cachedAccessToken;
+let cachedJsapiTicket;
 const cacheSafetyWindowMs = 5 * 60 * 1000;
 
-export function json(body: unknown, status = 200) {
+function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -24,21 +19,21 @@ function randomNonce() {
   return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-async function sha1(input: string) {
+async function sha1(input) {
   const hash = await crypto.subtle.digest('SHA-1', textEncoder.encode(input));
   return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-async function fetchWechatJson(url: string) {
+async function fetchWechatJson(url) {
   const response = await fetch(url);
-  const data = await response.json() as Record<string, unknown>;
+  const data = await response.json();
   if (!response.ok || data.errcode) {
     throw new Error(`WeChat API request failed: ${String(data.errcode || response.status)}`);
   }
   return data;
 }
 
-async function getAccessToken(appId: string, appSecret: string) {
+async function getAccessToken(appId, appSecret) {
   if (cachedAccessToken && cachedAccessToken.expiresAt - cacheSafetyWindowMs > Date.now()) {
     return cachedAccessToken.value;
   }
@@ -54,7 +49,7 @@ async function getAccessToken(appId: string, appSecret: string) {
   return cachedAccessToken.value;
 }
 
-async function getJsapiTicket(accessToken: string) {
+async function getJsapiTicket(accessToken) {
   if (cachedJsapiTicket && cachedJsapiTicket.expiresAt - cacheSafetyWindowMs > Date.now()) {
     return cachedJsapiTicket.value;
   }
@@ -69,7 +64,7 @@ async function getJsapiTicket(accessToken: string) {
   return cachedJsapiTicket.value;
 }
 
-export async function createWechatJsSignatureResponse(request: Request, env: WechatSignatureEnv) {
+export async function onRequestGet({ request, env }) {
   const appId = env.WECHAT_APP_ID;
   const appSecret = env.WECHAT_APP_SECRET;
   if (!appId || !appSecret) return json({ error: 'WeChat credentials are not configured' }, 503);
@@ -78,7 +73,7 @@ export async function createWechatJsSignatureResponse(request: Request, env: Wec
   const targetUrl = requestUrl.searchParams.get('url');
   if (!targetUrl) return json({ error: 'Missing url parameter' }, 400);
 
-  let parsedTarget: URL;
+  let parsedTarget;
   try {
     parsedTarget = new URL(targetUrl);
   } catch {

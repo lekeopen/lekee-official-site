@@ -23,24 +23,22 @@ test('news detail page registers per-article WeChat share metadata', async () =>
 });
 
 test('WeChat signature endpoint keeps app secret on the server side', async () => {
-  const endpoint = await read('functions/api/wechat-js-signature.ts');
-  const core = await read('functions/wechat-signature-core.ts');
+  const endpoint = await read('functions/api/wechat-js-signature.js');
   const main = await read('src/main.tsx');
 
-  assert.match(core, /WECHAT_APP_SECRET/);
-  assert.match(core, /WECHAT_APP_ID/);
-  assert.match(core, /jsapi_ticket/);
-  assert.match(core, /cachedJsapiTicket/);
-  assert.match(core, /sha1/i);
-  assert.match(endpoint, /createWechatJsSignatureResponse/);
+  assert.match(endpoint, /WECHAT_APP_SECRET/);
+  assert.match(endpoint, /WECHAT_APP_ID/);
+  assert.match(endpoint, /jsapi_ticket/);
+  assert.match(endpoint, /cachedJsapiTicket/);
+  assert.match(endpoint, /sha1/i);
+  assert.match(endpoint, /onRequestGet/);
   assert.doesNotMatch(main, /WECHAT_APP_SECRET/);
 });
 
-test('production build emits a Pages advanced-mode worker for the share API', async () => {
-  const worker = await read('public/_worker.js');
+test('production build exposes a standard Pages Function for the share API', async () => {
+  const endpoint = await read('functions/api/wechat-js-signature.js');
 
-  assert.equal(worker.includes("'/api/wechat-js-signature'"), true);
-  assert.equal(worker.includes('env.ASSETS.fetch'), true);
-  assert.match(worker, /WECHAT_APP_SECRET/);
-  assert.match(worker, /jsapi_ticket/);
+  assert.match(endpoint, /onRequestGet/);
+  assert.match(endpoint, /WECHAT_APP_SECRET/);
+  assert.match(endpoint, /jsapi_ticket/);
 });
