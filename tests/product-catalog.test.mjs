@@ -6,7 +6,11 @@ import ts from 'typescript';
 const catalogUrl = new URL('../src/products/catalog.ts', import.meta.url);
 
 async function loadCatalog() {
-  const source = await readFile(catalogUrl, 'utf8');
+  const releases = await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8');
+  const source = (await readFile(catalogUrl, 'utf8')).replace(
+    "import releaseData from './releases.json';",
+    `const releaseData = ${releases};`,
+  );
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
     fileName: 'catalog.ts',
