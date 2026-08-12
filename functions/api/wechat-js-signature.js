@@ -28,7 +28,12 @@ async function fetchWechatJson(url) {
   const response = await fetch(url);
   const data = await response.json();
   if (!response.ok || data.errcode) {
-    throw new Error(`WeChat API request failed: ${String(data.errcode || response.status)}`);
+    const error = new Error('WeChat API request failed');
+    error.wechat = {
+      errcode: data.errcode || response.status,
+      errmsg: typeof data.errmsg === 'string' ? data.errmsg : response.statusText,
+    };
+    throw error;
   }
   return data;
 }
@@ -105,8 +110,22 @@ export function onRequestGet(context) {
           signature: await sha1(signatureBase),
         });
       })
-      .catch(() => json({ error: 'Failed to create WeChat JS signature' }, 502));
-  } catch {
+      .catch((error) => {
+        if (error && error.wechat) {
+          return json({
+            error: 'Failed to create WeChat JS signature',
+            wechat: error.wechat,
+          }, 502);
+        }
+        return json({ error: 'Failed to create WeChat JS signature' }, 502);
+      });
+  } catch (error) {
+    if (error && error.wechat) {
+      return json({
+        error: 'Failed to create WeChat JS signature',
+        wechat: error.wechat,
+      }, 502);
+    }
     return json({ error: 'Failed to create WeChat JS signature' }, 502);
   }
 }
