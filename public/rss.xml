@@ -5,9 +5,29 @@
     <link>https://lekeopen.com</link>
     <description>lekeopen.com 官方技术与开源内容发布源</description>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 11 Aug 2026 23:01:28 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 12 Aug 2026 00:45:46 GMT</lastBuildDate>
     <atom:link href="https://lekeopen.com/rss.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title><![CDATA[归个类 v1.5.0 产品页上线]]></title>
+      <link>https://lekeopen.com/news/2026-08-12-guigelei-product</link>
+      <guid>https://lekeopen.com/news/2026-08-12-guigelei-product</guid>
+      <pubDate>Wed, 12 Aug 2026 00:12:55 GMT</pubDate>
+      <description><![CDATA[归个类 v1.5.0 已完成官网产品页承接，作为 macOS 本地文件整理工具，支持扫描预览、人工确认、自定义整理方案、重名保护和本批次撤销。]]></description>
+      <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/products/guigelei/og.png" length="0" type="image/png" />
+    </item>
+  
+    <item>
+      <title><![CDATA[乐可点名 v1.1.0 产品页上线]]></title>
+      <link>https://lekeopen.com/news/2026-08-12-leke-picker-product</link>
+      <guid>https://lekeopen.com/news/2026-08-12-leke-picker-product</guid>
+      <pubDate>Wed, 12 Aug 2026 00:11:55 GMT</pubDate>
+      <description><![CDATA[乐可点名 v1.1.0 已完成官网产品页承接，提供在线使用入口和 Windows 安装包下载，面向课堂随机点名、一轮内不重复、多人抽取和全屏展示等真实教学场景。]]></description>
+      <category>Project</category>
+      <enclosure url="https://lekeopen.com/images/products/leke-picker/og.png" length="0" type="image/png" />
+    </item>
+  
     <item>
       <title><![CDATA[乐可观澜项目经营决策驾驶舱上线]]></title>
       <link>https://lekeopen.com/news/2026-07-21-leke-insight</link>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T23:01:28.316Z",
+  "generatedAt": "2026-08-12T00:45:46.778Z",
   "items": [
     {
       "slug": "2025-12-18-xiaole-stage-update",
@@ -110,6 +110,30 @@
       "title": "乐可观澜项目经营决策驾驶舱上线",
       "date": "2026-07-21 14:14:44",
       "summary": "乐可观澜已作为乐可开源内部项目经营决策驾驶舱上线，用于统一观察多个项目的访问表现、数据可信度、近期动态和下一阶段行动建议。",
+      "channels": [
+        "wechat",
+        "github",
+        "x"
+      ],
+      "status": "pending"
+    },
+    {
+      "slug": "2026-08-12-guigelei-product",
+      "title": "归个类 v1.5.0 产品页上线",
+      "date": "2026-08-12 08:12:55",
+      "summary": "归个类 v1.5.0 已完成官网产品页承接，作为 macOS 本地文件整理工具，支持扫描预览、人工确认、自定义整理方案、重名保护和本批次撤销。",
+      "channels": [
+        "wechat",
+        "github",
+        "x"
+      ],
+      "status": "pending"
+    },
+    {
+      "slug": "2026-08-12-leke-picker-product",
+      "title": "乐可点名 v1.1.0 产品页上线",
+      "date": "2026-08-12 08:11:55",
+      "summary": "乐可点名 v1.1.0 已完成官网产品页承接，提供在线使用入口和 Windows 安装包下载，面向课堂随机点名、一轮内不重复、多人抽取和全屏展示等真实教学场景。",
       "channels": [
         "wechat",
         "github",

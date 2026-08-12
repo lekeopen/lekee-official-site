@@ -116,6 +116,18 @@
       "relatedPaths": ["/projects/leke-insight", "/news"]
     },
     {
+      "path": "/news/2026-08-12-guigelei-product",
+      "primaryIntent": "归个类 v1.5 本地文件整理工具上线",
+      "supportingTerms": ["macOS 文件整理", "本地工具", "可撤销整理"],
+      "relatedPaths": ["/products/guigelei", "/products"]
+    },
+    {
+      "path": "/news/2026-08-12-leke-picker-product",
+      "primaryIntent": "乐可点名 v1.1 课堂随机点名工具上线",
+      "supportingTerms": ["课堂点名", "在线点名", "Windows 点名软件"],
+      "relatedPaths": ["/products/leke-picker", "/products"]
+    },
+    {
       "path": "/news/lejiaoku-refactor",
       "primaryIntent": "乐教库平台重构动态",
       "supportingTerms": ["教育产品", "AI Agent", "资源共享"],
