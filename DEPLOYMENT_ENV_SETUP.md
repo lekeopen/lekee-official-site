@@ -85,3 +85,23 @@ npm run verify
 ```
 
 GitHub Actions 会在 Pull Request 及 `develop`、`main` 推送时运行相同门禁。部署后应在生产「联系我们」页面执行一次表单冒烟测试；文档不记录环境变量的实际值或假定某个部署环境已配置。
+
+## 微信分享 JS-SDK 配置
+
+新闻详情页在微信内分享时，会调用微信 JS-SDK 设置分享给朋友和朋友圈的标题、链接和图片。生产环境需要在部署平台配置服务端环境变量：
+
+```
+WECHAT_APP_ID=公众号 AppID
+WECHAT_APP_SECRET=公众号 AppSecret
+```
+
+Cloudflare Pages 会通过 `/api/wechat-js-signature` 生成 JS-SDK 签名。`WECHAT_APP_SECRET` 是服务端秘密，不能使用 `VITE_*` 前缀，也不能写入前端代码或文档示例值。
+
+还需要在微信公众号后台完成：
+
+1. 进入「公众号设置 / 功能设置」。
+2. 配置 JS 接口安全域名为 `lekeopen.com`。
+3. 确认网页通过 HTTPS 访问。
+4. 部署后用微信内置浏览器打开新闻详情页，再分享到聊天和朋友圈测试。
+
+注意：朋友圈通常只稳定展示标题、链接和缩略图，不保证展示独立摘要；摘要主要用于分享给朋友和部分聊天卡片场景。

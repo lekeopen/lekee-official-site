@@ -6,12 +6,24 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { getAllNews } from '../lib/content';
 import SEOMeta from '../components/common/SEOMeta';
+import { useWechatShare } from '../hooks/useWechatShare';
+import { absoluteImageUrl } from '../seo/site';
 import type { Components } from 'react-markdown';
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const news = getAllNews();
   const newsItem = news.find(item => item.id === id);
+  const summary = newsItem
+    ? Array.isArray(newsItem.summary) ? newsItem.summary.join(' ') : newsItem.summary
+    : '';
+
+  useWechatShare(newsItem ? {
+    title: newsItem.title,
+    desc: summary,
+    link: `/news/${newsItem.id}`,
+    imgUrl: absoluteImageUrl(newsItem.cover),
+  } : undefined);
 
   if (!newsItem) {
     return <Navigate to="/" replace />;
@@ -42,7 +54,7 @@ const NewsDetail: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-12 sm:py-20">
       <SEOMeta
         title={`${newsItem.title} | 乐可开源`}
-        description={Array.isArray(newsItem.summary) ? newsItem.summary.join(' ') : newsItem.summary}
+        description={summary}
         url={`/news/${newsItem.id}`}
         image={newsItem.cover}
         type="article"
