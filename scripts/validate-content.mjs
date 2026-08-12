@@ -87,6 +87,12 @@ const validateProducts = async (rootDir) => {
     throw error;
   }
 
+  const releases = await readFile(path.join(rootDir, 'src/products/releases.json'), 'utf8');
+  source = source.replace(
+    "import releaseData from './releases.json';",
+    `const releaseData = ${releases};`,
+  );
+
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
