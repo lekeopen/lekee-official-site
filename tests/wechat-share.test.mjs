@@ -4,43 +4,31 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
-test('WeChat share hook loads the JS SDK and registers timeline share data', async () => {
-  const source = await read('src/hooks/useWechatShare.ts');
-
-  assert.match(source, /res\.wx\.qq\.com\/open\/js\/jweixin-1\.6\.0\.js/);
-  assert.match(source, /updateTimelineShareData/);
-  assert.match(source, /updateAppMessageShareData/);
-  assert.match(source, /\/api\/wechat-js-signature/);
-});
-
-test('news detail page registers per-article WeChat share metadata', async () => {
+test('news detail page relies on server-rendered OG metadata for WeChat link cards', async () => {
   const source = await read('src/pages/NewsDetail.tsx');
 
-  assert.match(source, /useWechatShare/);
-  assert.match(source, /title:\s*newsItem\.title/);
-  assert.match(source, /desc:\s*summary/);
-  assert.match(source, /imgUrl:\s*absoluteImageUrl\(newsItem\.cover\)/);
+  assert.match(source, /<SEOMeta/);
+  assert.match(source, /title=\{`\$\{newsItem\.title\} \| 乐可开源`\}/);
+  assert.match(source, /description=\{summary\}/);
+  assert.match(source, /image=\{newsItem\.cover\}/);
 });
 
-test('WeChat signature endpoint keeps app secret on the server side', async () => {
-  const endpoint = await read('functions/api/wechat-js-signature.js');
+test('SEO metadata includes Open Graph fields used by social link cards', async () => {
+  const source = await read('src/components/common/SEOMeta.tsx');
+
+  assert.match(source, /og:title/);
+  assert.match(source, /og:description/);
+  assert.match(source, /og:image/);
+  assert.match(source, /og:image:width/);
+  assert.match(source, /og:image:height/);
+  assert.match(source, /twitter:card/);
+});
+
+test('WeChat link-card support does not depend on JS-SDK signing', async () => {
+  const newsDetail = await read('src/pages/NewsDetail.tsx');
   const main = await read('src/main.tsx');
 
-  assert.match(endpoint, /WECHAT_APP_SECRET/);
-  assert.match(endpoint, /WECHAT_APP_ID/);
-  assert.match(endpoint, /jsapi_ticket/);
-  assert.match(endpoint, /cachedJsapiTicket/);
-  assert.match(endpoint, /sha1/i);
-  assert.match(endpoint, /onRequestGet/);
+  assert.doesNotMatch(newsDetail, /useWechatShare/);
+  assert.doesNotMatch(newsDetail, /wechat-js-signature/);
   assert.doesNotMatch(main, /WECHAT_APP_SECRET/);
-});
-
-test('production build exposes a standard Pages Function for the share API', async () => {
-  const endpoint = await read('functions/api/wechat-js-signature.js');
-  const routes = await read('public/_routes.json');
-
-  assert.match(endpoint, /function onRequestGet\(context\)/);
-  assert.match(endpoint, /WECHAT_APP_SECRET/);
-  assert.match(endpoint, /jsapi_ticket/);
-  assert.match(routes, /"include":\s*\["\/api\/\*"\]/);
 });
