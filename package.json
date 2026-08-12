@@ -30,6 +30,7 @@
     "seo:report": "node tools/seo-ops/src/cli.mjs report",
     "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js",
+    "products:releases:check": "node scripts/product-release-monitor.mjs",
     "wechat": "node tools/wechat-admin/src/cli.mjs",
     "wechat:accounts": "node tools/wechat-admin/src/cli.mjs accounts",
     "wechat:menu:get": "node tools/wechat-admin/src/cli.mjs menu get",
