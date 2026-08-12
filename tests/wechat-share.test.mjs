@@ -37,7 +37,7 @@ test('WeChat signature endpoint keeps app secret on the server side', async () =
 
 test('production build exposes a standard Pages Function for the share API', async () => {
   const endpoint = await read('functions/api/wechat-js-signature.js');
-  const routes = await read('functions/_routes.json');
+  const routes = await read('public/_routes.json');
 
   assert.match(endpoint, /function onRequestGet\(context\)/);
   assert.match(endpoint, /WECHAT_APP_SECRET/);
