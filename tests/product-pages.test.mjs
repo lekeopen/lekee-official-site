@@ -44,15 +44,22 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
 test('归个类产品页提供已冻结的公开 DMG 下载', async () => {
   const $ = await loadPage('products/guigelei');
 
+  const releaseData = JSON.parse(await readFile(path.join(rootDir, 'src', 'products', 'releases.json'), 'utf8'));
+  const release = releaseData.guigelei;
+  const download = release.assets['macos-arm64'];
+
   assert.equal($('h1').length, 1);
   assert.match($('h1').text(), /归个类/);
+  assert.match($('main').text(), new RegExp(`v${release.version.replaceAll('.', '\\.')}`));
   assert.match($('main').text(), /macOS 12/);
   assert.match($('main').text(), /Apple Silicon/);
   assert.match($('main').text(), /不读取文件正文/);
   assert.equal(
-    $('a[href="https://github.com/lekeopen/guigelei-releases/releases/download/v1.5.0/guigelei-1.5.0-arm64.dmg"]').length,
+    $(`a[href="${download.url}"]`).length,
     1,
   );
+  assert.equal($(`a[href="${release.releaseUrl}"]`).length, 1);
+  assert.equal($('main').text().includes('查看更新记录'), false);
   assert.doesNotMatch($('main').text(), /即将开放|公开发布仓库完成后/);
   assert.equal($('a[href*="ai-file-organizer"]').length, 0);
 });
