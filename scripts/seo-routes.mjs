@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
+import releaseData from '../src/products/releases.json' with { type: 'json' };
 
 export const SITE_URL = 'https://lekeopen.com';
 export const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
@@ -45,14 +46,14 @@ function baseRoute(pathname, label, title, description) {
 
 const productSoftware = {
   '/products/leke-picker': {
-    version: '1.1.0',
+    version: releaseData['leke-picker'].version,
     operatingSystem: 'Windows 7 SP1, Windows 10, Windows 11, Web',
     applicationCategory: 'EducationalApplication',
     image: `${SITE_URL}/images/products/leke-picker/og.png`,
-    downloadUrl: 'https://github.com/lekeopen/leke-picker/releases/tag/v1.1.0',
+    downloadUrl: releaseData['leke-picker'].releaseUrl,
   },
   '/products/guigelei': {
-    version: '1.5.0',
+    version: releaseData.guigelei.version,
     operatingSystem: 'macOS 12 or later',
     applicationCategory: 'UtilitiesApplication',
     image: `${SITE_URL}/images/products/guigelei/og.png`,
