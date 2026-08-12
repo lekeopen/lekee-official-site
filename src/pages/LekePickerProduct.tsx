@@ -31,6 +31,34 @@ const LekePickerProduct: React.FC = () => (
       secondaryAction={{ label: '下载 Windows 版', href: '#downloads', analyticsEvent: 'product_leke_picker_download_section' }}
     />
 
+    <section className="border-y border-gray-200 bg-gray-50 py-16" aria-labelledby="picker-demo-title">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl">
+          <h2 id="picker-demo-title" className="text-3xl font-bold text-gray-950">先看一分钟，了解乐可点名</h2>
+          <p className="mt-4 leading-7 text-gray-600">
+            从导入名单到随机点名、多人抽取和课堂控制，快速了解完整使用流程。
+          </p>
+        </div>
+        <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-xl">
+          <video
+            className="aspect-video w-full"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/images/products/leke-picker/main.webp"
+            aria-label="乐可点名 v1.1 产品演示视频"
+          >
+            <source
+              src="/videos/products/leke-picker/leke-picker-v1.1-horizontal-natural-voice-final.mp4"
+              type="video/mp4"
+            />
+            当前浏览器无法播放视频。你可以
+            <a href="/videos/products/leke-picker/leke-picker-v1.1-horizontal-natural-voice-final.mp4">直接打开演示视频</a>。
+          </video>
+        </div>
+      </div>
+    </section>
+
     <section className="py-16" aria-labelledby="picker-value-title">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 id="picker-value-title" className="text-3xl font-bold text-gray-950">为课堂保留注意力</h2>
@@ -49,34 +77,6 @@ const LekePickerProduct: React.FC = () => (
               </article>
             );
           })}
-        </div>
-      </div>
-    </section>
-
-    <section className="border-y border-gray-200 bg-gray-50 py-16" aria-labelledby="picker-demo-title">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <h2 id="picker-demo-title" className="text-3xl font-bold text-gray-950">60 秒了解乐可点名</h2>
-          <p className="mt-4 leading-7 text-gray-600">
-            从导入名单到随机点名和课堂控制，一段视频看完整使用流程。
-          </p>
-        </div>
-        <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-xl">
-          <video
-            className="aspect-video w-full"
-            controls
-            playsInline
-            preload="metadata"
-            poster="/images/products/leke-picker/main.webp"
-            aria-label="乐可点名 v1.1 产品演示视频"
-          >
-            <source
-              src="/videos/products/leke-picker/leke-picker-v1.1-horizontal-website-final.mp4"
-              type="video/mp4"
-            />
-            当前浏览器无法播放视频。你可以
-            <a href="/videos/products/leke-picker/leke-picker-v1.1-horizontal-website-final.mp4">直接打开演示视频</a>。
-          </video>
         </div>
       </div>
     </section>
