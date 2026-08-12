@@ -37,12 +37,10 @@ test('WeChat signature endpoint keeps app secret on the server side', async () =
 });
 
 test('production build emits a Pages advanced-mode worker for the share API', async () => {
-  const packageJson = await read('package.json');
-  const buildWorker = await read('scripts/build-pages-worker.mjs');
-  const worker = await read('functions/worker.ts');
+  const worker = await read('public/_worker.js');
 
-  assert.match(packageJson, /build:pages-worker/);
-  assert.match(buildWorker, /dist\/_worker\.js/);
   assert.equal(worker.includes("'/api/wechat-js-signature'"), true);
   assert.equal(worker.includes('env.ASSETS.fetch'), true);
+  assert.match(worker, /WECHAT_APP_SECRET/);
+  assert.match(worker, /jsapi_ticket/);
 });
