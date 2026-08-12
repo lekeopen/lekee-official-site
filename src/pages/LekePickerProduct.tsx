@@ -3,7 +3,6 @@ import { ExternalLink, Monitor, ShieldCheck, Users } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
 import DownloadSection from '../components/products/DownloadSection';
 import ProductFaq from '../components/products/ProductFaq';
-import ProductGallery from '../components/products/ProductGallery';
 import ProductHero from '../components/products/ProductHero';
 import { getProduct } from '../products/catalog';
 import { trackProductEvent } from '../analytics/productEvents';
@@ -54,12 +53,33 @@ const LekePickerProduct: React.FC = () => (
       </div>
     </section>
 
-    <ProductGallery items={[
-      { title: '课堂点名主界面', description: '展示名单人数、已抽人数、剩余人数和主要点名操作。', image: '/images/products/leke-picker/main.webp', alt: '乐可点名 v1.1 课堂点名主界面' },
-      { title: '名单管理', description: '使用每行一个姓名的 TXT 格式在网页版和桌面版之间迁移。', image: '/images/products/leke-picker/roster.webp', alt: '乐可点名 v1.1 名单管理界面' },
-      { title: '多人抽取结果', description: '按课堂需要一次抽取 1 至 5 人，并保持本轮不重复。', image: '/images/products/leke-picker/result.webp', alt: '乐可点名 v1.1 多人抽取结果界面' },
-      { title: '课堂控制', description: '支持重置本轮、清空名单和全屏展示。', image: '/images/products/leke-picker/controls.webp', alt: '乐可点名 v1.1 课堂控制界面' },
-    ]} />
+    <section className="border-y border-gray-200 bg-gray-50 py-16" aria-labelledby="picker-demo-title">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl">
+          <h2 id="picker-demo-title" className="text-3xl font-bold text-gray-950">60 秒了解乐可点名</h2>
+          <p className="mt-4 leading-7 text-gray-600">
+            从导入名单到随机点名和课堂控制，一段视频看完整使用流程。
+          </p>
+        </div>
+        <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-xl">
+          <video
+            className="aspect-video w-full"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/images/products/leke-picker/main.webp"
+            aria-label="乐可点名 v1.1 产品演示视频"
+          >
+            <source
+              src="/videos/products/leke-picker/leke-picker-v1.1-horizontal-website-final.mp4"
+              type="video/mp4"
+            />
+            当前浏览器无法播放视频。你可以
+            <a href="/videos/products/leke-picker/leke-picker-v1.1-horizontal-website-final.mp4">直接打开演示视频</a>。
+          </video>
+        </div>
+      </div>
+    </section>
 
     <DownloadSection
       title="Windows 下载"

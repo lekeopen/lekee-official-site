@@ -21,6 +21,20 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.match($('main').text(), /版本与系统要求/);
   assert.match($('main').text(), /名单只在本机处理和保存/);
   assert.match($('main').text(), /常见问题/);
+  assert.match($('main').text(), /60 秒了解乐可点名/);
+
+  const video = $('video[aria-label="乐可点名 v1.1 产品演示视频"]');
+  assert.equal(video.length, 1);
+  assert.equal(video.is('[controls]'), true);
+  assert.equal(video.attr('preload'), 'metadata');
+  assert.equal(video.attr('poster'), '/images/products/leke-picker/main.webp');
+  assert.equal(video.attr('autoplay'), undefined);
+  assert.equal(
+    video.find('source[type="video/mp4"]').attr('src'),
+    '/videos/products/leke-picker/leke-picker-v1.1-horizontal-website-final.mp4',
+  );
+  assert.equal($('main').text().includes('课堂点名主界面'), false);
+  assert.equal($('main').text().includes('名单管理'), false);
 });
 
 test('归个类产品页提供已冻结的公开 DMG 下载', async () => {

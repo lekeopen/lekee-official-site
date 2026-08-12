@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { access, readdir } from 'node:fs/promises';
+import { access, open, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import sharp from 'sharp';
@@ -14,6 +14,29 @@ const galleries = {
 test('归个类 committed source screenshots contain no local-path workflow captures', async () => {
   const sourceFiles = await readdir(path.join(root, 'assets', 'product-source', 'guigelei'));
   assert.deepEqual(sourceFiles.sort(), ['icon.png', 'plans.png']);
+});
+
+test('leke-picker website demo is a non-empty MP4 asset', async () => {
+  const asset = path.join(
+    root,
+    'public',
+    'videos',
+    'products',
+    'leke-picker',
+    'leke-picker-v1.1-horizontal-website-final.mp4',
+  );
+  const info = await stat(asset);
+  const handle = await open(asset, 'r');
+  const header = Buffer.alloc(12);
+
+  try {
+    await handle.read(header, 0, header.length, 0);
+  } finally {
+    await handle.close();
+  }
+
+  assert.ok(info.size > 1_000_000);
+  assert.equal(header.subarray(4, 8).toString('ascii'), 'ftyp');
 });
 
 for (const [slug, files] of Object.entries(galleries)) {
