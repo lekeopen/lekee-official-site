@@ -14,6 +14,8 @@ test('support option values are unique and products are stable', () => {
 test('preview uses an exact origin and an isolated KV namespace', async () => {
   const config = JSON.parse(await readFile(new URL('../wrangler.jsonc', import.meta.url), 'utf8'));
   assert.equal(config.env.preview.vars.ALLOWED_SUPPORT_ORIGINS, 'https://codex-product-support-design.lekee-official-site.pages.dev');
+  assert.equal(config.vars.SUPPORT_MAIL_TO, 'contact@lekeopen.com');
+  assert.equal(config.env.preview.vars.SUPPORT_MAIL_TO, 'contact@lekeopen.com');
   assert.notEqual(config.env.preview.kv_namespaces[0].id, config.kv_namespaces[0].id);
   assert.equal(config.env.preview.kv_namespaces[0].binding, 'SUPPORT_RATE_LIMIT');
 });
