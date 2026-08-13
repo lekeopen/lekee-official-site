@@ -2,8 +2,23 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkRequestOrigin, verifyTurnstile } from '../functions/support/security.mjs';
 import { onRequestPost } from '../functions/api/support.js';
+import { deliverFeedbackToLezhi } from '../functions/support/lezhi.mjs';
 
 const payload = { product:'leke-picker',releaseTag:'v1.1.0',environmentId:'windows-modern-x64',issueType:'install',description:'安装之后无法启动应用，请协助排查具体原因。',contact:'teacher@example.com',name:'王老师',privacyConfirmed:true,website:'',turnstileToken:'ok',sourceUrl:'https://lekeopen.com/products/leke-picker/' };
+
+test('Lezhi relay identifies itself as the official website', async () => {
+  let headers;
+  const result = await deliverFeedbackToLezhi(
+    { LEZHI_FEEDBACK_URL:'https://lezhi.example/api/v1/product-feedback', LEZHI_FEEDBACK_TOKEN:'lezhi-secret' },
+    { reference:'LK-20260814-01234567' },
+    async (_url, options) => {
+      headers = options.headers;
+      return new Response('{"ok":true,"reference":"LK-20260814-01234567"}', { status:201 });
+    },
+  );
+  assert.equal(result.accepted, true);
+  assert.equal(headers['User-Agent'], 'LeKeOpen-Feedback-Relay/1.0');
+});
 
 test('checks origin and turnstile response', async () => {
   assert.equal(checkRequestOrigin(new Request('https://lekeopen.com/api/support',{headers:{origin:'https://lekeopen.com'}}), ['https://lekeopen.com']), true);
