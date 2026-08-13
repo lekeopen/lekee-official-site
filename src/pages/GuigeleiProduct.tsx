@@ -3,8 +3,6 @@ import { ExternalLink, Eye, RotateCcw, ShieldCheck } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
 import DownloadSection from '../components/products/DownloadSection';
 import ProductFaq from '../components/products/ProductFaq';
-import ProductGallery from '../components/products/ProductGallery';
-import ProductHero from '../components/products/ProductHero';
 import { getProduct } from '../products/catalog';
 import { trackProductEvent } from '../analytics/productEvents';
 
@@ -28,10 +26,24 @@ const GuigeleiProduct: React.FC = () => (
         applicationCategory: 'UtilitiesApplication',
       }}
     />
-    <ProductHero
-      product={product}
-      primaryAction={{ label: '下载正式版', href: '#downloads', analyticsEvent: 'product_guigelei_download_section' }}
-    />
+    <section data-product-hero className="border-b border-emerald-100 bg-gradient-to-br from-white via-emerald-50 to-teal-100 py-16 lg:py-20">
+      <div className="container mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700">乐可开源出品 · v{product.version}</p>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-gray-950 sm:text-5xl">归个类</h1>
+          <p className="mt-5 text-2xl font-semibold text-gray-900">{product.tagline}</p>
+          <p className="mt-4 max-w-xl leading-7 text-gray-600">{product.summary}</p>
+          <a href="#downloads" onClick={() => trackProductEvent('product_guigelei_download_section')} className="mt-8 inline-flex min-h-11 items-center rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-700">下载正式版</a>
+        </div>
+        <div data-product-hero-media className="overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-xl shadow-emerald-900/10">
+          <video className="aspect-video w-full" controls playsInline preload="metadata" poster="/images/products/guigelei/overview.webp" aria-label="归个类产品演示视频">
+            <source src="/videos/products/guigelei/guigelei-horizontal-website-final-v5.mp4" type="video/mp4" />
+            当前浏览器无法播放视频。你可以
+            <a href="/videos/products/guigelei/guigelei-horizontal-website-final-v5.mp4">直接打开演示视频</a>。
+          </video>
+        </div>
+      </div>
+    </section>
 
     <section className="py-16" aria-labelledby="guigelei-value-title">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -61,13 +73,6 @@ const GuigeleiProduct: React.FC = () => (
         <p className="mt-5 break-words text-lg leading-8 text-gray-700">选择文件夹 → 扫描 → 预览与调整 → 人工确认 → 移动 → 查看结果 → 可撤销</p>
       </div>
     </section>
-
-    <ProductGallery items={[
-      { title: '整理工作台', description: '从选择文件夹、选择方案到确认操作，完整流程保持在同一工作台。', image: '/images/products/guigelei/overview.webp', alt: '归个类 v1.5 整理工作台界面' },
-      { title: '内置整理方案', description: '可按类型、时间或项目整理，也能从内置方案复制后继续编辑。', image: '/images/products/guigelei/plans.webp', alt: '归个类 v1.5 内置整理方案界面' },
-      { title: '自定义方案', description: '复制内置方案为“我的方案”，再按实际目录规则调整并复用。', image: '/images/products/guigelei/customize.webp', alt: '归个类 v1.5 自定义方案入口界面' },
-      { title: '操作与恢复', description: '整理、撤销上次整理和恢复上次空目录清理均提供独立入口。', image: '/images/products/guigelei/actions.webp', alt: '归个类 v1.5 操作与恢复界面' },
-    ]} />
 
     <DownloadSection
       title="下载安装包"

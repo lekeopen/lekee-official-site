@@ -39,6 +39,33 @@ test('leke-picker website demo is a non-empty MP4 asset', async () => {
   assert.equal(header.subarray(4, 8).toString('ascii'), 'ftyp');
 });
 
+test('guigelei website demo is the optimized MP4, not the 4K display master', async () => {
+  const websiteAsset = path.join(
+    root,
+    'public',
+    'videos',
+    'products',
+    'guigelei',
+    'guigelei-horizontal-website-final-v5.mp4',
+  );
+  const info = await stat(websiteAsset);
+  const handle = await open(websiteAsset, 'r');
+  const header = Buffer.alloc(12);
+
+  try {
+    await handle.read(header, 0, header.length, 0);
+  } finally {
+    await handle.close();
+  }
+
+  assert.ok(info.size > 1_000_000);
+  assert.ok(info.size < 5_000_000);
+  assert.equal(header.subarray(4, 8).toString('ascii'), 'ftyp');
+  await assert.rejects(
+    access(path.join(root, 'public', 'videos', 'products', 'guigelei', 'guigelei-horizontal-display-master-4k-v5.mp4')),
+  );
+});
+
 for (const [slug, files] of Object.entries(galleries)) {
   test(`${slug} has a compact product icon`, async () => {
     const asset = path.join(root, 'public', 'images', 'products', slug, 'icon.webp');
