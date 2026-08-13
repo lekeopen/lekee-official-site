@@ -98,6 +98,8 @@ test('compatible newer stable releases update deterministic release data', async
   const updated = JSON.parse(await readFile(file, 'utf8'));
   assert.equal(updated.guigelei.version, '1.6.0');
   assert.deepEqual(updated.guigelei.assets, nextAssets);
+  assert.equal(updated.guigelei.releases[0].version, '1.6.0');
+  assert.equal(updated.guigelei.releases[1].version, '1.5.0');
   assert.match(await readFile(file, 'utf8'), /\n$/);
 });
 

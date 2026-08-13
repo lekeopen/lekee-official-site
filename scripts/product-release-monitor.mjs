@@ -170,7 +170,12 @@ export async function checkProductReleases({ rootDir = process.cwd(), fetchImpl 
     if (!response.ok) fail(`${slug}: GitHub API returned HTTP ${response.status}`);
     const candidate = await validateRelease(slug, current, await response.json(), fetchImpl);
     if (!candidate) continue;
-    data[slug] = candidate;
+    const previousReleases = Array.isArray(current.releases) ? current.releases : [{
+      repository: current.repository, tag: current.tag, version: current.version,
+      publishedAt: current.publishedAt, releaseUrl: current.releaseUrl,
+      ...(current.minimumSystems ? { minimumSystems: current.minimumSystems } : {}), assets: current.assets,
+    }];
+    data[slug] = { ...candidate, releases: [candidate, ...previousReleases.filter((item) => item.tag !== candidate.tag)].slice(0, 10) };
     updates.push({ slug, from: current.version, to: candidate.version });
   }
 
