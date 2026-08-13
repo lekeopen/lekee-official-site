@@ -32,3 +32,14 @@ test('versions and environments come from each product release', () => {
   assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'macos-arm64'), true);
   assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'windows-modern-x64'), false);
 });
+
+test('Pages Functions avoid JSON import attributes unsupported by the production bundler', async () => {
+  const recordModule = await readFile(new URL('../functions/support/record.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(recordModule, /releases\.json['"]\s+with\s*\{/);
+});
+
+test('generated Functions release data stays synchronized with the canonical manifest', async () => {
+  const canonical = JSON.parse(await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8'));
+  const generated = (await import(`../functions/support/release-data.generated.mjs?test=${Date.now()}`)).default;
+  assert.deepEqual(generated, canonical);
+});

@@ -1,4 +1,4 @@
-import releaseData from '../../src/products/releases.json' with { type: 'json' };
+import releaseData from './release-data.generated.mjs';
 import { PRODUCT_OPTIONS, ISSUE_TYPE_OPTIONS, optionLabel } from '../../src/support/config.js';
 import { getEnvironmentOptions } from '../../src/support/options.js';
 
