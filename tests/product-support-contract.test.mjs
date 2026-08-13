@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PRODUCT_OPTIONS, SYSTEM_OPTIONS, ISSUE_TYPE_OPTIONS } from '../src/support/config.js';
 import { createSupportReference } from '../functions/support/reference.mjs';
+import { getEnvironmentOptions, getVersionOptions, isAllowedProductReleaseEnvironment } from '../src/support/options.js';
 
 test('support option values are unique and products are stable', () => {
   assert.deepEqual(PRODUCT_OPTIONS.map(({ value }) => value), ['leke-picker', 'guigelei', 'other']);
@@ -23,4 +24,25 @@ test('preview uses an exact origin and an isolated KV namespace', async () => {
 test('support reference contains date and random data only', () => {
   const reference = createSupportReference(new Date('2026-08-13T10:00:00Z'), new Uint8Array([1, 35, 69, 103]));
   assert.equal(reference, 'LK-20260813-01234567');
+});
+
+test('versions and environments come from each product release', () => {
+  assert.deepEqual(getVersionOptions('leke-picker').map(({ value }) => value), ['v1.1.0', 'other']);
+  assert.deepEqual(getEnvironmentOptions('leke-picker', 'v1.1.0').map(({ value }) => value), ['windows-modern-x64', 'windows-7-x64', 'windows-7-x86', 'unknown']);
+  assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'macos-arm64'), true);
+  assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'windows-modern-x64'), false);
+});
+
+test('Pages Functions avoid JSON import attributes unsupported by the production bundler', async () => {
+  const recordModule = await readFile(new URL('../functions/support/record.mjs', import.meta.url), 'utf8');
+  const validationModule = await readFile(new URL('../functions/support/validation.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(recordModule, /releases\.json['"]\s+with\s*\{/);
+  assert.doesNotMatch(recordModule, /src\/support\/(?:config|options)\.js/);
+  assert.doesNotMatch(validationModule, /src\/support\/(?:config|options)\.js/);
+});
+
+test('generated Functions release data stays synchronized with the canonical manifest', async () => {
+  const canonical = JSON.parse(await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8'));
+  const generated = (await import(`../functions/support/release-data.generated.mjs?test=${Date.now()}`)).default;
+  assert.deepEqual(generated, canonical);
 });

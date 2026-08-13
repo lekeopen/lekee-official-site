@@ -2,6 +2,8 @@ import { parseSupportRequest } from '../support/validation.mjs';
 import { checkRequestOrigin, verifyTurnstile, checkRateLimit } from '../support/security.mjs';
 import { createSupportReference } from '../support/reference.mjs';
 import { buildSupportEmail, sendSupportEmail } from '../support/mailer.mjs';
+import { buildSupportRecord } from '../support/record.mjs';
+import { deliverFeedbackToLezhi } from '../support/lezhi.mjs';
 
 const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff' } });
 
@@ -24,7 +26,9 @@ export async function onRequestPost(context, dependencies = {}) {
   const now=dependencies.now || new Date();
   const randomBytes=dependencies.randomBytes || crypto.getRandomValues(new Uint8Array(4));
   const reference=createSupportReference(now,randomBytes);
-  const mail=buildSupportEmail(reference,parsed.data,now.toISOString());
+  const record=buildSupportRecord(reference,parsed.data,now.toISOString());
+  if (!(await deliverFeedbackToLezhi(env,record,fetchImpl)).accepted) return json(503,{ok:false,code:'temporarily_unavailable'});
+  const mail=buildSupportEmail(record);
   if (!(await sendSupportEmail(env,mail,fetchImpl)).accepted) return json(503,{ok:false,code:'temporarily_unavailable'});
   console.info('support accepted', { reference });
   return json(201,{ok:true,reference});

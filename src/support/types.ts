@@ -1,7 +1,7 @@
 export interface SupportRequest {
   product: string;
-  version: string;
-  system: string;
+  releaseTag: string;
+  environmentId: string;
   issueType: string;
   description: string;
   contact: string;
@@ -9,6 +9,7 @@ export interface SupportRequest {
   privacyConfirmed: true;
   website: string;
   turnstileToken: string;
+  sourceUrl: string;
 }
 
 export type SupportSuccess = { ok: true; reference: string };
