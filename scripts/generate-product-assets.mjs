@@ -48,12 +48,20 @@ async function createOg({ slug, title, subtitle, accent, icon }) {
     .toFile(path.join(productDir(slug), 'og.png'));
 }
 
+async function createProductIcon(source, output) {
+  await sharp(source)
+    .resize(256, 256, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    .webp({ quality: 88, effort: 5 })
+    .toFile(output);
+}
+
 const picker = productDir('leke-picker');
 const pickerSource = sourceDir('leke-picker');
 await cropToGallery(path.join(pickerSource, 'main.png'), path.join(picker, 'main.webp'), { top: 0, height: 712 });
 await cropToGallery(path.join(pickerSource, 'main.png'), path.join(picker, 'roster.webp'), { top: 460, height: 712 });
 await cropToGallery(path.join(pickerSource, 'result.png'), path.join(picker, 'result.webp'), { top: 0, height: 712 });
 await cropToGallery(path.join(pickerSource, 'result.png'), path.join(picker, 'controls.webp'), { top: 760, height: 712 });
+await createProductIcon(path.join(pickerSource, 'mark.svg'), path.join(picker, 'icon.webp'));
 
 const guigelei = productDir('guigelei');
 const guigeleiSource = sourceDir('guigelei');
@@ -61,6 +69,7 @@ await cropToGallery(path.join(guigeleiSource, 'plans.png'), path.join(guigelei, 
 await cropToGallery(path.join(guigeleiSource, 'plans.png'), path.join(guigelei, 'plans.webp'), { top: 43, height: 638 });
 await cropToGallery(path.join(guigeleiSource, 'plans.png'), path.join(guigelei, 'customize.webp'), { top: 86, height: 638 });
 await cropToGallery(path.join(guigeleiSource, 'plans.png'), path.join(guigelei, 'actions.webp'), { top: 130, height: 638 });
+await createProductIcon(path.join(guigeleiSource, 'icon.png'), path.join(guigelei, 'icon.webp'));
 
 await createOg({
   slug: 'leke-picker',
