@@ -90,6 +90,11 @@ const Privacy: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-2xl font-bold text-gray-900">产品反馈信息</h2>
+        <p className="mt-4 leading-7 text-gray-700">当您主动提交产品反馈时，我们仅将您填写的产品版本、操作系统、问题描述和联系方式用于处理该次咨询。请勿提交学生名单、私人文件、密码或其他敏感信息。反馈通过支持邮箱接收，不在官网数据库中另行保存；相关邮件仅按处理问题和履行必要记录义务所需的期限保留。您可通过 support@lekeopen.com 联系我们。</p>
+      </section>
     </div>
   );
 };

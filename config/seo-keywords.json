@@ -50,6 +50,12 @@
       "relatedPaths": ["/services", "/about"]
     },
     {
+      "path": "/support",
+      "primaryIntent": "乐可开源产品帮助与反馈",
+      "supportingTerms": ["安装帮助", "使用反馈", "功能建议"],
+      "relatedPaths": ["/products/leke-picker", "/products/guigelei", "/privacy"]
+    },
+    {
       "path": "/news",
       "primaryIntent": "乐可开源技术动态",
       "supportingTerms": ["工程实践", "项目里程碑", "团队动态"],
