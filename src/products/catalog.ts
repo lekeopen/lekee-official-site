@@ -31,7 +31,31 @@ export interface ProductDefinition {
   downloads: ProductDownload[];
   repository?: string;
   releaseNotes: string;
+  minimumSystems?: Record<string, string>;
 }
+
+const guigeleiDownloadDefinitions = {
+  'macos-arm64': {
+    label: 'macOS Apple Silicon', platform: 'macOS', architecture: 'arm64',
+    warning: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证；请核对 SHA-256，并按 macOS 提示人工允许打开。',
+    analyticsEvent: 'product_guigelei_download_macos' as ProductEventName,
+  },
+  'windows-x64': {
+    label: 'Windows 64 位', platform: 'Windows', architecture: 'x64',
+    warning: '安装包如未进行代码签名，Windows 可能显示未知发布者提示；请核对 SHA-256。',
+    analyticsEvent: 'product_guigelei_download_windows' as ProductEventName,
+  },
+} as const;
+
+const guigeleiAssets = guigeleiRelease.assets as Record<string, { name: string; url: string; sha256: string; sizeBytes: number }>;
+const guigeleiMinimumSystems = ('minimumSystems' in guigeleiRelease ? guigeleiRelease.minimumSystems : { macos: '12.0' }) as Record<string, string>;
+const guigeleiDownloads: ProductDownload[] = Object.keys(guigeleiDownloadDefinitions)
+  .filter((id) => id in guigeleiAssets)
+  .map((id) => {
+    const definition = guigeleiDownloadDefinitions[id as keyof typeof guigeleiDownloadDefinitions];
+    const asset = guigeleiAssets[id];
+    return { id, ...definition, availability: 'available', assetName: asset.name, url: asset.url, sha256: asset.sha256, sizeBytes: asset.sizeBytes };
+  });
 
 export const PRODUCTS: readonly ProductDefinition[] = [
   {
@@ -92,24 +116,14 @@ export const PRODUCTS: readonly ProductDefinition[] = [
     tagline: '文件乱了，归个类',
     summary: '完全在本地运行的文件整理工具，先预览、再确认，支持自定义整理方案、重名保护和一键撤销。',
     version: guigeleiRelease.version,
-    platforms: ['macOS 12+', 'Apple Silicon'],
+    platforms: [
+      ...(guigeleiAssets['macos-arm64'] ? [`macOS ${guigeleiMinimumSystems.macos}+`, 'Apple Silicon'] : []),
+      ...(guigeleiAssets['windows-x64'] ? [`Windows ${guigeleiMinimumSystems.windows}`, 'Windows x64'] : []),
+    ],
     cover: '/images/products/guigelei/og.png',
     releaseNotes: guigeleiRelease.releaseUrl,
-    downloads: [
-      {
-        id: 'macos-arm64',
-        label: 'macOS Apple Silicon',
-        platform: 'macOS 12+',
-        architecture: 'arm64',
-        availability: 'available',
-        assetName: guigeleiRelease.assets['macos-arm64'].name,
-        url: guigeleiRelease.assets['macos-arm64'].url,
-        sha256: guigeleiRelease.assets['macos-arm64'].sha256,
-        sizeBytes: guigeleiRelease.assets['macos-arm64'].sizeBytes,
-        warning: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证；请核对 SHA-256，并按 macOS 提示人工允许打开。',
-        analyticsEvent: 'product_guigelei_download_macos',
-      },
-    ],
+    minimumSystems: guigeleiMinimumSystems,
+    downloads: guigeleiDownloads,
   },
 ] as const;
 

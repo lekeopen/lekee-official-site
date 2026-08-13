@@ -8,6 +8,7 @@ export type ProductEventName =
   | 'product_leke_picker_release_notes'
   | 'product_guigelei_download_section'
   | 'product_guigelei_download_macos'
+  | 'product_guigelei_download_windows'
   | 'product_guigelei_release_notes';
 
 declare global {

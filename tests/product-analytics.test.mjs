@@ -8,6 +8,7 @@ test('product analytics uses an allow-list of anonymous Clarity event names', as
   assert.match(source, /product_leke_picker_download_modern/);
   assert.match(source, /product_guigelei_release_notes/);
   assert.match(source, /product_guigelei_download_macos/);
+  assert.match(source, /product_guigelei_download_windows/);
   assert.match(source, /window\.clarity\('event', eventName\)/);
   assert.doesNotMatch(source, /student|roster|filename|filePath/i);
 });
