@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -24,8 +25,10 @@ const current = {
 };
 
 function asset(name, repository, tag, hex, size) {
-  return { name, url: `https://github.com/${repository}/releases/download/${tag}/${name}`, sha256: hex.repeat(64), sizeBytes: size };
+  return { name, url: `https://github.com/${repository}/releases/download/${tag}/${name}`, sha256: hex.length === 64 ? hex : hex.repeat(64), sizeBytes: size };
 }
+
+const hash = (value) => createHash('sha256').update(value).digest('hex');
 
 function release(repository, tag, assets, overrides = {}) {
   return {
@@ -56,6 +59,20 @@ function fetchFor(releases) {
   };
 }
 
+function fetchWithManifest(releases, manifest, checksums) {
+  return async (input) => {
+    const url = String(input);
+    const match = url.match(/repos\/([^/]+\/[^/]+)\/releases\/latest$/);
+    if (match) {
+      const body = releases[match[1]];
+      return new Response(JSON.stringify(body ?? {}), { status: body ? 200 : 404 });
+    }
+    if (url.endsWith('/release-manifest.json')) return new Response(JSON.stringify(manifest));
+    if (url.endsWith('/SHA256SUMS')) return new Response(checksums);
+    return new Response('', { status: 404 });
+  };
+}
+
 test('current stable releases produce no write', async () => {
   const { rootDir, file, bytes } = await fixture();
   const releases = {
@@ -82,6 +99,71 @@ test('compatible newer stable releases update deterministic release data', async
   assert.equal(updated.guigelei.version, '1.6.0');
   assert.deepEqual(updated.guigelei.assets, nextAssets);
   assert.match(await readFile(file, 'utf8'), /\n$/);
+});
+
+test('manifest-driven guigelei release accepts dynamic macOS and Windows asset names', async () => {
+  const { rootDir, file } = await fixture();
+  const repository = 'lekeopen/guigelei-releases';
+  const tag = 'v1.7.0';
+  const downloads = [
+    { id: 'macos-arm64', asset: 'guigelei-v1.7.0-macos-arm64.dmg', platform: 'macos', architecture: 'arm64', sha256: 'e'.repeat(64), sizeBytes: 301 },
+    { id: 'windows-x64', asset: 'guigelei-v1.7.0-windows-x64.exe', platform: 'windows', architecture: 'x64', sha256: 'f'.repeat(64), sizeBytes: 302 },
+  ];
+  const manifest = { schemaVersion: 1, product: 'guigelei', version: '1.7.0', tag, minimumSystems: { macos: '12.0', windows: '10 64-bit' }, downloads };
+  const manifestBytes = JSON.stringify(manifest);
+  const checksums = downloads.map((item) => `${item.sha256}  ${item.asset}`).join('\n') + '\n';
+  const evidence = {
+    manifest: asset('release-manifest.json', repository, tag, hash(manifestBytes), Buffer.byteLength(manifestBytes)),
+    sums: asset('SHA256SUMS', repository, tag, hash(checksums), Buffer.byteLength(checksums)),
+  };
+  const releaseAssets = Object.fromEntries([
+    ...downloads.map((item) => [item.id, asset(item.asset, repository, tag, item.sha256[0], item.sizeBytes)]),
+    ['manifest', evidence.manifest], ['sums', evidence.sums],
+  ]);
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.0', current['leke-picker'].assets),
+    [repository]: release(repository, tag, releaseAssets),
+  };
+  const result = await checkProductReleases({ rootDir, fetchImpl: fetchWithManifest(releases, manifest, checksums) });
+  assert.deepEqual(result, { changed: true, updates: [{ slug: 'guigelei', from: '1.5.0', to: '1.7.0' }] });
+  const updated = JSON.parse(await readFile(file, 'utf8')).guigelei;
+  assert.deepEqual(Object.keys(updated.assets), ['macos-arm64', 'windows-x64']);
+  assert.deepEqual(updated.minimumSystems, manifest.minimumSystems);
+});
+
+test('manifest-driven guigelei release fails closed when evidence is missing', async () => {
+  const { rootDir, file, bytes } = await fixture();
+  const repository = 'lekeopen/guigelei-releases';
+  const tag = 'v1.7.0';
+  const installer = asset('guigelei-v1.7.0-macos-arm64.dmg', repository, tag, 'e', 301);
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.0', current['leke-picker'].assets),
+    [repository]: release(repository, tag, { installer }),
+  };
+  await assert.rejects(checkProductReleases({ rootDir, fetchImpl: fetchFor(releases) }), /release-manifest/i);
+  assert.equal(await readFile(file, 'utf8'), bytes);
+});
+
+test('manifest-driven guigelei release verifies downloaded evidence bytes', async () => {
+  const { rootDir, file, bytes } = await fixture();
+  const repository = 'lekeopen/guigelei-releases';
+  const tag = 'v1.7.0';
+  const download = { id: 'macos-arm64', asset: 'guigelei-v1.7.0-macos-arm64.dmg', platform: 'macos', architecture: 'arm64', sha256: 'e'.repeat(64), sizeBytes: 301 };
+  const releaseAssets = {
+    installer: asset(download.asset, repository, tag, 'e', 301),
+    manifest: asset('release-manifest.json', repository, tag, '1', 1),
+    sums: asset('SHA256SUMS', repository, tag, '2', 2),
+  };
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.0', current['leke-picker'].assets),
+    [repository]: release(repository, tag, releaseAssets),
+  };
+  const manifest = { schemaVersion: 1, product: 'guigelei', version: '1.7.0', tag, minimumSystems: { macos: '12.0' }, downloads: [download] };
+  await assert.rejects(
+    checkProductReleases({ rootDir, fetchImpl: fetchWithManifest(releases, manifest, `${download.sha256}  ${download.asset}\n`) }),
+    /evidence.*(size|SHA-256)/i,
+  );
+  assert.equal(await readFile(file, 'utf8'), bytes);
 });
 
 for (const [label, mutate] of [

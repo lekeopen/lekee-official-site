@@ -9,6 +9,9 @@ import { getProduct } from '../products/catalog';
 import { trackProductEvent } from '../analytics/productEvents';
 
 const product = getProduct('guigelei');
+const hasMac = product.downloads.some(({ id }) => id === 'macos-arm64');
+const hasWindows = product.downloads.some(({ id }) => id === 'windows-x64');
+const operatingSystem = [hasMac && `macOS ${product.minimumSystems?.macos} or later`, hasWindows && `Windows ${product.minimumSystems?.windows}`].filter(Boolean).join(', ');
 
 const GuigeleiProduct: React.FC = () => (
   <div className="bg-white">
@@ -21,13 +24,13 @@ const GuigeleiProduct: React.FC = () => (
       kind="software"
       software={{
         version: product.version,
-        operatingSystem: 'macOS 12 or later',
+        operatingSystem,
         applicationCategory: 'UtilitiesApplication',
       }}
     />
     <ProductHero
       product={product}
-      primaryAction={{ label: '下载 macOS 版', href: '#downloads', analyticsEvent: 'product_guigelei_download_section' }}
+      primaryAction={{ label: '下载正式版', href: '#downloads', analyticsEvent: 'product_guigelei_download_section' }}
     />
 
     <section className="py-16" aria-labelledby="guigelei-value-title">
@@ -67,8 +70,8 @@ const GuigeleiProduct: React.FC = () => (
     ]} />
 
     <DownloadSection
-      title="macOS 下载"
-      intro={`当前正式版本为 v${product.version}，仅支持 macOS 12 及以上、Apple Silicon（M1/M2/M3/M4）。请从官方 Release 下载并核对 SHA-256。`}
+      title="下载安装包"
+      intro={`当前正式版本为 v${product.version}。请选择对应平台，从官方 Release 下载并核对 SHA-256。`}
       downloads={[...product.downloads]}
       stats={{
         owner: 'lekeopen',
@@ -84,9 +87,9 @@ const GuigeleiProduct: React.FC = () => (
           <h2 className="text-3xl font-bold text-gray-950">版本与系统要求</h2>
           <ul className="mt-5 space-y-3 leading-7 text-gray-700">
             <li>当前正式版本：v{product.version}</li>
-            <li>macOS 12.0 Monterey 或更高版本</li>
-            <li>Apple Silicon：M1、M2、M3、M4</li>
-            <li>当前不支持 Intel Mac，也不提供 Windows 版</li>
+            {hasMac && <li>macOS {product.minimumSystems?.macos} 或更高版本；Apple Silicon（M1/M2/M3/M4）</li>}
+            {hasWindows && <li>Windows {product.minimumSystems?.windows}；x64</li>}
+            {hasMac && <li>当前不支持 Intel Mac</li>}
           </ul>
         </div>
         <div>
@@ -102,7 +105,7 @@ const GuigeleiProduct: React.FC = () => (
       { question: '为什么 macOS 会阻止首次打开？', answer: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请只从乐可开源官方 Release 下载，核对 SHA-256 后在 Finder 中选择“打开”，并按系统提示人工确认；不要关闭 Gatekeeper。' },
       { question: '应用会读取或上传文件内容吗？', answer: '不会。分类依据扩展名和文件元数据，不读取文件正文，也不向服务器或第三方上传文件。' },
       { question: '会不会覆盖或删除我的文件？', answer: '移动遇到同名时会自动增加序号，不覆盖原文件。空目录清理是独立、默认关闭且需要二次确认的操作，不会递归删除目录内容。' },
-      { question: 'Intel Mac 或 Windows 可以使用吗？', answer: `当前 v${product.version} 只支持 Apple Silicon Mac。Intel Mac 和 Windows 均不在本次正式支持范围内。` },
+      { question: 'Intel Mac 或 Windows 可以使用吗？', answer: hasWindows ? `当前 v${product.version} 支持 Apple Silicon Mac 和 Windows x64，暂不支持 Intel Mac。` : `当前 v${product.version} 只支持 Apple Silicon Mac，Intel Mac 和 Windows 暂不支持。` },
     ]} />
 
     <section className="py-12">
