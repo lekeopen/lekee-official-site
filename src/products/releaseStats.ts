@@ -28,9 +28,13 @@ const unavailable = () => new Error('Download statistics unavailable');
 export async function fetchReleaseDownloadStats(
   input: ReleaseStatsInput,
   fetchImpl: FetchLike = fetch,
+  externalSignal?: AbortSignal,
 ): Promise<ReleaseDownloadStats> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), 5000);
+  const abortFromCaller = () => controller.abort(externalSignal?.reason);
+  if (externalSignal?.aborted) abortFromCaller();
+  else externalSignal?.addEventListener('abort', abortFromCaller, { once: true });
 
   try {
     const url = `https://api.github.com/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/releases/tags/${encodeURIComponent(input.tag)}`;
@@ -60,5 +64,6 @@ export async function fetchReleaseDownloadStats(
     throw unavailable();
   } finally {
     globalThis.clearTimeout(timeout);
+    externalSignal?.removeEventListener('abort', abortFromCaller);
   }
 }

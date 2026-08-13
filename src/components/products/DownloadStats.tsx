@@ -16,26 +16,26 @@ const DownloadStats: React.FC<DownloadStatsProps> = ({ label = '正式安装包�
 
   useEffect(() => {
     let active = true;
-    fetchReleaseDownloadStats({ owner, repo, tag, allowedAssets: allowedAssetsKey.split('\n') })
+    const controller = new AbortController();
+    fetchReleaseDownloadStats({ owner, repo, tag, allowedAssets: allowedAssetsKey.split('\n') }, fetch, controller.signal)
       .then((stats) => {
         if (active) setState({ status: 'ready', total: stats.total, fetchedAt: stats.fetchedAt });
       })
       .catch(() => {
         if (active) setState({ status: 'unavailable' });
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [owner, repo, tag, allowedAssetsKey]);
+
+  if (state.status !== 'ready') return null;
 
   return (
     <div className="mt-6 rounded-lg bg-gray-50 p-4 text-sm text-gray-600" aria-live="polite">
-      {state.status === 'loading' && '正在读取下载统计…'}
-      {state.status === 'unavailable' && '下载统计暂不可用'}
-      {state.status === 'ready' && (
-        <>
-          <strong className="text-gray-950">{label}：{state.total.toLocaleString('zh-CN')}</strong>
-          <span className="ml-2">查询于 {new Date(state.fetchedAt).toLocaleString('zh-CN')}</span>
-        </>
-      )}
+      <strong className="text-gray-950">{label}：{state.total.toLocaleString('zh-CN')}</strong>
+      <span className="ml-2">查询于 {new Date(state.fetchedAt).toLocaleString('zh-CN')}</span>
     </div>
   );
 };

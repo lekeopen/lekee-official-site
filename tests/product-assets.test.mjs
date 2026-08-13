@@ -40,6 +40,16 @@ test('leke-picker website demo is a non-empty MP4 asset', async () => {
 });
 
 for (const [slug, files] of Object.entries(galleries)) {
+  test(`${slug} has a compact product icon`, async () => {
+    const asset = path.join(root, 'public', 'images', 'products', slug, 'icon.webp');
+    const metadata = await sharp(asset).metadata();
+    const info = await stat(asset);
+    assert.equal(metadata.format, 'webp');
+    assert.equal(metadata.width, 256);
+    assert.equal(metadata.height, 256);
+    assert.ok(info.size < 100_000);
+  });
+
   test(`${slug} has four optimized real-interface gallery images`, async () => {
     for (const file of files) {
       const asset = path.join(root, 'public', 'images', 'products', slug, file);

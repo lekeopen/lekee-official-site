@@ -46,6 +46,15 @@ const Products: React.FC = () => {
                 to={`/products/${product.slug}/`}
                 className="group flex min-w-0 flex-col rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-md"
               >
+                <div className="mb-5 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+                  <img
+                    src={`/images/products/${product.slug}/icon.webp`}
+                    alt={`${product.name}图标`}
+                    width={256}
+                    height={256}
+                    className="h-full w-full object-contain"
+                  />
+                </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gray-600">
                   <span className="rounded-full bg-gray-100 px-3 py-1">v{product.version}</span>
                   {product.platforms.map((platform) => <span key={platform} className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">{platform}</span>)}

@@ -53,3 +53,21 @@ test('download stats fail closed for incomplete or mismatched release data', asy
     await assert.rejects(fetchReleaseDownloadStats(input, fakeFetch), /Download statistics unavailable/);
   }
 });
+
+test('download stats abort a pending request when the caller cancels', async () => {
+  const { fetchReleaseDownloadStats } = await loadModule();
+  const controller = new AbortController();
+  let requestSignal;
+  const pendingFetch = async (_url, init) => {
+    requestSignal = init.signal;
+    return new Promise((_resolve, reject) => {
+      init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true });
+    });
+  };
+
+  const request = fetchReleaseDownloadStats(input, pendingFetch, controller.signal);
+  controller.abort();
+
+  await assert.rejects(request, /Download statistics unavailable/);
+  assert.equal(requestSignal.aborted, true);
+});
