@@ -1,9 +1,16 @@
-import { PRODUCT_OPTIONS, ISSUE_TYPE_OPTIONS } from '../../src/support/config.js';
-import { isAllowedProductReleaseEnvironment } from '../../src/support/options.js';
+import releaseData from './release-data.generated.mjs';
 
 const allowedKeys = new Set(['product','releaseTag','environmentId','issueType','description','contact','name','privacyConfirmed','website','turnstileToken','sourceUrl']);
-const values = (options) => new Set(options.map(({ value }) => value));
-const products = values(PRODUCT_OPTIONS), issueTypes = values(ISSUE_TYPE_OPTIONS);
+const products = new Set([...Object.keys(releaseData), 'other']);
+const issueTypes = new Set(['install','usage','error','feature','other']);
+const isAllowedProductReleaseEnvironment = (productId, releaseTag, environmentId) => {
+  if (productId === 'other') return releaseTag === 'other' && environmentId === 'unknown';
+  const product = releaseData[productId];
+  const releases = Array.isArray(product?.releases) ? product.releases : product ? [product] : [];
+  if (releaseTag === 'other') return environmentId === 'unknown';
+  const release = releases.find(({tag}) => tag === releaseTag);
+  return Boolean(release && (environmentId === 'unknown' || Object.hasOwn(release.assets || {}, environmentId)));
+};
 
 export function parseSupportRequest(value) {
   const errors = {};

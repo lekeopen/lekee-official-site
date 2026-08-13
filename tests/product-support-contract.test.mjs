@@ -35,7 +35,10 @@ test('versions and environments come from each product release', () => {
 
 test('Pages Functions avoid JSON import attributes unsupported by the production bundler', async () => {
   const recordModule = await readFile(new URL('../functions/support/record.mjs', import.meta.url), 'utf8');
+  const validationModule = await readFile(new URL('../functions/support/validation.mjs', import.meta.url), 'utf8');
   assert.doesNotMatch(recordModule, /releases\.json['"]\s+with\s*\{/);
+  assert.doesNotMatch(recordModule, /src\/support\/(?:config|options)\.js/);
+  assert.doesNotMatch(validationModule, /src\/support\/(?:config|options)\.js/);
 });
 
 test('generated Functions release data stays synchronized with the canonical manifest', async () => {
