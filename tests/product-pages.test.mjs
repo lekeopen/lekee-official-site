@@ -85,6 +85,21 @@ test('归个类产品页提供已冻结的公开 DMG 下载', async () => {
   assert.doesNotMatch($('main').text(), /即将开放|公开发布仓库完成后/);
   assert.equal($('a[href*="ai-file-organizer"]').length, 0);
   assert.equal($('[data-legacy-downloads]').length, 0);
+
+  const video = $('video[aria-label="归个类产品演示视频"]');
+  assert.equal(video.length, 1);
+  assert.equal(video.is('[controls]'), true);
+  assert.equal(video.attr('preload'), 'metadata');
+  assert.equal(video.attr('poster'), '/images/products/guigelei/overview.webp');
+  assert.equal(video.attr('autoplay'), undefined);
+  assert.equal(
+    video.find('source[type="video/mp4"]').attr('src'),
+    '/videos/products/guigelei/guigelei-horizontal-website-final-v5.mp4',
+  );
+  assert.equal(video.closest('[data-product-hero-media]').length, 1);
+  assert.equal($('[data-product-gallery]').length, 0);
+  assert.equal($('main').text().includes('整理工作台'), false);
+  assert.equal($('main').text().includes('内置整理方案'), false);
 });
 
 test('产品目录为两款正式 App 展示各自图标', async () => {
