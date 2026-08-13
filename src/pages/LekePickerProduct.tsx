@@ -123,8 +123,8 @@ const LekePickerProduct: React.FC = () => (
           <p className="mt-2">如果无法确认文件来源或校验结果，请停止安装并联系我们。</p>
         </div>
         <div className="mt-6 flex flex-wrap gap-4">
-          <a href="https://github.com/lekeopen/leke-picker/issues/new" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:text-blue-900">安装遇到问题：提交 GitHub Issue</a>
-          <a href="/contact/" className="font-semibold text-blue-700 hover:text-blue-900">没有 GitHub 账号：联系乐可开源</a>
+          <a href="/support/?product=leke-picker" className="inline-flex min-h-11 items-center font-semibold text-blue-700 hover:text-blue-900">使用遇到问题？提交反馈</a>
+          <a href="https://github.com/lekeopen/leke-picker/issues/new" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center font-semibold text-gray-600 hover:text-gray-900">开发者与开源贡献者反馈</a>
         </div>
         <p className="mt-3 text-sm leading-6 text-gray-500">反馈时请提供 Windows 版本、安装包文件名和错误截图；请勿提交学生名单或其他隐私信息。</p>
       </div>

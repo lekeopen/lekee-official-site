@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lekee-official-site",
+  "compatibility_date": "2026-08-13",
+  "pages_build_output_dir": "dist",
+  "vars": {
+    "ALLOWED_SUPPORT_ORIGINS": "https://lekeopen.com",
+    "SUPPORT_MAIL_FROM": "乐可开源产品支持 <support@lekeopen.com>",
+    "SUPPORT_MAIL_TO": "support@lekeopen.com"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SUPPORT_RATE_LIMIT",
+      "id": "02d2e0e3045145bd933fddec330f9138",
+      "preview_id": "433c07ec5a704ab8a72360861fb83f62"
+    }
+  ]
+}

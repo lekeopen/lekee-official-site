@@ -107,3 +107,17 @@ curl -fsSL https://lekeopen.com/news/2026-08-12-guigelei-product/ \
 ```
 
 注意：朋友圈通常只稳定展示标题、链接和缩略图，不保证展示独立摘要；摘要主要用于分享给朋友和部分聊天卡片场景。
+
+## 产品帮助与反馈
+
+`/support/` 使用 Cloudflare Pages Function、Turnstile、KV 限流和服务端邮件投递。`VITE_TURNSTILE_SITE_KEY` 是可公开的站点键；以下值必须配置为 Cloudflare 服务端变量或 Secret，不能使用 `VITE_` 前缀：
+
+```text
+TURNSTILE_SECRET_KEY
+RESEND_API_KEY
+SUPPORT_MAIL_FROM
+SUPPORT_MAIL_TO
+ALLOWED_SUPPORT_ORIGINS
+```
+
+同时创建 KV namespace，并以 `SUPPORT_RATE_LIMIT` 绑定到 Preview 和 Production；在 Resend 免费方案中验证 `lekeopen.com`，创建本项目专用 API Key 并保存为 Pages Secret `RESEND_API_KEY`。Cloudflare Workers 保持免费套餐，不启用 Email Sending Beta。发布前必须确认 `support@lekeopen.com` 能正常收信，在 Preview 完成一次真实提交，并检查 Pages Function 日志不含联系方式、问题正文、Turnstile token 或 Secret。详细操作和回滚步骤见 `docs/product-support-operations.md`。

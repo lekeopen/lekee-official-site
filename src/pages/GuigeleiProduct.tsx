@@ -114,7 +114,8 @@ const GuigeleiProduct: React.FC = () => (
     ]} />
 
     <section className="py-12">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex max-w-6xl flex-wrap gap-5 px-4 sm:px-6 lg:px-8">
+        <a href="/support/?product=guigelei" className="inline-flex min-h-11 items-center font-semibold text-blue-700 hover:text-blue-900">使用遇到问题？提交反馈</a>
         <a href={product.releaseNotes} onClick={() => trackProductEvent('product_guigelei_release_notes')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center font-semibold text-blue-700 hover:text-blue-900">
           v{product.version} 更新记录 <ExternalLink className="ml-1" size={16} aria-hidden="true" />
         </a>

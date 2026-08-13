@@ -13,6 +13,7 @@ import ProjectDetail from '../pages/ProjectDetail';
 import Privacy from '../pages/Privacy';
 import LekePickerProduct from '../pages/LekePickerProduct';
 import GuigeleiProduct from '../pages/GuigeleiProduct';
+import Support from '../pages/Support';
 
 export default function ServerApp() {
   return (
@@ -26,6 +27,7 @@ export default function ServerApp() {
         <Route path="solutions" element={<Solutions />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="support" element={<Support />} />
         <Route path="news" element={<News />} />
         <Route path="news/:id" element={<NewsDetail />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
