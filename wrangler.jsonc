@@ -11,8 +11,22 @@
   "kv_namespaces": [
     {
       "binding": "SUPPORT_RATE_LIMIT",
-      "id": "02d2e0e3045145bd933fddec330f9138",
-      "preview_id": "433c07ec5a704ab8a72360861fb83f62"
+      "id": "02d2e0e3045145bd933fddec330f9138"
     }
-  ]
+  ],
+  "env": {
+    "preview": {
+      "vars": {
+        "ALLOWED_SUPPORT_ORIGINS": "https://codex-product-support-design.lekee-official-site.pages.dev",
+        "SUPPORT_MAIL_FROM": "乐可开源产品支持 <support@lekeopen.com>",
+        "SUPPORT_MAIL_TO": "support@lekeopen.com"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "SUPPORT_RATE_LIMIT",
+          "id": "433c07ec5a704ab8a72360861fb83f62"
+        }
+      ]
+    }
+  }
 }

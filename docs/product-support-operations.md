@@ -8,6 +8,8 @@
 4. 在 Resend 免费方案中验证 `lekeopen.com` 发信域名，仅创建本项目使用的 API Key，并作为 Pages Secret `RESEND_API_KEY` 保存；配置 `SUPPORT_MAIL_FROM` 和 `SUPPORT_MAIL_TO`。Cloudflare Workers 保持免费套餐，不启用 Email Sending Beta。
 5. 将 `ALLOWED_SUPPORT_ORIGINS` 配置为逗号分隔的精确 Origin，不使用通配符。
 
+Pages 以 `wrangler.jsonc` 为普通变量和绑定的配置源：Production 使用顶层 `vars` 与 `kv_namespaces`，Preview 必须在 `env.preview.vars` 与 `env.preview.kv_namespaces` 中显式覆盖，不能只依赖 `preview_id` 或控制台显示名称判断实际绑定。
+
 ## 预览验收
 
 - 从两个产品页分别进入 Support 页面，确认产品预选正确。
