@@ -77,7 +77,7 @@ const GuigeleiProduct: React.FC = () => (
 
     <DownloadSection
       title="下载安装包"
-      intro={`当前正式版本为 v${product.version}。请选择对应平台，从官方 Release 下载并核对 SHA-256。`}
+      intro={`当前正式版本为 v${product.version}。国内用户可使用 OSS 高速下载，GitHub Release 保留为权威发布源和备用入口；安装前请核对 SHA-256。`}
       downloads={[...product.downloads]}
       stats={{
         owner: 'lekeopen',
