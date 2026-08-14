@@ -6,6 +6,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { checkProductReleases } from '../scripts/product-release-monitor.mjs';
+import { buildMirrorPlan, createOssAdapter, mirrorReleaseAssets } from '../scripts/product-release-mirror.mjs';
 
 const current = {
   'leke-picker': {
@@ -82,6 +83,76 @@ test('current stable releases produce no write', async () => {
   const result = await checkProductReleases({ rootDir, fetchImpl: fetchFor(releases) });
   assert.deepEqual(result, { changed: false, updates: [] });
   assert.equal(await readFile(file, 'utf8'), bytes);
+});
+
+test('mirror plan uses immutable OSS keys and preserves GitHub fallback URLs', () => {
+  const plan = buildMirrorPlan(current, { publicBaseUrl: 'https://downloads.lekeopen.com' });
+  assert.equal(plan[0].objectKey, 'leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal(plan[0].domesticUrl, 'https://downloads.lekeopen.com/leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal(plan[0].sourceUrl, current['leke-picker'].assets['windows-modern-x64'].url);
+  assert.equal(plan.length, 4);
+  assert.ok(plan.every((item) => /^[a-f0-9]{64}$/.test(item.sha256)));
+});
+
+test('dry-run reports the complete plan without downloading or writing OSS', async () => {
+  let fetched = false;
+  let called = false;
+  const result = await mirrorReleaseAssets(current, {
+    publicBaseUrl: 'https://downloads.lekeopen.com', dryRun: true,
+    fetchImpl: async () => { fetched = true; },
+    oss: { inspect: async () => { called = true; } },
+  });
+  assert.equal(result.mode, 'dry-run');
+  assert.equal(result.items.length, 4);
+  assert.equal(fetched, false);
+  assert.equal(called, false);
+});
+
+test('mirror verifies source and OSS read-back bytes', async () => {
+  const bytes = Buffer.from('verified installer');
+  const sha256 = hash(bytes);
+  const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
+  const calls = [];
+  const result = await mirrorReleaseAssets(releases, {
+    publicBaseUrl: 'https://downloads.lekeopen.com',
+    fetchImpl: async () => new Response(bytes),
+    oss: {
+      inspect: async () => null,
+      upload: async (item, source) => calls.push(['upload', item.objectKey, source.equals(bytes)]),
+      read: async (item) => { calls.push(['read', item.objectKey]); return bytes; },
+    },
+  });
+  assert.deepEqual(result.items.map(({ status }) => status), ['uploaded']);
+  assert.deepEqual(calls, [['upload', 'demo/1.0.0/demo.exe', true], ['read', 'demo/1.0.0/demo.exe']]);
+});
+
+test('mirror refuses to overwrite an OSS object with different evidence', async () => {
+  const bytes = Buffer.from('verified installer');
+  const sha256 = hash(bytes);
+  const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
+  await assert.rejects(mirrorReleaseAssets(releases, {
+    publicBaseUrl: 'https://downloads.lekeopen.com', fetchImpl: async () => new Response(bytes),
+    oss: { inspect: async () => ({ sha256: 'f'.repeat(64), sizeBytes: bytes.length }) },
+  }), /refusing to overwrite/);
+});
+
+test('OSS adapter signs HEAD, PUT, and GET without delete requests', async () => {
+  const requests = [];
+  const bytes = Buffer.from('x');
+  const adapter = createOssAdapter({
+    endpoint: 'https://oss-cn-beijing.aliyuncs.com', bucket: 'lekeopen-downloads', accessKeyId: 'id', accessKeySecret: 'secret',
+    fetchImpl: async (url, init) => {
+      requests.push({ url: String(url), method: init.method, authorization: init.headers.Authorization });
+      if (init.method === 'HEAD') return new Response(null, { status: 404 });
+      return new Response(init.method === 'GET' ? bytes : null, { status: 200 });
+    },
+  });
+  const item = { objectKey: 'demo/1.0.0/demo.exe', sha256: hash(bytes), sizeBytes: bytes.length };
+  assert.equal(await adapter.inspect(item), null);
+  await adapter.upload(item, bytes);
+  assert.deepEqual(await adapter.read(item), bytes);
+  assert.deepEqual(requests.map(({ method }) => method), ['HEAD', 'PUT', 'GET']);
+  assert.ok(requests.every(({ authorization }) => authorization.startsWith('OSS id:')));
 });
 
 test('compatible newer stable releases update deterministic release data', async () => {

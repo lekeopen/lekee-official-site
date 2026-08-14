@@ -25,9 +25,12 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
 
   assert.equal($('[data-download-featured="windows-modern-x64"]').length, 1);
   assert.match($('[data-download-featured]').text(), /推荐/);
-  assert.match($('[data-download-featured]').text(), /下载 Windows 10\/11 版/);
+  assert.match($('[data-download-featured]').text(), /Windows 10\/11 版/);
+  assert.match($('[data-download-featured]').text(), /国内高速下载/);
+  assert.equal($('[data-download-featured] a').filter((_, element) => $(element).text().includes('GitHub 备用下载')).length, 1);
   assert.equal($('details[data-legacy-downloads]').attr('open'), undefined);
-  assert.equal($('details[data-legacy-downloads] a[href$=".exe"]').length, 2);
+  assert.equal($('details[data-legacy-downloads] a[href$=".exe"]').length, 4);
+  assert.equal($('details[data-legacy-downloads] a').filter((_, element) => $(element).text().includes('GitHub 备用下载')).length, 2);
   assert.match($('details[data-legacy-downloads]').text(), /已结束安全维护/);
 
   const quickStart = $('#quick-start');
@@ -76,10 +79,7 @@ test('归个类产品页提供已冻结的公开 DMG 下载', async () => {
   assert.match($('main').text(), /macOS 12/);
   assert.match($('main').text(), /Apple Silicon/);
   assert.match($('main').text(), /不读取文件正文/);
-  assert.equal(
-    $(`a[href="${download.url}"]`).length,
-    1,
-  );
+  assert.equal($(`a[href="${download.url}"]`).length, 1);
   assert.equal($(`a[href="${release.releaseUrl}"]`).length, 1);
   assert.equal($('main').text().includes('查看更新记录'), false);
   assert.doesNotMatch($('main').text(), /即将开放|公开发布仓库完成后/);

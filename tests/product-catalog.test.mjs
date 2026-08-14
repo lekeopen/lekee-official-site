@@ -44,10 +44,8 @@ test('乐可点名 uses only the audited public source and release repository', 
   const picker = getProduct('leke-picker');
   assert.equal(picker.repository, 'https://github.com/lekeopen/leke-picker');
   assert.equal(picker.releaseNotes, 'https://github.com/lekeopen/leke-picker/releases/tag/v1.1.0');
-  assert.equal(
-    picker.downloads.every((download) => download.url?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/')),
-    true,
-  );
+  assert.equal(picker.downloads.every((download) => download.url?.startsWith('https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/1.1.0/')), true);
+  assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/')), true);
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
 });
 
@@ -58,10 +56,8 @@ test('归个类 exposes only the monitored public release asset', async () => {
   assert.equal(guigelei.downloads[0].availability, 'available');
   assert.equal(guigelei.releaseNotes, `https://github.com/lekeopen/guigelei-releases/releases/tag/v${guigelei.version}`);
   assert.equal(guigelei.downloads[0].assetName, `guigelei-${guigelei.version}-arm64.dmg`);
-  assert.equal(
-    guigelei.downloads[0].url,
-    `https://github.com/lekeopen/guigelei-releases/releases/download/v${guigelei.version}/guigelei-${guigelei.version}-arm64.dmg`,
-  );
+  assert.equal(guigelei.downloads[0].url, `https://github.com/lekeopen/guigelei-releases/releases/download/v${guigelei.version}/guigelei-${guigelei.version}-arm64.dmg`);
+  assert.equal(guigelei.downloads[0].fallbackUrl, undefined);
   assert.equal(JSON.stringify(guigelei).includes('lekeopen/ai-file-organizer'), false);
 });
 
