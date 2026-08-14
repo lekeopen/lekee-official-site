@@ -10,7 +10,7 @@ type ViewState =
   | { status: 'ready'; total: number; fetchedAt: string }
   | { status: 'unavailable' };
 
-const DownloadStats: React.FC<DownloadStatsProps> = ({ label = '正式安装包累计下载', owner, repo, tag, allowedAssets }) => {
+const DownloadStats: React.FC<DownloadStatsProps> = ({ label = 'GitHub Release 累计下载', owner, repo, tag, allowedAssets }) => {
   const [state, setState] = useState<ViewState>({ status: 'loading' });
   const allowedAssetsKey = allowedAssets.join('\n');
 

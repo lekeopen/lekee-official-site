@@ -19,6 +19,7 @@ export interface ProductDownload {
   sizeBytes: number;
   warning?: string;
   analyticsEvent?: ProductEventName;
+  fallbackAnalyticsEvent?: ProductEventName;
 }
 
 export interface ProductDefinition {
@@ -39,12 +40,14 @@ const guigeleiDownloadDefinitions = {
   'macos-arm64': {
     label: 'macOS Apple Silicon', platform: 'macOS', architecture: 'arm64',
     warning: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证；请核对 SHA-256，并按 macOS 提示人工允许打开。',
-    analyticsEvent: 'product_guigelei_download_macos' as ProductEventName,
+    analyticsEvent: 'product_guigelei_download_macos_oss' as ProductEventName,
+    fallbackAnalyticsEvent: 'product_guigelei_download_macos_github' as ProductEventName,
   },
   'windows-x64': {
     label: 'Windows 64 位', platform: 'Windows', architecture: 'x64',
     warning: '安装包如未进行代码签名，Windows 可能显示未知发布者提示；请核对 SHA-256。',
-    analyticsEvent: 'product_guigelei_download_windows' as ProductEventName,
+    analyticsEvent: 'product_guigelei_download_windows_oss' as ProductEventName,
+    fallbackAnalyticsEvent: 'product_guigelei_download_windows_github' as ProductEventName,
   },
 } as const;
 
@@ -91,7 +94,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         sha256: pickerRelease.assets['windows-modern-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-modern-x64'].sizeBytes,
         warning: '安装包尚未进行代码签名，Windows 可能显示未知发布者提示。',
-        analyticsEvent: 'product_leke_picker_download_modern',
+        analyticsEvent: 'product_leke_picker_download_modern_oss',
+        fallbackAnalyticsEvent: 'product_leke_picker_download_modern_github',
       },
       {
         id: 'windows-7-x64',
@@ -105,7 +109,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         sha256: pickerRelease.assets['windows-7-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x64'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
-        analyticsEvent: 'product_leke_picker_download_win7_x64',
+        analyticsEvent: 'product_leke_picker_download_win7_x64_oss',
+        fallbackAnalyticsEvent: 'product_leke_picker_download_win7_x64_github',
       },
       {
         id: 'windows-7-x86',
@@ -119,7 +124,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         sha256: pickerRelease.assets['windows-7-x86'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x86'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
-        analyticsEvent: 'product_leke_picker_download_win7_x86',
+        analyticsEvent: 'product_leke_picker_download_win7_x86_oss',
+        fallbackAnalyticsEvent: 'product_leke_picker_download_win7_x86_github',
       },
     ],
   },

@@ -1,14 +1,19 @@
 export type ProductEventName =
   | 'product_leke_picker_online_use'
   | 'product_leke_picker_download_section'
-  | 'product_leke_picker_download_modern'
-  | 'product_leke_picker_download_win7_x64'
-  | 'product_leke_picker_download_win7_x86'
+  | 'product_leke_picker_download_modern_oss'
+  | 'product_leke_picker_download_modern_github'
+  | 'product_leke_picker_download_win7_x64_oss'
+  | 'product_leke_picker_download_win7_x64_github'
+  | 'product_leke_picker_download_win7_x86_oss'
+  | 'product_leke_picker_download_win7_x86_github'
   | 'product_leke_picker_github'
   | 'product_leke_picker_release_notes'
   | 'product_guigelei_download_section'
-  | 'product_guigelei_download_macos'
-  | 'product_guigelei_download_windows'
+  | 'product_guigelei_download_macos_oss'
+  | 'product_guigelei_download_macos_github'
+  | 'product_guigelei_download_windows_oss'
+  | 'product_guigelei_download_windows_github'
   | 'product_guigelei_release_notes';
 
 declare global {
