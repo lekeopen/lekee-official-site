@@ -14,6 +14,7 @@ export interface ProductDownload {
   availability: DownloadAvailability;
   assetName: string;
   url?: string;
+  fallbackUrl?: string;
   sha256: string;
   sizeBytes: number;
   warning?: string;
@@ -76,7 +77,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x64',
         availability: 'available',
         assetName: pickerRelease.assets['windows-modern-x64'].name,
-        url: pickerRelease.assets['windows-modern-x64'].url,
+        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-modern-x64'].name)}`,
+        fallbackUrl: pickerRelease.assets['windows-modern-x64'].url,
         sha256: pickerRelease.assets['windows-modern-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-modern-x64'].sizeBytes,
         warning: '安装包尚未进行代码签名，Windows 可能显示未知发布者提示。',
@@ -89,7 +91,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x64',
         availability: 'available',
         assetName: pickerRelease.assets['windows-7-x64'].name,
-        url: pickerRelease.assets['windows-7-x64'].url,
+        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-7-x64'].name)}`,
+        fallbackUrl: pickerRelease.assets['windows-7-x64'].url,
         sha256: pickerRelease.assets['windows-7-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x64'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
@@ -102,7 +105,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x86',
         availability: 'available',
         assetName: pickerRelease.assets['windows-7-x86'].name,
-        url: pickerRelease.assets['windows-7-x86'].url,
+        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-7-x86'].name)}`,
+        fallbackUrl: pickerRelease.assets['windows-7-x86'].url,
         sha256: pickerRelease.assets['windows-7-x86'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x86'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
@@ -154,6 +158,13 @@ export function validateProductCatalog(products: readonly ProductDefinition[]): 
           if (!download.url || new URL(download.url).protocol !== 'https:') throw new Error();
         } catch {
           errors.push(`${prefix}: available download requires an HTTPS url`);
+        }
+        if (download.fallbackUrl !== undefined) {
+          try {
+            if (new URL(download.fallbackUrl).protocol !== 'https:') throw new Error();
+          } catch {
+            errors.push(`${prefix}: fallbackUrl must use HTTPS`);
+          }
         }
       } else if (download.url !== undefined) {
         errors.push(`${prefix}: pending download must not expose a url`);

@@ -29,3 +29,13 @@ test('release monitor contains no search submission or unrelated deployment writ
   assert.doesNotMatch(workflow, /seo:submit|IndexNow|Baidu|百度/i);
   assert.doesNotMatch(workflow, /wrangler|cloudflare|deploy/i);
 });
+
+test('release monitor mirrors to OSS before publishing release data and supports dry-run dispatch', () => {
+  assert.match(workflow, /inputs:[\s\S]*dry_run:[\s\S]*type: boolean/);
+  assert.match(workflow, /ALIYUN_OSS_ACCESS_KEY_ID:.*secrets\.ALIYUN_OSS_ACCESS_KEY_ID/);
+  assert.match(workflow, /ALIYUN_OSS_ACCESS_KEY_SECRET:.*secrets\.ALIYUN_OSS_ACCESS_KEY_SECRET/);
+  const mirrorIndex = workflow.indexOf('Mirror verified release assets');
+  const verifyIndex = workflow.indexOf('Verify website');
+  assert.ok(mirrorIndex > 0 && verifyIndex > mirrorIndex);
+  assert.doesNotMatch(workflow, /ossutil\s+rm|--delete|DeleteObject/);
+});

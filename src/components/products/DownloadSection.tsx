@@ -40,14 +40,21 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
       <h3 className="text-lg font-bold text-gray-950">{download.label}</h3>
       <p className="mt-1 text-sm text-gray-500">{download.architecture} · {formatSize(download.sizeBytes)}</p>
       {download.availability === 'available' && download.url ? (
-        <a
-          href={download.url}
-          onClick={() => download.analyticsEvent && trackProductEvent(download.analyticsEvent)}
-          className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
-        >
-          <Download className="mr-2" size={18} aria-hidden="true" />
-          {featured ? '下载 Windows 10/11 版' : '下载安装包'}
-        </a>
+        <div className="mt-5 grid gap-3">
+          <a
+            href={download.url}
+            onClick={() => download.analyticsEvent && trackProductEvent(download.analyticsEvent)}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+          >
+            <Download className="mr-2" size={18} aria-hidden="true" />
+            {featured ? '国内高速下载 · Windows 10/11 版' : '国内高速下载'}
+          </a>
+          {download.fallbackUrl && (
+            <a href={download.fallbackUrl} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-700">
+              GitHub 备用下载
+            </a>
+          )}
+        </div>
       ) : (
         <span className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-gray-100 px-4 py-3 font-semibold text-gray-500" aria-disabled="true">即将开放</span>
       )}

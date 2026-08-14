@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Plan OSS mirror operations without writing objects or release data
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: read
@@ -33,9 +39,25 @@ jobs:
         run: npm ci
 
       - name: Check stable product releases
+        if: github.event_name != 'workflow_dispatch' || inputs.dry_run != true
         run: npm run products:releases:check
 
+      - name: Mirror verified release assets (dry-run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run == true
+        run: npm run products:releases:mirror:dry-run
+
+      - name: Mirror verified release assets
+        if: github.event_name != 'workflow_dispatch' || inputs.dry_run != true
+        env:
+          ALIYUN_OSS_ACCESS_KEY_ID: ${{ secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
+          ALIYUN_OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
+          OSS_ENDPOINT: https://oss-cn-beijing.aliyuncs.com
+          OSS_BUCKET: lekeopen-downloads
+          OSS_PUBLIC_BASE_URL: https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com
+        run: node scripts/product-release-mirror.mjs --execute
+
       - name: Detect release data changes
+        if: github.event_name != 'workflow_dispatch' || inputs.dry_run != true
         id: changes
         shell: bash
         run: |
@@ -46,11 +68,11 @@ jobs:
           fi
 
       - name: Verify website
-        if: steps.changes.outputs.changed == 'true'
+        if: (github.event_name != 'workflow_dispatch' || inputs.dry_run != true) && steps.changes.outputs.changed == 'true'
         run: npm run verify
 
       - name: Commit verified release data
-        if: steps.changes.outputs.changed == 'true'
+        if: (github.event_name != 'workflow_dispatch' || inputs.dry_run != true) && steps.changes.outputs.changed == 'true'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
