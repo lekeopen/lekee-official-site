@@ -55,7 +55,16 @@ const guigeleiDownloads: ProductDownload[] = Object.keys(guigeleiDownloadDefinit
   .map((id) => {
     const definition = guigeleiDownloadDefinitions[id as keyof typeof guigeleiDownloadDefinitions];
     const asset = guigeleiAssets[id];
-    return { id, ...definition, availability: 'available', assetName: asset.name, url: asset.url, sha256: asset.sha256, sizeBytes: asset.sizeBytes };
+    return {
+      id,
+      ...definition,
+      availability: 'available',
+      assetName: asset.name,
+      url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/guigelei/${guigeleiRelease.version}/${encodeURIComponent(asset.name)}`,
+      fallbackUrl: asset.url,
+      sha256: asset.sha256,
+      sizeBytes: asset.sizeBytes,
+    };
   });
 
 export const PRODUCTS: readonly ProductDefinition[] = [
