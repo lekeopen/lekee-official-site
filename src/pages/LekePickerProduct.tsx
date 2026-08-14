@@ -125,7 +125,6 @@ const LekePickerProduct: React.FC = () => (
         </div>
         <div className="mt-6 flex flex-wrap gap-4">
           <SupportDialog productId="leke-picker" />
-          <a href="/support/?product=leke-picker" className="inline-flex min-h-11 items-center font-semibold text-gray-600 hover:text-gray-900">单独打开反馈页</a>
           <a href="https://github.com/lekeopen/leke-picker/issues/new" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center font-semibold text-gray-600 hover:text-gray-900">开发者与开源贡献者反馈</a>
         </div>
         <p className="mt-3 text-sm leading-6 text-gray-500">反馈时请提供 Windows 版本、安装包文件名和错误截图；请勿提交学生名单或其他隐私信息。</p>
@@ -159,6 +158,7 @@ const LekePickerProduct: React.FC = () => (
       { question: '学生名单会上传吗？', answer: '不会。网页版和桌面版都只在本机处理名单，不要求账号，也不上传学生姓名。' },
       { question: 'Windows 7 版本仍有安全支持吗？', answer: '没有。它只为确有需要的旧电脑提供离线兼容，Windows 7 和内置 Electron 22 运行时都已结束安全维护。' },
       { question: 'Mac、Linux 或平板可以使用吗？', answer: '可以直接使用在线版；目前不提供 Mac、Linux 或平板安装版，在线版需要受支持的现代浏览器。' },
+      { question: '遇到使用问题，怎样获得帮助？', answer: '点击本页的“问题反馈与使用帮助”即可提交，无需 GitHub 账号。我们通常会在 1–2 个工作日内回复；如果弹窗无法使用，可打开完整反馈页或发送邮件。' },
     ]} />
 
     <section className="py-12">

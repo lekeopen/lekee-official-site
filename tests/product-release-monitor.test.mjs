@@ -136,6 +136,35 @@ test('mirror refuses to overwrite an OSS object with different evidence', async 
   }), /refusing to overwrite/);
 });
 
+test('mirror accepts a legacy OSS object without metadata only after full read-back verification', async () => {
+  const bytes = Buffer.from('verified legacy installer');
+  const sha256 = hash(bytes);
+  const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
+  let fetched = false;
+  const result = await mirrorReleaseAssets(releases, {
+    publicBaseUrl: 'https://downloads.lekeopen.com',
+    fetchImpl: async () => { fetched = true; throw new Error('source must not be downloaded'); },
+    oss: {
+      inspect: async () => ({ sha256: null, sizeBytes: bytes.length }),
+      read: async () => bytes,
+    },
+  });
+  assert.equal(fetched, false);
+  assert.deepEqual(result.items.map(({ status }) => status), ['verified-existing']);
+});
+
+test('mirror rejects a legacy OSS object without metadata when read-back digest differs', async () => {
+  const expected = Buffer.from('expected installer');
+  const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256: hash(expected), sizeBytes: expected.length } } } };
+  await assert.rejects(mirrorReleaseAssets(releases, {
+    publicBaseUrl: 'https://downloads.lekeopen.com',
+    oss: {
+      inspect: async () => ({ sha256: null, sizeBytes: expected.length }),
+      read: async () => Buffer.alloc(expected.length, 0),
+    },
+  }), /OSS read-back verification failed/);
+});
+
 test('OSS adapter signs HEAD, PUT, and GET without delete requests', async () => {
   const requests = [];
   const bytes = Buffer.from('x');

@@ -112,12 +112,12 @@ const GuigeleiProduct: React.FC = () => (
       { question: '应用会读取或上传文件内容吗？', answer: '不会。分类依据扩展名和文件元数据，不读取文件正文，也不向服务器或第三方上传文件。' },
       { question: '会不会覆盖或删除我的文件？', answer: '移动遇到同名时会自动增加序号，不覆盖原文件。空目录清理是独立、默认关闭且需要二次确认的操作，不会递归删除目录内容。' },
       { question: 'Intel Mac 或 Windows 可以使用吗？', answer: hasWindows ? `当前 v${product.version} 支持 Apple Silicon Mac 和 Windows x64，暂不支持 Intel Mac。` : `当前 v${product.version} 只支持 Apple Silicon Mac，Intel Mac 和 Windows 暂不支持。` },
+      { question: '遇到使用问题，怎样获得帮助？', answer: '点击本页的“问题反馈与使用帮助”即可提交，无需 GitHub 账号。我们通常会在 1–2 个工作日内回复；如果弹窗无法使用，可打开完整反馈页或发送邮件。' },
     ]} />
 
     <section className="py-12">
       <div className="container mx-auto flex max-w-6xl flex-wrap gap-5 px-4 sm:px-6 lg:px-8">
         <SupportDialog productId="guigelei" />
-        <a href="/support/?product=guigelei" className="inline-flex min-h-11 items-center font-semibold text-gray-600 hover:text-gray-900">单独打开反馈页</a>
         <a href={product.releaseNotes} onClick={() => trackProductEvent('product_guigelei_release_notes')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center font-semibold text-blue-700 hover:text-blue-900">
           v{product.version} 更新记录 <ExternalLink className="ml-1" size={16} aria-hidden="true" />
         </a>
