@@ -61,7 +61,9 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.match(installHelp.text(), /不需要、也不建议关闭/);
   assert.doesNotMatch(installHelp.text(), /请关闭杀毒软件/);
   assert.equal(installHelp.find('a[href="https://github.com/lekeopen/leke-picker/issues/new"]').length, 1);
-  assert.equal(installHelp.find('a[href="/support/?product=leke-picker"]').length, 1);
+  assert.equal(installHelp.find('a[href="/support/?product=leke-picker"]').length, 0);
+  assert.match(installHelp.text(), /问题反馈与使用帮助/);
+  assert.doesNotMatch(installHelp.text(), /单独打开反馈页/);
   assert.match($('main').text(), /Mac、Linux 和平板用户可直接使用在线版/);
   assert.match($('main').text(), /目前不提供 Mac、Linux 或平板安装版/);
 });

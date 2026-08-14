@@ -75,29 +75,38 @@ const Services: React.FC = () => {
             <span className="w-2 h-8 bg-blue-600 rounded-full mr-3"></span>
             核心合作模式
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {coreServices.map((service, index) => (
               <div key={index} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-100 flex flex-col">
                 <div className="bg-blue-50 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                   {service.icon}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                <div className="space-y-4 flex-grow">
-                  <p className="text-sm text-gray-600 leading-relaxed">{service.problem}</p>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">交付内容</h4>
-                    <ul className="space-y-1">
+                <div className="flex-grow space-y-5">
+                  <div>
+                    <h4 className="mb-2 text-sm font-bold text-gray-900">解决什么问题</h4>
+                    <p className="text-sm leading-7 text-gray-600">{service.problem}</p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-5">
+                    <h4 className="mb-3 text-sm font-bold text-gray-900">交付内容</h4>
+                    <ul className="grid gap-2 sm:grid-cols-2">
                       {service.features.map((f, i) => (
-                        <li key={i} className="text-xs text-gray-700 flex items-center">
-                          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"></span>{f}
+                        <li key={i} className="flex items-start text-sm leading-6 text-gray-700">
+                          <span className="mr-2 mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500"></span>{f}
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
-                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-medium">
-                  <span className="text-gray-500">适合：{service.target.split('/')[0].substring(0, 10)}...</span>
-                  <span className="text-blue-700 bg-blue-50 px-2 py-1 rounded">{service.cooperation.split(' ')[0]}</span>
+                <div className="mt-6 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wide text-gray-500">适合谁</h4>
+                    <p className="mt-2 text-sm leading-6 text-gray-700">{service.target}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wide text-gray-500">合作方式</h4>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-blue-700">{service.cooperation}</p>
+                  </div>
                 </div>
               </div>
             ))}

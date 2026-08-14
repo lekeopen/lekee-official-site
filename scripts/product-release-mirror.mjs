@@ -81,7 +81,7 @@ export async function mirrorReleaseAssets(releases, { publicBaseUrl, dryRun = fa
   for (const item of plan) {
     const existing = await oss.inspect(item);
     if (existing) {
-      if (existing.sha256 !== item.sha256 || existing.sizeBytes !== item.sizeBytes) {
+      if (existing.sizeBytes !== item.sizeBytes || (existing.sha256 !== null && existing.sha256 !== item.sha256)) {
         throw new Error(`${item.objectKey}: refusing to overwrite an object with different evidence`);
       }
       if (!oss.read) throw new Error('OSS adapter is incomplete');
