@@ -36,6 +36,8 @@ test('available downloads have complete immutable release identity', async () =>
     assert.equal(new URL(download.url).protocol, 'https:');
     assert.match(download.sha256, /^[a-f0-9]{64}$/);
     assert.equal(Number.isSafeInteger(download.sizeBytes) && download.sizeBytes > 0, true);
+    assert.match(download.analyticsEvent, /_oss$/);
+    assert.match(download.fallbackAnalyticsEvent, /_github$/);
   }
 });
 

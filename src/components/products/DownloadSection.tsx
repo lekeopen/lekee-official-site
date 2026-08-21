@@ -50,7 +50,11 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
             {featured ? '国内高速下载 · Windows 10/11 版' : '国内高速下载'}
           </a>
           {download.fallbackUrl && (
-            <a href={download.fallbackUrl} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-700">
+            <a
+              href={download.fallbackUrl}
+              onClick={() => download.fallbackAnalyticsEvent && trackProductEvent(download.fallbackAnalyticsEvent)}
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-700"
+            >
               GitHub 备用下载
             </a>
           )}
