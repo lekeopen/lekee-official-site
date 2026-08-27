@@ -15,6 +15,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const LekePickerProduct = lazy(() => import('./pages/LekePickerProduct'));
 const GuigeleiProduct = lazy(() => import('./pages/GuigeleiProduct'));
 const Support = lazy(() => import('./pages/Support'));
+const AIDataPlatformProject = lazy(() => import('./pages/AIDataPlatformProject'));
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="support" element={<Support />} />
           <Route path="news" element={<News />} />
           <Route path="news/:id" element={<NewsDetail />} />
+          <Route path="projects/ai-data-platform" element={<AIDataPlatformProject />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
           <Route path="privacy" element={<Privacy />} />
         </Route>

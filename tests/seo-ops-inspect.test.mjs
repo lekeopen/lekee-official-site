@@ -114,7 +114,7 @@ test('inspectProduction requests representative pages at their canonical trailin
   assert.deepEqual(calls.slice(0, 3).map((call) => new URL(call.url).pathname), [
     '/',
     '/news/2025-12-18-xiaole-stage-update/',
-    '/projects/boral-wang/',
+    '/projects/ai-data-platform/',
   ]);
 });
 

@@ -6,6 +6,9 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, '..');
 const logoPath = path.join(rootDir, 'public', 'logo.png');
 const outputPath = path.join(rootDir, 'public', 'og-default.png');
+const projectImageDir = path.join(rootDir, 'public', 'images', 'projects', 'ai-data-platform');
+const dashboardPath = path.join(projectImageDir, 'ai-data-platform-dashboard.png');
+const projectOgPath = path.join(projectImageDir, 'ai-data-platform-og.png');
 
 const width = 600;
 const height = 600;
@@ -46,3 +49,41 @@ await sharp(background)
   .toFile(outputPath);
 
 console.log(`Generated default OG image: ${outputPath}`);
+
+const dashboard = await sharp(dashboardPath)
+  .extract({ left: 0, top: 0, width: 1100, height: 760 })
+  .resize(600, 414, { fit: 'cover', position: 'top' })
+  .png()
+  .toBuffer();
+
+const projectBackground = Buffer.from(`
+  <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="projectBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#071426"/>
+        <stop offset="1" stop-color="#0f2f55"/>
+      </linearGradient>
+      <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(230 80) rotate(35) scale(470 390)">
+        <stop stop-color="#2563eb" stop-opacity="0.42"/>
+        <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1200" height="630" fill="url(#projectBg)"/>
+    <rect width="1200" height="630" fill="url(#glow)"/>
+    <text x="70" y="72" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-size="25" font-weight="600" fill="#bfdbfe">乐可开源 · 工程项目与实践</text>
+    <text x="70" y="176" font-family="Arial, PingFang SC, sans-serif" font-size="55" font-weight="700" fill="#ffffff">AI Data Platform</text>
+    <text x="70" y="260" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-size="34" font-weight="600" fill="#dbeafe">把分散资料变成可信、</text>
+    <text x="70" y="310" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-size="34" font-weight="600" fill="#dbeafe">可查询、可追溯的数据</text>
+    <rect x="70" y="382" width="154" height="6" rx="3" fill="#60a5fa"/>
+    <text x="70" y="445" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-size="22" fill="#93c5fd">真实 Golden Demo</text>
+    <text x="70" y="480" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-size="22" fill="#93c5fd">海川实验学校（虚构）</text>
+    <text x="70" y="555" font-family="ui-monospace, SFMono-Regular, monospace" font-size="22" fill="#94a3b8">lekeopen.com/projects/ai-data-platform/</text>
+    <rect x="558" y="104" width="622" height="440" rx="25" fill="#ffffff" fill-opacity="0.12"/>
+  </svg>`);
+
+await sharp(projectBackground)
+  .composite([{ input: dashboard, left: 564, top: 110 }])
+  .png({ compressionLevel: 9, adaptiveFiltering: true })
+  .toFile(projectOgPath);
+
+console.log(`Generated AI Data Platform OG image: ${projectOgPath}`);

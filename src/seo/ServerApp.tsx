@@ -14,6 +14,7 @@ import Privacy from '../pages/Privacy';
 import LekePickerProduct from '../pages/LekePickerProduct';
 import GuigeleiProduct from '../pages/GuigeleiProduct';
 import Support from '../pages/Support';
+import AIDataPlatformProject from '../pages/AIDataPlatformProject';
 
 export default function ServerApp() {
   return (
@@ -30,6 +31,7 @@ export default function ServerApp() {
         <Route path="support" element={<Support />} />
         <Route path="news" element={<News />} />
         <Route path="news/:id" element={<NewsDetail />} />
+        <Route path="projects/ai-data-platform" element={<AIDataPlatformProject />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
         <Route path="privacy" element={<Privacy />} />
       </Route>

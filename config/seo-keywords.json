@@ -158,6 +158,12 @@
       "relatedPaths": ["/news/2026-07-18-boral-wang", "/solutions"]
     },
     {
+      "path": "/projects/ai-data-platform",
+      "primaryIntent": "学校资料可信数据治理",
+      "supportingTerms": ["历史资料整理", "人工审核", "来源追溯", "私有部署"],
+      "relatedPaths": ["/products", "/solutions", "/contact"]
+    },
+    {
       "path": "/projects/free-e-gaoyuanwai",
       "primaryIntent": "高源外个人技术博客",
       "supportingTerms": ["技术写作", "个人博客"],
