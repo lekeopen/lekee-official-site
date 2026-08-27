@@ -34,6 +34,7 @@ test('release monitor mirrors to OSS before publishing release data and supports
   assert.match(workflow, /inputs:[\s\S]*dry_run:[\s\S]*type: boolean/);
   assert.match(workflow, /ALIYUN_OSS_ACCESS_KEY_ID:.*secrets\.ALIYUN_OSS_ACCESS_KEY_ID/);
   assert.match(workflow, /ALIYUN_OSS_ACCESS_KEY_SECRET:.*secrets\.ALIYUN_OSS_ACCESS_KEY_SECRET/);
+  assert.doesNotMatch(workflow, /OSS_PUBLIC_BASE_URL|oss-cn-beijing\.aliyuncs\.com\/[\w/-]+/);
   const mirrorIndex = workflow.indexOf('Mirror verified release assets');
   const verifyIndex = workflow.indexOf('Verify website');
   assert.ok(mirrorIndex > 0 && verifyIndex > mirrorIndex);

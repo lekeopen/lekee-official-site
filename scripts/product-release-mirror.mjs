@@ -3,16 +3,7 @@ import { createHash, createHmac } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-function cleanBaseUrl(value) {
-  const url = new URL(value);
-  if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash) {
-    throw new Error('OSS public base URL must be a clean HTTPS origin');
-  }
-  return url.href.replace(/\/$/, '');
-}
-
-export function buildMirrorPlan(releases, { publicBaseUrl }) {
-  const baseUrl = cleanBaseUrl(publicBaseUrl);
+export function buildMirrorPlan(releases) {
   const plan = [];
   for (const [slug, release] of Object.entries(releases)) {
     if (!/^\d+\.\d+\.\d+$/.test(release?.version ?? '')) throw new Error(`${slug}: invalid version`);
@@ -31,7 +22,6 @@ export function buildMirrorPlan(releases, { publicBaseUrl }) {
         sha256: asset.sha256,
         sourceUrl: asset.url,
         objectKey,
-        domesticUrl: `${baseUrl}/${objectKey.split('/').map(encodeURIComponent).join('/')}`,
       });
     }
   }
@@ -73,20 +63,20 @@ export function createOssAdapter({ endpoint, bucket, accessKeyId, accessKeySecre
   };
 }
 
-export async function mirrorReleaseAssets(releases, { publicBaseUrl, dryRun = false, fetchImpl = fetch, oss }) {
-  const plan = buildMirrorPlan(releases, { publicBaseUrl });
+export async function mirrorReleaseAssets(releases, { dryRun = false, fetchImpl = fetch, oss }) {
+  const plan = buildMirrorPlan(releases);
   if (dryRun) return { mode: 'dry-run', items: plan.map((item) => ({ ...item, status: 'planned' })) };
   if (!oss?.inspect) throw new Error('OSS adapter is incomplete');
   const items = [];
   for (const item of plan) {
     const existing = await oss.inspect(item);
     if (existing) {
-      if (existing.sizeBytes !== item.sizeBytes || (existing.sha256 !== null && existing.sha256 !== item.sha256)) {
+      if (existing.sha256 === null) {
+        throw new Error(`${item.objectKey}: refusing to trust an object without SHA-256 metadata`);
+      }
+      if (existing.sizeBytes !== item.sizeBytes || existing.sha256 !== item.sha256) {
         throw new Error(`${item.objectKey}: refusing to overwrite an object with different evidence`);
       }
-      if (!oss.read) throw new Error('OSS adapter is incomplete');
-      const readBack = Buffer.from(await oss.read(item));
-      if (readBack.length !== item.sizeBytes || digest(readBack) !== item.sha256) throw new Error(`${item.objectKey}: OSS read-back verification failed`);
       items.push({ ...item, status: 'verified-existing' });
       continue;
     }
@@ -110,7 +100,6 @@ async function main() {
   const required = ['ALIYUN_OSS_ACCESS_KEY_ID', 'ALIYUN_OSS_ACCESS_KEY_SECRET'];
   if (execute && required.some((name) => !process.env[name])) throw new Error('Execute mode requires OSS credentials');
   const result = await mirrorReleaseAssets(releases, {
-    publicBaseUrl: process.env.OSS_PUBLIC_BASE_URL ?? 'https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com',
     dryRun: !execute,
     ...(execute ? { oss: createOssAdapter({
       endpoint: process.env.OSS_ENDPOINT ?? 'https://oss-cn-beijing.aliyuncs.com',

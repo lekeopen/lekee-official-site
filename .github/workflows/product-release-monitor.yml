@@ -53,7 +53,6 @@ jobs:
           ALIYUN_OSS_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
           OSS_ENDPOINT: https://oss-cn-beijing.aliyuncs.com
           OSS_BUCKET: lekeopen-downloads
-          OSS_PUBLIC_BASE_URL: https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com
         run: node scripts/product-release-mirror.mjs --execute
 
       - name: Detect release data changes
