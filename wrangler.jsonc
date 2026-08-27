@@ -7,7 +7,10 @@
     "ALLOWED_SUPPORT_ORIGINS": "https://lekeopen.com",
     "SUPPORT_MAIL_FROM": "乐可开源产品支持 <support@lekeopen.com>",
     "SUPPORT_MAIL_TO": "contact@lekeopen.com",
-    "LEZHI_FEEDBACK_URL": "https://lezhi.lekeopen.com/api/v1/product-feedback"
+    "LEZHI_FEEDBACK_URL": "https://lezhi.lekeopen.com/api/v1/product-feedback",
+    "DOMESTIC_DOWNLOADS_ENABLED": "false",
+    "DOWNLOAD_CDN_HOST": "downloads.lekeopen.com",
+    "DOWNLOAD_URL_TTL_SECONDS": "120"
   },
   "kv_namespaces": [
     {
@@ -21,7 +24,10 @@
         "ALLOWED_SUPPORT_ORIGINS": "https://codex-product-support-design.lekee-official-site.pages.dev",
         "SUPPORT_MAIL_FROM": "乐可开源产品支持 <support@lekeopen.com>",
         "SUPPORT_MAIL_TO": "contact@lekeopen.com",
-        "LEZHI_FEEDBACK_URL": "https://lezhi.lekeopen.com/api/v1/product-feedback"
+        "LEZHI_FEEDBACK_URL": "https://lezhi.lekeopen.com/api/v1/product-feedback",
+        "DOMESTIC_DOWNLOADS_ENABLED": "false",
+        "DOWNLOAD_CDN_HOST": "downloads.lekeopen.com",
+        "DOWNLOAD_URL_TTL_SECONDS": "120"
       },
       "kv_namespaces": [
         {
