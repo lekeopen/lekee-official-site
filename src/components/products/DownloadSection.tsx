@@ -58,6 +58,7 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
               GitHub 备用下载
             </a>
           )}
+          <p className="text-center text-xs leading-5 text-gray-500">国内链路暂不可用或提示频繁时，请使用 GitHub 备用下载。</p>
         </div>
       ) : (
         <span className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-gray-100 px-4 py-3 font-semibold text-gray-500" aria-disabled="true">即将开放</span>
