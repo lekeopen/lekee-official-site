@@ -33,10 +33,14 @@ test('available downloads have complete immutable release identity', async () =>
   assert.equal(downloads.length, 4);
   assert.equal(new Set(downloads.map(({ id }) => id)).size, 4);
   for (const download of downloads) {
-    assert.equal(new URL(download.url).protocol, 'https:');
+    const url = new URL(download.url, 'https://lekeopen.com');
+    assert.equal(url.origin, 'https://lekeopen.com');
+    assert.equal(url.pathname, '/api/download');
+    assert.equal(url.searchParams.get('product') !== null, true);
+    assert.equal(url.searchParams.get('asset'), download.id);
     assert.match(download.sha256, /^[a-f0-9]{64}$/);
     assert.equal(Number.isSafeInteger(download.sizeBytes) && download.sizeBytes > 0, true);
-    assert.match(download.analyticsEvent, /_oss$/);
+    assert.match(download.analyticsEvent, /_domestic$/);
     assert.match(download.fallbackAnalyticsEvent, /_github$/);
   }
 });
@@ -46,19 +50,19 @@ test('乐可点名 uses only the audited public source and release repository', 
   const picker = getProduct('leke-picker');
   assert.equal(picker.repository, 'https://github.com/lekeopen/leke-picker');
   assert.equal(picker.releaseNotes, 'https://github.com/lekeopen/leke-picker/releases/tag/v1.1.0');
-  assert.equal(picker.downloads.every((download) => download.url?.startsWith('https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/1.1.0/')), true);
+  assert.equal(picker.downloads.every((download) => download.url === `/api/download?product=leke-picker&asset=${download.id}`), true);
   assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/')), true);
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
 });
 
-test('归个类 uses the verified OSS mirror with the monitored GitHub asset as fallback', async () => {
+test('归个类 uses the controlled domestic endpoint with the monitored GitHub asset as fallback', async () => {
   const { getProduct } = await loadCatalog();
   const guigelei = getProduct('guigelei');
   assert.equal(guigelei.downloads.length, 1);
   assert.equal(guigelei.downloads[0].availability, 'available');
   assert.equal(guigelei.releaseNotes, `https://github.com/lekeopen/guigelei-releases/releases/tag/v${guigelei.version}`);
   assert.equal(guigelei.downloads[0].assetName, `guigelei-${guigelei.version}-arm64.dmg`);
-  assert.equal(guigelei.downloads[0].url, `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/guigelei/${guigelei.version}/guigelei-${guigelei.version}-arm64.dmg`);
+  assert.equal(guigelei.downloads[0].url, '/api/download?product=guigelei&asset=macos-arm64');
   assert.equal(guigelei.downloads[0].fallbackUrl, `https://github.com/lekeopen/guigelei-releases/releases/download/v${guigelei.version}/guigelei-${guigelei.version}-arm64.dmg`);
   assert.equal(JSON.stringify(guigelei).includes('lekeopen/ai-file-organizer'), false);
 });
@@ -76,6 +80,12 @@ test('catalog validation reports duplicate ids and incomplete available download
 
   assert.deepEqual(validateProductCatalog(invalidProducts), [
     'leke-picker: duplicate download id "windows-modern-x64"',
-    'leke-picker/windows-7-x86: available download requires an HTTPS url',
+    'leke-picker/windows-modern-x64: available download requires the controlled same-origin endpoint',
+    'leke-picker/windows-7-x86: available download requires the controlled same-origin endpoint',
   ]);
+});
+
+test('public product catalog never exposes the private OSS origin', async () => {
+  const source = await readFile(catalogUrl, 'utf8');
+  assert.doesNotMatch(source, /lekeopen-downloads\.oss-cn-beijing\.aliyuncs\.com/);
 });

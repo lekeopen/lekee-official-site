@@ -86,9 +86,9 @@ test('current stable releases produce no write', async () => {
 });
 
 test('mirror plan uses immutable OSS keys and preserves GitHub fallback URLs', () => {
-  const plan = buildMirrorPlan(current, { publicBaseUrl: 'https://downloads.lekeopen.com' });
+  const plan = buildMirrorPlan(current);
   assert.equal(plan[0].objectKey, 'leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
-  assert.equal(plan[0].domesticUrl, 'https://downloads.lekeopen.com/leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal('domesticUrl' in plan[0], false);
   assert.equal(plan[0].sourceUrl, current['leke-picker'].assets['windows-modern-x64'].url);
   assert.equal(plan.length, 4);
   assert.ok(plan.every((item) => /^[a-f0-9]{64}$/.test(item.sha256)));
@@ -98,7 +98,7 @@ test('dry-run reports the complete plan without downloading or writing OSS', asy
   let fetched = false;
   let called = false;
   const result = await mirrorReleaseAssets(current, {
-    publicBaseUrl: 'https://downloads.lekeopen.com', dryRun: true,
+    dryRun: true,
     fetchImpl: async () => { fetched = true; },
     oss: { inspect: async () => { called = true; } },
   });
@@ -114,7 +114,6 @@ test('mirror verifies source and OSS read-back bytes', async () => {
   const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
   const calls = [];
   const result = await mirrorReleaseAssets(releases, {
-    publicBaseUrl: 'https://downloads.lekeopen.com',
     fetchImpl: async () => new Response(bytes),
     oss: {
       inspect: async () => null,
@@ -131,38 +130,38 @@ test('mirror refuses to overwrite an OSS object with different evidence', async 
   const sha256 = hash(bytes);
   const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
   await assert.rejects(mirrorReleaseAssets(releases, {
-    publicBaseUrl: 'https://downloads.lekeopen.com', fetchImpl: async () => new Response(bytes),
+    fetchImpl: async () => new Response(bytes),
     oss: { inspect: async () => ({ sha256: 'f'.repeat(64), sizeBytes: bytes.length }) },
   }), /refusing to overwrite/);
 });
 
-test('mirror accepts a legacy OSS object without metadata only after full read-back verification', async () => {
+test('mirror verifies existing objects from HEAD metadata without reading object bytes', async () => {
   const bytes = Buffer.from('verified legacy installer');
   const sha256 = hash(bytes);
   const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256, sizeBytes: bytes.length } } } };
   let fetched = false;
+  let read = false;
   const result = await mirrorReleaseAssets(releases, {
-    publicBaseUrl: 'https://downloads.lekeopen.com',
     fetchImpl: async () => { fetched = true; throw new Error('source must not be downloaded'); },
     oss: {
-      inspect: async () => ({ sha256: null, sizeBytes: bytes.length }),
-      read: async () => bytes,
+      inspect: async () => ({ sha256, sizeBytes: bytes.length }),
+      read: async () => { read = true; throw new Error('existing object must not be downloaded'); },
     },
   });
   assert.equal(fetched, false);
+  assert.equal(read, false);
   assert.deepEqual(result.items.map(({ status }) => status), ['verified-existing']);
 });
 
-test('mirror rejects a legacy OSS object without metadata when read-back digest differs', async () => {
+test('mirror fails closed for a legacy OSS object without SHA metadata', async () => {
   const expected = Buffer.from('expected installer');
   const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256: hash(expected), sizeBytes: expected.length } } } };
   await assert.rejects(mirrorReleaseAssets(releases, {
-    publicBaseUrl: 'https://downloads.lekeopen.com',
     oss: {
       inspect: async () => ({ sha256: null, sizeBytes: expected.length }),
-      read: async () => Buffer.alloc(expected.length, 0),
+      read: async () => { throw new Error('existing object must not be downloaded'); },
     },
-  }), /OSS read-back verification failed/);
+  }), /refusing to trust an object without SHA-256 metadata/);
 });
 
 test('OSS adapter signs HEAD, PUT, and GET without delete requests', async () => {

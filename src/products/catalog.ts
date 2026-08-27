@@ -5,6 +5,7 @@ import releaseData from './releases.json';
 
 const pickerRelease = releaseData['leke-picker'];
 const guigeleiRelease = releaseData.guigelei;
+const domesticDownloadUrl = (product: ProductSlug, asset: string) => `/api/download?product=${encodeURIComponent(product)}&asset=${encodeURIComponent(asset)}`;
 
 export interface ProductDownload {
   id: string;
@@ -40,13 +41,13 @@ const guigeleiDownloadDefinitions = {
   'macos-arm64': {
     label: 'macOS Apple Silicon', platform: 'macOS', architecture: 'arm64',
     warning: '当前 DMG 尚未使用 Apple Developer ID 签名，也未经过 Apple 公证；请核对 SHA-256，并按 macOS 提示人工允许打开。',
-    analyticsEvent: 'product_guigelei_download_macos_oss' as ProductEventName,
+    analyticsEvent: 'product_guigelei_download_macos_domestic' as ProductEventName,
     fallbackAnalyticsEvent: 'product_guigelei_download_macos_github' as ProductEventName,
   },
   'windows-x64': {
     label: 'Windows 64 位', platform: 'Windows', architecture: 'x64',
     warning: '安装包如未进行代码签名，Windows 可能显示未知发布者提示；请核对 SHA-256。',
-    analyticsEvent: 'product_guigelei_download_windows_oss' as ProductEventName,
+    analyticsEvent: 'product_guigelei_download_windows_domestic' as ProductEventName,
     fallbackAnalyticsEvent: 'product_guigelei_download_windows_github' as ProductEventName,
   },
 } as const;
@@ -63,7 +64,7 @@ const guigeleiDownloads: ProductDownload[] = Object.keys(guigeleiDownloadDefinit
       ...definition,
       availability: 'available',
       assetName: asset.name,
-      url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/guigelei/${guigeleiRelease.version}/${encodeURIComponent(asset.name)}`,
+      url: domesticDownloadUrl('guigelei', id),
       fallbackUrl: asset.url,
       sha256: asset.sha256,
       sizeBytes: asset.sizeBytes,
@@ -89,12 +90,12 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x64',
         availability: 'available',
         assetName: pickerRelease.assets['windows-modern-x64'].name,
-        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-modern-x64'].name)}`,
+        url: domesticDownloadUrl('leke-picker', 'windows-modern-x64'),
         fallbackUrl: pickerRelease.assets['windows-modern-x64'].url,
         sha256: pickerRelease.assets['windows-modern-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-modern-x64'].sizeBytes,
         warning: '安装包尚未进行代码签名，Windows 可能显示未知发布者提示。',
-        analyticsEvent: 'product_leke_picker_download_modern_oss',
+        analyticsEvent: 'product_leke_picker_download_modern_domestic',
         fallbackAnalyticsEvent: 'product_leke_picker_download_modern_github',
       },
       {
@@ -104,12 +105,12 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x64',
         availability: 'available',
         assetName: pickerRelease.assets['windows-7-x64'].name,
-        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-7-x64'].name)}`,
+        url: domesticDownloadUrl('leke-picker', 'windows-7-x64'),
         fallbackUrl: pickerRelease.assets['windows-7-x64'].url,
         sha256: pickerRelease.assets['windows-7-x64'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x64'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
-        analyticsEvent: 'product_leke_picker_download_win7_x64_oss',
+        analyticsEvent: 'product_leke_picker_download_win7_x64_domestic',
         fallbackAnalyticsEvent: 'product_leke_picker_download_win7_x64_github',
       },
       {
@@ -119,12 +120,12 @@ export const PRODUCTS: readonly ProductDefinition[] = [
         architecture: 'x86',
         availability: 'available',
         assetName: pickerRelease.assets['windows-7-x86'].name,
-        url: `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com/leke-picker/${pickerRelease.version}/${encodeURIComponent(pickerRelease.assets['windows-7-x86'].name)}`,
+        url: domesticDownloadUrl('leke-picker', 'windows-7-x86'),
         fallbackUrl: pickerRelease.assets['windows-7-x86'].url,
         sha256: pickerRelease.assets['windows-7-x86'].sha256,
         sizeBytes: pickerRelease.assets['windows-7-x86'].sizeBytes,
         warning: '仅用于确有需要的旧电脑；Windows 7 与内置 Electron 22 运行时均已结束安全维护。',
-        analyticsEvent: 'product_leke_picker_download_win7_x86_oss',
+        analyticsEvent: 'product_leke_picker_download_win7_x86_domestic',
         fallbackAnalyticsEvent: 'product_leke_picker_download_win7_x86_github',
       },
     ],
@@ -170,9 +171,12 @@ export function validateProductCatalog(products: readonly ProductDefinition[]): 
 
       if (download.availability === 'available') {
         try {
-          if (!download.url || new URL(download.url).protocol !== 'https:') throw new Error();
+          const url = new URL(download.url || '', 'https://lekeopen.com');
+          if (url.origin !== 'https://lekeopen.com' || url.pathname !== '/api/download') throw new Error();
+          if (url.searchParams.get('product') !== product.slug || url.searchParams.get('asset') !== download.id) throw new Error();
+          if ([...url.searchParams.keys()].some((key) => key !== 'product' && key !== 'asset')) throw new Error();
         } catch {
-          errors.push(`${prefix}: available download requires an HTTPS url`);
+          errors.push(`${prefix}: available download requires the controlled same-origin endpoint`);
         }
         if (download.fallbackUrl !== undefined) {
           try {

@@ -45,4 +45,6 @@ test('generated Functions release data stays synchronized with the canonical man
   const canonical = JSON.parse(await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8'));
   const generated = (await import(`../functions/support/release-data.generated.mjs?test=${Date.now()}`)).default;
   assert.deepEqual(generated, canonical);
+  const downloadGenerated = (await import(`../functions/download/release-data.generated.mjs?test=${Date.now()}`)).default;
+  assert.deepEqual(downloadGenerated, canonical);
 });

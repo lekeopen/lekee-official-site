@@ -3,15 +3,15 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const expectedEvents = [
-  'product_leke_picker_download_modern_oss',
+  'product_leke_picker_download_modern_domestic',
   'product_leke_picker_download_modern_github',
-  'product_leke_picker_download_win7_x64_oss',
+  'product_leke_picker_download_win7_x64_domestic',
   'product_leke_picker_download_win7_x64_github',
-  'product_leke_picker_download_win7_x86_oss',
+  'product_leke_picker_download_win7_x86_domestic',
   'product_leke_picker_download_win7_x86_github',
-  'product_guigelei_download_macos_oss',
+  'product_guigelei_download_macos_domestic',
   'product_guigelei_download_macos_github',
-  'product_guigelei_download_windows_oss',
+  'product_guigelei_download_windows_domestic',
   'product_guigelei_download_windows_github',
 ];
 
