@@ -96,9 +96,9 @@ const AIDataPlatformProject: React.FC = () => (
           <img
             src={`${imageRoot}/ai-data-platform-dashboard.png`}
             alt="海川实验学校虚构 Demo 的资产总览，显示 100 台设备和 635,800 元资产"
-            className="aspect-[4/3] w-full rounded-2xl object-cover object-left-top"
-            width="1440"
-            height="934"
+            className="h-auto w-full rounded-2xl"
+            width="720"
+            height="720"
           />
           <figcaption className="flex items-center justify-between gap-4 px-4 py-3 text-xs text-gray-500">
             <span>真实 Golden Demo · 校领导视角</span>
@@ -156,8 +156,8 @@ const AIDataPlatformProject: React.FC = () => (
               src={`${imageRoot}/ai-data-platform-query.png`}
               alt="信息化负责人查询 PC-2025-018 并查看来源追溯的真实 Demo 页面"
               className="h-auto w-full rounded-xl"
-              width="1440"
-              height="934"
+              width="720"
+              height="650"
               loading="lazy"
             />
             <figcaption className="px-3 py-2 text-xs text-gray-500">真实查询：PC-2025-018 · 结果可查看来源</figcaption>
@@ -197,8 +197,8 @@ const AIDataPlatformProject: React.FC = () => (
               src={`${imageRoot}/ai-data-platform-governance.png`}
               alt="从 AI 候选数据经过人工审核并发布为 136 条可信数据的治理页面"
               className="h-auto w-full rounded-xl"
-              width="1440"
-              height="934"
+              width="720"
+              height="820"
               loading="lazy"
             />
           </figure>
@@ -252,7 +252,7 @@ const AIDataPlatformProject: React.FC = () => (
               src={`${imageRoot}/ai-data-platform-office-preview.png`}
               alt="固定资产台账 Excel 工作簿的 Office 原文件版式预览真实页面"
               className="h-auto w-full rounded-xl"
-              width="1440"
+              width="1110"
               height="934"
               loading="lazy"
             />

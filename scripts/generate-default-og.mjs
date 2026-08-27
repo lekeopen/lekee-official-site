@@ -51,7 +51,6 @@ await sharp(background)
 console.log(`Generated default OG image: ${outputPath}`);
 
 const dashboard = await sharp(dashboardPath)
-  .extract({ left: 0, top: 0, width: 1100, height: 760 })
   .resize(600, 414, { fit: 'cover', position: 'top' })
   .png()
   .toBuffer();

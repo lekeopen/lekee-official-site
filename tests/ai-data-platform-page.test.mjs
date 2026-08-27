@@ -18,6 +18,12 @@ const screenshots = [
   'ai-data-platform-office-preview.png',
   'ai-data-platform-governance.png',
 ];
+const screenshotDimensions = {
+  'ai-data-platform-dashboard.png': [720, 720],
+  'ai-data-platform-query.png': [720, 650],
+  'ai-data-platform-office-preview.png': [1110, 934],
+  'ai-data-platform-governance.png': [720, 820],
+};
 const ogImage = `${assetRoot}ai-data-platform-og.png`;
 
 async function loadBuiltPage(relativePath) {
@@ -91,8 +97,7 @@ test('AI Data Platform real screenshots and social image have publishable dimens
   for (const filename of screenshots) {
     const metadata = await sharp(path.join(rootDir, 'public', assetRoot, filename)).metadata();
     assert.equal(metadata.format, 'png');
-    assert.equal(metadata.width, 1440);
-    assert.equal(metadata.height, 934);
+    assert.deepEqual([metadata.width, metadata.height], screenshotDimensions[filename]);
   }
 
   const ogMetadata = await sharp(path.join(rootDir, 'public', ogImage)).metadata();
