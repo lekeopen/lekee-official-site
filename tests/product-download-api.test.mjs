@@ -25,6 +25,7 @@ function request(product = 'leke-picker', asset = 'windows-modern-x64', headers 
 test('download catalog returns only canonical committed release assets', () => {
   const item = findDownloadAsset('leke-picker', 'windows-modern-x64');
   assert.equal(item.pathname, '/leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal(item.fallbackUrl, 'https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker_1.1.0_x64-setup.exe');
   assert.equal(item.sha256, '72681a950ee190d9d97c836ad0d1e950c3475554f4d625c595660d256a87b44c');
   assert.equal(findDownloadAsset('leke-picker', '../../secret'), null);
   assert.equal(findDownloadAsset('unknown', 'windows-modern-x64'), null);
@@ -58,11 +59,20 @@ test('download endpoint redirects only to a short-lived configured CDN URL', asy
   assert.equal(JSON.stringify(logs).includes(env.ALIYUN_CDN_AUTH_KEY), false);
 });
 
-test('download endpoint fails closed for unknown assets and missing runtime controls', async () => {
+test('download endpoint falls back to the canonical GitHub asset when domestic runtime controls are unavailable', async () => {
+  const response = await onRequestGet({ request: request(), env: { ...env, DOMESTIC_DOWNLOADS_ENABLED: 'false' } }, { now: new Date() });
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get('location'), 'https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+});
+
+test('download endpoint rejects unknown assets but falls back when domestic dependencies fail', async () => {
   assert.equal((await onRequestGet({ request: request('leke-picker', 'unknown'), env }, { now: new Date() })).status, 404);
-  assert.equal((await onRequestGet({ request: request(), env: { ...env, DOMESTIC_DOWNLOADS_ENABLED: 'false' } }, { now: new Date() })).status, 503);
-  assert.equal((await onRequestGet({ request: request(), env: { ...env, ALIYUN_CDN_AUTH_KEY: '' } }, { now: new Date() })).status, 503);
-  assert.equal((await onRequestGet({ request: request(), env: { ...env, DOWNLOAD_RATE_LIMIT: undefined } }, { now: new Date() })).status, 503);
+  assert.equal((await onRequestGet({ request: request(), env: { ...env, ALIYUN_CDN_AUTH_KEY: '' } }, { now: new Date() })).status, 302);
+  assert.equal((await onRequestGet({ request: request(), env: { ...env, DOWNLOAD_RATE_LIMIT: undefined } }, { now: new Date() })).status, 302);
+  const failedRateLimit = { get: async () => { throw new Error('unavailable'); }, put: async () => {} };
+  assert.equal((await onRequestGet({ request: request(), env: { ...env, DOWNLOAD_RATE_LIMIT: failedRateLimit } }, { now: new Date() })).status, 302);
 });
 
 test('download endpoint rate limits repeated grants without exposing a signed URL', async () => {
