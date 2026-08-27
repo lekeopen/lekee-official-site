@@ -6,6 +6,7 @@
 - `lekeopen-downloads` 必须保持私有，不能因故障临时恢复公共读。
 - `downloads.lekeopen.com` 是唯一面向用户的国内文件域名。
 - `lekeopen.com/api/download` 只签发短时 CDN 地址，不代理安装包字节。
+- 国内 CDN 配置未启用或临时不可用时，下载接口回退到当前清单锁定的 GitHub Release 资产；限流命中仍返回 429。
 - 版本化对象不可覆盖；新版本必须使用新的版本目录。
 
 ## 阿里云 CDN 配置门槛
