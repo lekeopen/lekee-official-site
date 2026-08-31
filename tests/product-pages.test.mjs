@@ -69,6 +69,13 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.match($('main').text(), /目前不提供 Mac、Linux 或平板安装版/);
 });
 
+test('乐可点名下载统计跟随当前产品版本且只统计本版本安装包', async () => {
+  const source = await readFile(new URL('../src/pages/LekePickerProduct.tsx', import.meta.url), 'utf8');
+  assert.match(source, /tag:\s*`v\$\{product\.version\}`/);
+  assert.doesNotMatch(source, /tag:\s*'v1\.1\.0'/);
+  assert.match(source, /allowedAssets:\s*\[product\.downloads\[0\]\.assetName\]/);
+});
+
 test('归个类产品页提供受控国内下载和已冻结的 GitHub 备用下载', async () => {
   const $ = await loadPage('products/guigelei');
 

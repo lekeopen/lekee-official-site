@@ -153,15 +153,33 @@ test('mirror verifies existing objects from HEAD metadata without reading object
   assert.deepEqual(result.items.map(({ status }) => status), ['verified-existing']);
 });
 
-test('mirror fails closed for a legacy OSS object without SHA metadata', async () => {
+test('mirror repairs a legacy OSS object only after its bytes match the trusted release evidence', async () => {
   const expected = Buffer.from('expected installer');
+  const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256: hash(expected), sizeBytes: expected.length } } } };
+  const calls = [];
+  const result = await mirrorReleaseAssets(releases, {
+    oss: {
+      inspect: async () => ({ sha256: null, sizeBytes: expected.length }),
+      read: async () => expected,
+      upload: async (item, bytes) => calls.push([item.objectKey, bytes.equals(expected)]),
+    },
+  });
+  assert.deepEqual(result.items.map(({ status }) => status), ['repaired-metadata']);
+  assert.deepEqual(calls, [['demo/1.0.0/demo.exe', true]]);
+});
+
+test('mirror never repairs missing metadata when legacy OSS bytes do not match release evidence', async () => {
+  const expected = Buffer.from('expected installer');
+  let uploaded = false;
   const releases = { demo: { version: '1.0.0', assets: { x64: { name: 'demo.exe', url: 'https://github.com/lekeopen/demo/releases/download/v1.0.0/demo.exe', sha256: hash(expected), sizeBytes: expected.length } } } };
   await assert.rejects(mirrorReleaseAssets(releases, {
     oss: {
       inspect: async () => ({ sha256: null, sizeBytes: expected.length }),
-      read: async () => { throw new Error('existing object must not be downloaded'); },
+      read: async () => Buffer.from('tampered object'),
+      upload: async () => { uploaded = true; },
     },
-  }), /refusing to trust an object without SHA-256 metadata/);
+  }), /legacy OSS object does not match trusted release evidence/);
+  assert.equal(uploaded, false);
 });
 
 test('OSS adapter signs HEAD, PUT, and GET without delete requests', async () => {
@@ -200,6 +218,63 @@ test('compatible newer stable releases update deterministic release data', async
   assert.equal(updated.guigelei.releases[0].version, '1.6.0');
   assert.equal(updated.guigelei.releases[1].version, '1.5.0');
   assert.match(await readFile(file, 'utf8'), /\n$/);
+});
+
+test('leke-picker stable update may replace the modern installer while inheriting Windows 7 assets', async () => {
+  const { rootDir, file } = await fixture();
+  const modern = asset('leke-picker_1.1.1_x64-setup.exe', 'lekeopen/leke-picker', 'v1.1.1', '9', 205);
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.1', { 'windows-modern-x64': modern }),
+    'lekeopen/guigelei-releases': release('lekeopen/guigelei-releases', 'v1.5.0', current.guigelei.assets),
+  };
+
+  const result = await checkProductReleases({ rootDir, fetchImpl: fetchFor(releases) });
+
+  assert.deepEqual(result, { changed: true, updates: [{ slug: 'leke-picker', from: '1.1.0', to: '1.1.1' }] });
+  const updated = JSON.parse(await readFile(file, 'utf8'))['leke-picker'];
+  assert.equal(updated.version, '1.1.1');
+  assert.deepEqual(updated.assets['windows-modern-x64'], modern);
+  assert.deepEqual(updated.assets['windows-7-x64'], current['leke-picker'].assets['windows-7-x64']);
+  assert.deepEqual(updated.assets['windows-7-x86'], current['leke-picker'].assets['windows-7-x86']);
+});
+
+test('leke-picker rejects inherited Windows 7 evidence from another repository', async () => {
+  const { rootDir, file, bytes } = await fixture();
+  const data = JSON.parse(bytes);
+  data['leke-picker'].assets['windows-7-x64'].url =
+    'https://github.com/attacker/leke-picker/releases/download/v1.1.0/leke-picker-Win7-x64-Offline.exe';
+  await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
+  const before = await readFile(file, 'utf8');
+  const modern = asset('leke-picker_1.1.1_x64-setup.exe', 'lekeopen/leke-picker', 'v1.1.1', '9', 205);
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.1', { 'windows-modern-x64': modern }),
+    'lekeopen/guigelei-releases': release('lekeopen/guigelei-releases', 'v1.5.0', current.guigelei.assets),
+  };
+
+  await assert.rejects(
+    checkProductReleases({ rootDir, fetchImpl: fetchFor(releases) }),
+    /inherited download URL does not match/,
+  );
+  assert.equal(await readFile(file, 'utf8'), before);
+});
+
+test('leke-picker rejects malformed inherited Windows 7 digest evidence', async () => {
+  const { rootDir, file, bytes } = await fixture();
+  const data = JSON.parse(bytes);
+  data['leke-picker'].assets['windows-7-x86'].sha256 = 'not-a-sha256';
+  await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
+  const before = await readFile(file, 'utf8');
+  const modern = asset('leke-picker_1.1.1_x64-setup.exe', 'lekeopen/leke-picker', 'v1.1.1', '9', 205);
+  const releases = {
+    'lekeopen/leke-picker': release('lekeopen/leke-picker', 'v1.1.1', { 'windows-modern-x64': modern }),
+    'lekeopen/guigelei-releases': release('lekeopen/guigelei-releases', 'v1.5.0', current.guigelei.assets),
+  };
+
+  await assert.rejects(
+    checkProductReleases({ rootDir, fetchImpl: fetchFor(releases) }),
+    /inherited SHA-256 is invalid/,
+  );
+  assert.equal(await readFile(file, 'utf8'), before);
 });
 
 test('manifest-driven guigelei release accepts dynamic macOS and Windows asset names', async () => {
@@ -268,7 +343,7 @@ test('manifest-driven guigelei release verifies downloaded evidence bytes', asyn
 });
 
 for (const [label, mutate] of [
-  ['missing required asset', (item) => item.assets.pop()],
+  ['missing required asset', (item) => { item.assets = item.assets.filter((entry) => entry.name !== 'leke-picker_1.2.0_x64-setup.exe'); }],
   ['unknown binary asset', (item) => item.assets.push({ ...item.assets[0], name: 'unknown.exe' })],
   ['invalid asset size', (item) => { item.assets[0].size = 0; }],
   ['missing digest', (item) => { delete item.assets[0].digest; }],
