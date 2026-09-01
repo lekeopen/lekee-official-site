@@ -102,8 +102,8 @@ const LekePickerProduct: React.FC = () => (
       stats={{
         owner: 'lekeopen',
         repo: 'leke-picker',
-        tag: 'v1.1.0',
-        allowedAssets: product.downloads.map((download) => download.assetName),
+        tag: `v${product.version}`,
+        allowedAssets: [product.downloads[0].assetName],
       }}
     />
 
@@ -154,7 +154,7 @@ const LekePickerProduct: React.FC = () => (
 
     <ProductFaq items={[
       { question: '我应该下载哪个安装包？', answer: 'Windows 10/11 请选择 64 位版本；Windows 7 必须先确认已安装 SP1，再按系统位数选择 x64 或 x86。' },
-      { question: '为什么 Windows 提示未知发布者？', answer: 'v1.1.0 的三个安装器尚未代码签名。请只从本页指向的官方 Release 下载，不要为了安装而关闭 SmartScreen、杀毒软件或其他安全保护。' },
+      { question: '为什么 Windows 提示未知发布者？', answer: '当前 Windows 安装器尚未代码签名。请只从本页指向的官方 Release 下载，不要为了安装而关闭 SmartScreen、杀毒软件或其他安全保护。' },
       { question: '学生名单会上传吗？', answer: '不会。网页版和桌面版都只在本机处理名单，不要求账号，也不上传学生姓名。' },
       { question: 'Windows 7 版本仍有安全支持吗？', answer: '没有。它只为确有需要的旧电脑提供离线兼容，Windows 7 和内置 Electron 22 运行时都已结束安全维护。' },
       { question: 'Mac、Linux 或平板可以使用吗？', answer: '可以直接使用在线版；目前不提供 Mac、Linux 或平板安装版，在线版需要受支持的现代浏览器。' },

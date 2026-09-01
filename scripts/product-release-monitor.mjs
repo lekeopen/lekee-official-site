@@ -50,6 +50,33 @@ function validateAsset(policy, release, id, name) {
   return { name, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
 }
 
+function validateInheritedAsset(policy, currentTag, nextTag, id, expectedName, inherited) {
+  if (inherited?.name !== expectedName) fail(`leke-picker/${id}: inherited asset name does not match policy`);
+  if (!/^[a-f0-9]{64}$/.test(inherited.sha256 ?? '')) fail(`leke-picker/${id}: inherited SHA-256 is invalid`);
+  if (!Number.isSafeInteger(inherited.sizeBytes) || inherited.sizeBytes <= 0) fail(`leke-picker/${id}: inherited asset size is invalid`);
+
+  let inheritedTag;
+  try {
+    const url = new URL(inherited.url);
+    const prefix = `/${policy.repository}/releases/download/`;
+    if (url.protocol !== 'https:' || url.hostname !== 'github.com' || !url.pathname.startsWith(prefix)) throw new Error('invalid origin');
+    const suffix = url.pathname.slice(prefix.length);
+    const separator = suffix.indexOf('/');
+    if (separator <= 0 || decodeURIComponent(suffix.slice(separator + 1)) !== expectedName || url.search || url.hash) throw new Error('invalid path');
+    inheritedTag = suffix.slice(0, separator);
+  } catch {
+    fail(`leke-picker/${id}: inherited download URL does not match repository, tag, and asset`);
+  }
+
+  const inheritedVersion = parseVersion(inheritedTag);
+  const currentVersion = parseVersion(currentTag);
+  const nextVersion = parseVersion(nextTag);
+  if (compare(inheritedVersion.parts, currentVersion.parts) > 0 || compare(inheritedVersion.parts, nextVersion.parts) > 0) {
+    fail(`leke-picker/${id}: inherited asset tag is newer than the known release`);
+  }
+  return { name: expectedName, url: inherited.url, sha256: inherited.sha256, sizeBytes: inherited.sizeBytes };
+}
+
 async function validateManifestRelease(policy, release, version, fetchImpl) {
   if (!release.assets.some(({ name }) => name === 'release-manifest.json')) fail('guigelei: release-manifest.json is missing');
   if (!release.assets.some(({ name }) => name === 'SHA256SUMS')) fail('guigelei: SHA256SUMS is missing');
@@ -127,13 +154,21 @@ async function validateRelease(slug, current, release, fetchImpl) {
   const expectedNames = Object.fromEntries(Object.entries(policy.assets).map(([id, buildName]) => [id, buildName(next.version)]));
   const expectedNameSet = new Set(Object.values(expectedNames));
   const binaryAssets = release.assets.filter((asset) => !/^SHA256SUMS(?:\.txt)?$/i.test(asset?.name ?? ''));
-  if (binaryAssets.length !== expectedNameSet.size || binaryAssets.some((asset) => !expectedNameSet.has(asset?.name))) {
+  const requiredIds = slug === 'leke-picker' ? ['windows-modern-x64'] : Object.keys(expectedNames);
+  const requiredNames = new Set(requiredIds.map((id) => expectedNames[id]));
+  if (binaryAssets.some((asset) => !expectedNameSet.has(asset?.name)) || [...requiredNames].some((name) => !binaryAssets.some((asset) => asset.name === name))) {
     fail(`${slug}: release asset set does not match the locked platforms`);
   }
 
   const assets = {};
   for (const [id, name] of Object.entries(expectedNames)) {
     const matches = binaryAssets.filter((asset) => asset.name === name);
+    if (matches.length === 0 && slug === 'leke-picker' && id.startsWith('windows-7-')) {
+      const inherited = current.assets?.[id];
+      if (!inherited) fail(`${slug}/${id}: missing inherited compatibility asset`);
+      assets[id] = validateInheritedAsset(policy, current.tag, release.tag_name, id, name, inherited);
+      continue;
+    }
     if (matches.length !== 1) fail(`${slug}/${id}: expected exactly one asset`);
     const asset = matches[0];
     if (asset.state !== 'uploaded') fail(`${slug}/${id}: asset is not uploaded`);

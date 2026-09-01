@@ -72,7 +72,14 @@ export async function mirrorReleaseAssets(releases, { dryRun = false, fetchImpl 
     const existing = await oss.inspect(item);
     if (existing) {
       if (existing.sha256 === null) {
-        throw new Error(`${item.objectKey}: refusing to trust an object without SHA-256 metadata`);
+        if (!oss.read || !oss.upload) throw new Error('OSS adapter is incomplete');
+        const legacyBytes = Buffer.from(await oss.read(item));
+        if (legacyBytes.length !== item.sizeBytes || digest(legacyBytes) !== item.sha256) {
+          throw new Error(`${item.objectKey}: legacy OSS object does not match trusted release evidence`);
+        }
+        await oss.upload(item, legacyBytes);
+        items.push({ ...item, status: 'repaired-metadata' });
+        continue;
       }
       if (existing.sizeBytes !== item.sizeBytes || existing.sha256 !== item.sha256) {
         throw new Error(`${item.objectKey}: refusing to overwrite an object with different evidence`);
