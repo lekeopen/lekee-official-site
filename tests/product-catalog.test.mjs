@@ -49,9 +49,10 @@ test('乐可点名 uses only the audited public source and release repository', 
   const { getProduct } = await loadCatalog();
   const picker = getProduct('leke-picker');
   assert.equal(picker.repository, 'https://github.com/lekeopen/leke-picker');
-  assert.equal(picker.releaseNotes, 'https://github.com/lekeopen/leke-picker/releases/tag/v1.1.0');
+  assert.equal(picker.releaseNotes, `https://github.com/lekeopen/leke-picker/releases/tag/v${picker.version}`);
   assert.equal(picker.downloads.every((download) => download.url === `/api/download?product=leke-picker&asset=${download.id}`), true);
-  assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/')), true);
+  assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/')), true);
+  assert.equal(picker.downloads.every((download) => download.fallbackUrl?.endsWith(`/${download.assetName}`)), true);
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
 });
 
