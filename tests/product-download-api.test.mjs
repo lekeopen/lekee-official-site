@@ -7,6 +7,9 @@ import { findDownloadAsset } from '../functions/download/catalog.mjs';
 import { createCdnSignedUrl } from '../functions/download/signing.mjs';
 import { onRequest, onRequestGet } from '../functions/api/download.js';
 
+const releases = JSON.parse(await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8'));
+const pickerModern = releases['leke-picker'].assets['windows-modern-x64'];
+
 const env = {
   DOMESTIC_DOWNLOADS_ENABLED: 'true',
   DOWNLOAD_CDN_HOST: 'downloads.lekeopen.com',
@@ -24,9 +27,9 @@ function request(product = 'leke-picker', asset = 'windows-modern-x64', headers 
 
 test('download catalog returns only canonical committed release assets', () => {
   const item = findDownloadAsset('leke-picker', 'windows-modern-x64');
-  assert.equal(item.pathname, '/leke-picker/1.1.0/leke-picker_1.1.0_x64-setup.exe');
-  assert.equal(item.fallbackUrl, 'https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker_1.1.0_x64-setup.exe');
-  assert.equal(item.sha256, '72681a950ee190d9d97c836ad0d1e950c3475554f4d625c595660d256a87b44c');
+  assert.equal(item.pathname, `/leke-picker/${releases['leke-picker'].version}/${pickerModern.name}`);
+  assert.equal(item.fallbackUrl, pickerModern.url);
+  assert.equal(item.sha256, pickerModern.sha256);
   assert.equal(findDownloadAsset('leke-picker', '../../secret'), null);
   assert.equal(findDownloadAsset('unknown', 'windows-modern-x64'), null);
 });
@@ -62,7 +65,7 @@ test('download endpoint redirects only to a short-lived configured CDN URL', asy
 test('download endpoint falls back to the canonical GitHub asset when domestic runtime controls are unavailable', async () => {
   const response = await onRequestGet({ request: request(), env: { ...env, DOMESTIC_DOWNLOADS_ENABLED: 'false' } }, { now: new Date() });
   assert.equal(response.status, 302);
-  assert.equal(response.headers.get('location'), 'https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker_1.1.0_x64-setup.exe');
+  assert.equal(response.headers.get('location'), pickerModern.url);
   assert.equal(response.headers.get('cache-control'), 'private, no-store');
   assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
 });

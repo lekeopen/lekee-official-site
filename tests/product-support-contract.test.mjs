@@ -5,6 +5,8 @@ import { PRODUCT_OPTIONS, SYSTEM_OPTIONS, ISSUE_TYPE_OPTIONS } from '../src/supp
 import { createSupportReference } from '../functions/support/reference.mjs';
 import { getEnvironmentOptions, getVersionOptions, isAllowedProductReleaseEnvironment } from '../src/support/options.js';
 
+const releases = JSON.parse(await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8'));
+
 test('support option values are unique and products are stable', () => {
   assert.deepEqual(PRODUCT_OPTIONS.map(({ value }) => value), ['leke-picker', 'guigelei', 'other']);
   for (const options of [PRODUCT_OPTIONS, SYSTEM_OPTIONS, ISSUE_TYPE_OPTIONS]) {
@@ -27,8 +29,12 @@ test('support reference contains date and random data only', () => {
 });
 
 test('versions and environments come from each product release', () => {
-  assert.deepEqual(getVersionOptions('leke-picker').map(({ value }) => value), ['v1.1.0', 'other']);
-  assert.deepEqual(getEnvironmentOptions('leke-picker', 'v1.1.0').map(({ value }) => value), ['windows-modern-x64', 'windows-7-x64', 'windows-7-x86', 'unknown']);
+  const pickerVersions = releases['leke-picker'].releases.map(({ tag }) => tag);
+  assert.deepEqual(getVersionOptions('leke-picker').map(({ value }) => value), [...pickerVersions, 'other']);
+  assert.deepEqual(
+    getEnvironmentOptions('leke-picker', releases['leke-picker'].tag).map(({ value }) => value),
+    [...Object.keys(releases['leke-picker'].assets), 'unknown'],
+  );
   assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'macos-arm64'), true);
   assert.equal(isAllowedProductReleaseEnvironment('guigelei', 'v1.6.0', 'windows-modern-x64'), false);
 });
