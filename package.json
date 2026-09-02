@@ -32,6 +32,7 @@
     "generate-rss": "node --loader ts-node/esm scripts/generate-rss.ts",
     "publish:queue": "node --loader ts-node/esm scripts/generate-publish-queue.js",
     "products:releases:check": "node scripts/product-release-monitor.mjs",
+    "products:web:import": "node scripts/leke-picker-web-distribution.mjs",
     "products:releases:mirror:dry-run": "node scripts/product-release-mirror.mjs",
     "wechat": "node tools/wechat-admin/src/cli.mjs",
     "wechat:accounts": "node tools/wechat-admin/src/cli.mjs accounts",

@@ -1,8 +1,10 @@
 # 下载域名与软件签名准备度（2026-08-14）
 
+> 历史记录，已被 `secure-app-downloads.md` 和 2026-09-01 发行设计取代。文中当时可公开读取的 OSS 状态不得作为当前操作指引；Bucket 必须保持私有，任何故障都回退 GitHub Release。
+
 ## 当前结论
 
-- OSS 正式下载继续使用 `https://lekeopen-downloads.oss-cn-beijing.aliyuncs.com`。
+- 当时曾直接使用 OSS 公网端点；该方案已停止，禁止恢复。
 - `downloads.lekeopen.com` 当前没有可公开解析的 A、AAAA 或 CNAME 记录，HTTPS 请求无法解析主机，**不满足启用条件**。
 - 乐可点名 Windows 安装包仍未进行代码签名；归个类 macOS DMG 仍未使用 Developer ID 签名或 Apple 公证。官网必须继续保留现有风险提示和 SHA-256。
 - 本次不修改 DNS、OSS、CDN、证书或签名配置，不购买服务，不重新构建安装包。
@@ -30,7 +32,7 @@
 4. HTTPS 证书有效、自动续期路径明确；
 5. HEAD、Range、完整文件大小和 SHA-256 验证通过；
 6. 防盗链规则不会误伤官网用户、浏览器下载或 GitHub Actions 回读；
-7. OSS 官方 URL 与 GitHub Release 备用地址仍可用。
+7. OSS 原始地址继续拒绝公网访问，GitHub Release 备用地址可用。
 
 直接下载不依赖浏览器跨域读取，因此当前没有理由仅为下载而扩大 CORS。若以后前端需要读取对象响应，再按最小来源和最小方法单独配置。
 
@@ -58,4 +60,4 @@
 
 ## 回滚
 
-自定义域名未来若出现 DNS、证书、备案、CDN、Range 或校验问题，产品目录立即恢复 OSS 官方基础地址；不删除 OSS 对象，也不移除 GitHub Release 备用下载。签名项目失败时继续保留当前已冻结安装包及明确风险说明，不发布半签名或校验不一致的包。
+自定义域名未来若出现 DNS、证书、备案、CDN、Range 或校验问题，立即关闭国内 CDN 并回退 GitHub Release；不恢复 OSS 公共读，不删除 OSS 对象。签名项目失败时继续保留当前已冻结安装包及明确风险说明，不发布半签名或校验不一致的包。

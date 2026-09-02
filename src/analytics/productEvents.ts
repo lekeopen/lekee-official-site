@@ -1,6 +1,7 @@
 export type ProductEventName =
   | 'product_leke_picker_online_use'
   | 'product_leke_picker_download_section'
+  | 'product_leke_picker_download_store'
   | 'product_leke_picker_download_modern_domestic'
   | 'product_leke_picker_download_modern_github'
   | 'product_leke_picker_download_win7_x64_domestic'

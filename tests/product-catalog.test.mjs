@@ -10,6 +10,9 @@ async function loadCatalog() {
   const source = (await readFile(catalogUrl, 'utf8')).replace(
     "import releaseData from './releases.json';",
     `const releaseData = ${releases};`,
+  ).replace(
+    "import { getMicrosoftStoreChannel, storeStatusForVersion } from './storeChannels';",
+    "const MICROSOFT_STORE_CHANNEL = { provider: 'microsoft', storeId: '9P8078B19P1H', url: 'https://apps.microsoft.com/detail/9P8078B19P1H', verifiedVersion: '1.1.1.0' }; const storeStatusForVersion = (productVersion, verifiedVersion) => verifiedVersion.split('.').slice(0, 3).join('.') === productVersion ? 'verified' : 'lagging'; const getMicrosoftStoreChannel = (productVersion) => ({ ...MICROSOFT_STORE_CHANNEL, status: storeStatusForVersion(productVersion, MICROSOFT_STORE_CHANNEL.verifiedVersion) });",
   );
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
@@ -54,6 +57,14 @@ test('乐可点名 uses only the audited public source and release repository', 
   assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/')), true);
   assert.equal(picker.downloads.every((download) => download.fallbackUrl?.endsWith(`/${download.assetName}`)), true);
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
+  assert.deepEqual(picker.store, {
+    provider: 'microsoft',
+    storeId: '9P8078B19P1H',
+    url: 'https://apps.microsoft.com/detail/9P8078B19P1H',
+    verifiedVersion: '1.1.1.0',
+    status: 'verified',
+  });
+  assert.equal(picker.releases.length, 2);
 });
 
 test('归个类 uses the controlled domestic endpoint with the monitored GitHub asset as fallback', async () => {
@@ -89,4 +100,28 @@ test('catalog validation reports duplicate ids and incomplete available download
 test('public product catalog never exposes the private OSS origin', async () => {
   const source = await readFile(catalogUrl, 'utf8');
   assert.doesNotMatch(source, /lekeopen-downloads\.oss-cn-beijing\.aliyuncs\.com/);
+});
+
+test('catalog validation rejects an invalid or non-Microsoft Store channel', async () => {
+  const { PRODUCTS, validateProductCatalog } = await loadCatalog();
+  const invalidProducts = structuredClone(PRODUCTS);
+  invalidProducts[0].store.storeId = 'not-a-store-id';
+  invalidProducts[0].store.url = 'https://example.com/app';
+  invalidProducts[0].store.verifiedVersion = '1.1.1';
+
+  assert.deepEqual(validateProductCatalog(invalidProducts), [
+    'leke-picker: Microsoft Store ID must be 12 uppercase letters or digits',
+    'leke-picker: Microsoft Store URL must match its Store ID',
+    'leke-picker: Microsoft Store version must use four numeric parts',
+  ]);
+});
+
+test('catalog validation prevents a stale Store version from remaining verified', async () => {
+  const { PRODUCTS, validateProductCatalog } = await loadCatalog();
+  const staleProducts = structuredClone(PRODUCTS);
+  staleProducts[0].version = '1.1.2';
+
+  assert.deepEqual(validateProductCatalog(staleProducts), [
+    'leke-picker: Microsoft Store status must be lagging for product v1.1.2',
+  ]);
 });

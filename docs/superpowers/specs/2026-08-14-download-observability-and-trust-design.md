@@ -1,5 +1,7 @@
 # 官网下载可观测性、自动分发健康度与信任体验设计
 
+> 历史设计，已被 `docs/superpowers/specs/2026-08-27-secure-domestic-downloads-design.md` 和 2026-09-01 发行设计取代。不得根据本文恢复 OSS 公网直链。
+
 ## 目标
 
 在不新增数据库、不引入新的分析平台、不购买签名服务的前提下，清晰区分阿里云 OSS 主下载和 GitHub 备用下载，确认 GitHub Actions 自然定时分发可用，并为软件签名与 `downloads.lekeopen.com` 建立可执行且可回滚的后续路径。
@@ -11,7 +13,7 @@
 - 页面现有下载数字仅来自 GitHub Release API，因此文案明确为“GitHub Release 累计下载”，不把它描述为全部下载量。
 - 保持 GitHub Actions 定时检查，不依赖 Studio、Codex 或个人电脑在线。
 - 当前不购买 Windows 代码签名或 Apple Developer 资格；继续使用官方来源、SHA-256、安装帮助和安全提示降低风险。
-- `downloads.lekeopen.com` 只有在阿里云域名绑定、备案接入、HTTPS 证书和回滚条件全部满足后才启用；否则继续使用 OSS 官方 HTTPS 域名。
+- `downloads.lekeopen.com` 只有在备案、HTTPS、CDN 私有回源、短时签名、限流和费用告警全部满足后才启用；否则回退 GitHub Release。
 
 ## 1. 下载统计设计
 
@@ -84,7 +86,7 @@
 
 ### 启用条件与回滚
 
-仅当 DNS、备案接入、OSS 绑定和 HTTPS 均验证通过时，才把产品目录的 OSS 基础地址切换为 `https://downloads.lekeopen.com`。切换前保留 OSS 官方地址作为配置级回滚值；切换后验证 HEAD、Range、完整下载大小和 SHA-256。任何错误立即恢复官方 OSS URL，不删除对象、不修改 GitHub 备用地址。
+仅当 DNS、备案接入、HTTPS、CDN 私有回源、短时鉴权、独立限流和费用告警均验证通过时，才允许受控接口签发 `downloads.lekeopen.com` 短时地址。切换后验证 HEAD、Range、完整下载大小和 SHA-256。任何错误立即关闭国内入口并回退 GitHub Release，不删除对象、不修改 GitHub 备用地址，也不恢复 OSS 公共读。
 
 ## 5. 测试与发布边界
 

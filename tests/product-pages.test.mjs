@@ -16,7 +16,10 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
 
   assert.equal($('h1').length, 1);
   assert.match($('h1').text(), /乐可点名/);
-  assert.equal($('a[href="/products/leke-picker/app/"]').text().trim(), '立即在线使用');
+  const onlineLink = $('a[href="/products/leke-picker/app/"]');
+  assert.equal(onlineLink.text().trim(), '立即在线使用');
+  assert.equal(onlineLink.attr('target'), '_blank');
+  assert.equal(onlineLink.attr('rel'), 'noopener noreferrer');
   assert.match($('main').text(), /Windows 下载/);
   assert.match($('main').text(), /版本与系统要求/);
   assert.match($('main').text(), /名单只在本机处理和保存/);
@@ -24,9 +27,16 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.doesNotMatch($('main').text(), /正在读取下载统计|下载统计暂不可用/);
 
   assert.equal($('[data-download-featured="windows-modern-x64"]').length, 1);
+  const storeLink = $('[data-download-store="microsoft"]');
+  assert.equal(storeLink.length, 1);
+  assert.equal(storeLink.attr('href'), 'https://apps.microsoft.com/detail/9P8078B19P1H');
+  assert.equal(storeLink.attr('target'), '_blank');
+  assert.equal(storeLink.attr('rel'), 'noopener noreferrer');
+  assert.match(storeLink.text(), /Microsoft Store/);
+  assert.match($('[data-download-featured]').text(), /推荐.*自动更新/s);
   assert.match($('[data-download-featured]').text(), /推荐/);
   assert.match($('[data-download-featured]').text(), /Windows 10\/11 版/);
-  assert.match($('[data-download-featured]').text(), /国内高速下载/);
+  assert.match($('[data-download-featured]').text(), /下载安装包/);
   assert.equal($('[data-download-featured] a').filter((_, element) => $(element).text().includes('GitHub 备用下载')).length, 1);
   assert.equal($('details[data-legacy-downloads]').attr('open'), undefined);
   assert.equal($('details[data-legacy-downloads] a[href^="/api/download?product=leke-picker&asset="]').length, 2);
@@ -67,6 +77,12 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.doesNotMatch(installHelp.text(), /单独打开反馈页/);
   assert.match($('main').text(), /Mac、Linux 和平板用户可直接使用在线版/);
   assert.match($('main').text(), /目前不提供 Mac、Linux 或平板安装版/);
+
+  const releaseHistory = $('[data-release-history]');
+  assert.equal(releaseHistory.length, 1);
+  assert.equal(releaseHistory.find('[data-release]').length, 2);
+  assert.match(releaseHistory.text(), /v1\.1\.1/);
+  assert.match(releaseHistory.text(), /v1\.1\.0/);
 });
 
 test('乐可点名下载统计跟随当前产品版本且只统计本版本安装包', async () => {
@@ -74,6 +90,12 @@ test('乐可点名下载统计跟随当前产品版本且只统计本版本安�
   assert.match(source, /tag:\s*`v\$\{product\.version\}`/);
   assert.doesNotMatch(source, /tag:\s*'v1\.1\.0'/);
   assert.match(source, /allowedAssets:\s*\[product\.downloads\[0\]\.assetName\]/);
+});
+
+test('微软商店推荐状态由商店核验版本与当前正式版本共同决定', async () => {
+  const catalog = await readFile(new URL('../src/products/catalog.ts', import.meta.url), 'utf8');
+  assert.match(catalog, /getMicrosoftStoreChannel\(pickerRelease\.version\)/);
+  assert.doesNotMatch(catalog, /status:\s*'verified'/);
 });
 
 test('归个类产品页提供受控国内下载和已冻结的 GitHub 备用下载', async () => {

@@ -74,6 +74,19 @@ function fetchWithManifest(releases, manifest, checksums) {
   };
 }
 
+function fetchWithPickerWeb(releases, manifestBytes) {
+  return async (input) => {
+    const url = String(input);
+    const match = url.match(/repos\/([^/]+\/[^/]+)\/releases\/latest$/);
+    if (match) {
+      const body = releases[match[1]];
+      return new Response(JSON.stringify(body ?? {}), { status: body ? 200 : 404 });
+    }
+    if (url.endsWith('.manifest.json')) return new Response(manifestBytes);
+    return new Response('', { status: 404 });
+  };
+}
+
 test('current stable releases produce no write', async () => {
   const { rootDir, file, bytes } = await fixture();
   const releases = {
@@ -236,6 +249,72 @@ test('leke-picker stable update may replace the modern installer while inheritin
   assert.deepEqual(updated.assets['windows-modern-x64'], modern);
   assert.deepEqual(updated.assets['windows-7-x64'], current['leke-picker'].assets['windows-7-x64']);
   assert.deepEqual(updated.assets['windows-7-x86'], current['leke-picker'].assets['windows-7-x86']);
+});
+
+test('leke-picker stable update records verified website archive evidence separately from installer assets', async () => {
+  const { rootDir, file } = await fixture();
+  const repository = 'lekeopen/leke-picker';
+  const tag = 'v1.1.1';
+  const version = '1.1.1';
+  const modern = asset('leke-picker_1.1.1_x64-setup.exe', repository, tag, '9', 205);
+  const archiveBytes = Buffer.from('verified web archive');
+  const archive = asset(`leke-picker-web_${version}.tar.gz`, repository, tag, hash(archiveBytes), archiveBytes.length);
+  const manifestBody = {
+    schemaVersion: 1,
+    product: 'leke-picker',
+    version,
+    sourceCommit: 'e022d29be11aa69fa786f6fc17ec8547043c7dcc',
+    sourceDirty: false,
+    base: '/products/leke-picker/app/',
+    archive: { name: archive.name, sizeBytes: archive.sizeBytes, sha256: archive.sha256 },
+    files: [{ path: 'index.html', sizeBytes: 5, sha256: hash('index') }],
+  };
+  const manifestBytes = Buffer.from(`${JSON.stringify(manifestBody, null, 2)}\n`);
+  const manifest = asset(`leke-picker-web_${version}.manifest.json`, repository, tag, hash(manifestBytes), manifestBytes.length);
+  const releases = {
+    [repository]: release(repository, tag, { modern, archive, manifest }),
+    'lekeopen/guigelei-releases': release('lekeopen/guigelei-releases', 'v1.5.0', current.guigelei.assets),
+  };
+
+  const result = await checkProductReleases({ rootDir, fetchImpl: fetchWithPickerWeb(releases, manifestBytes) });
+
+  assert.deepEqual(result, { changed: true, updates: [{ slug: 'leke-picker', from: '1.1.0', to: '1.1.1' }] });
+  const updated = JSON.parse(await readFile(file, 'utf8'))['leke-picker'];
+  assert.deepEqual(Object.keys(updated.assets), ['windows-modern-x64', 'windows-7-x64', 'windows-7-x86']);
+  assert.deepEqual(updated.web.archive, archive);
+  assert.deepEqual(updated.web.manifest, manifest);
+  assert.equal(updated.web.sourceCommit, manifestBody.sourceCommit);
+  assert.equal(updated.web.base, manifestBody.base);
+});
+
+test('leke-picker may attach verified website evidence to the already recorded stable version', async () => {
+  const { rootDir, file } = await fixture();
+  const repository = 'lekeopen/leke-picker';
+  const tag = 'v1.1.0';
+  const version = '1.1.0';
+  const archiveBytes = Buffer.from('verified same-version web archive');
+  const archive = asset(`leke-picker-web_${version}.tar.gz`, repository, tag, hash(archiveBytes), archiveBytes.length);
+  const manifestBody = {
+    schemaVersion: 1, product: 'leke-picker', version,
+    sourceCommit: 'a14f31b16e43a8198865d2be9385b4fe7b14de9d', sourceDirty: false,
+    base: '/products/leke-picker/app/',
+    archive: { name: archive.name, sizeBytes: archive.sizeBytes, sha256: archive.sha256 },
+    files: [{ path: 'index.html', sizeBytes: 5, sha256: hash('index') }],
+  };
+  const manifestBytes = Buffer.from(`${JSON.stringify(manifestBody, null, 2)}\n`);
+  const manifest = asset(`leke-picker-web_${version}.manifest.json`, repository, tag, hash(manifestBytes), manifestBytes.length);
+  const releases = {
+    [repository]: release(repository, tag, { ...current['leke-picker'].assets, archive, manifest }),
+    'lekeopen/guigelei-releases': release('lekeopen/guigelei-releases', 'v1.5.0', current.guigelei.assets),
+  };
+
+  const result = await checkProductReleases({ rootDir, fetchImpl: fetchWithPickerWeb(releases, manifestBytes) });
+
+  assert.deepEqual(result, { changed: true, updates: [{ slug: 'leke-picker', from: '1.1.0', to: '1.1.0' }] });
+  const updated = JSON.parse(await readFile(file, 'utf8'))['leke-picker'];
+  assert.equal(updated.version, '1.1.0');
+  assert.equal(updated.web.sourceCommit, manifestBody.sourceCommit);
+  assert.equal(updated.releases[0].web.sourceCommit, manifestBody.sourceCommit);
 });
 
 test('leke-picker rejects inherited Windows 7 evidence from another repository', async () => {
