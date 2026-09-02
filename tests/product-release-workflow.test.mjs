@@ -18,8 +18,10 @@ test('release monitor runs in GitHub on a schedule and manually', () => {
 
 test('release monitor verifies before its narrowly scoped commit', () => {
   assert.match(workflow, /npm run products:releases:check/);
+  assert.match(workflow, /node scripts\/leke-picker-web-distribution\.mjs/);
   assert.match(workflow, /npm run verify/);
-  assert.match(workflow, /git add -- src\/products\/releases\.json/);
+  assert.match(workflow, /git add -- src\/products\/releases\.json public\/products\/leke-picker\/app/);
+  assert.match(workflow, /allowed_paths=/);
   assert.match(workflow, /git diff --cached --name-only/);
   assert.match(workflow, /git push origin HEAD:main/);
   assert.match(workflow, /contents:\s*write/);

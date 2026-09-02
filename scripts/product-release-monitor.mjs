@@ -37,16 +37,16 @@ function compare(left, right) {
   return 0;
 }
 
-function validateAsset(policy, release, id, name) {
+function validateAsset(slug, policy, release, id, name) {
   const matches = release.assets.filter((asset) => asset.name === name);
-  if (matches.length !== 1) fail(`guigelei/${id}: expected exactly one asset`);
+  if (matches.length !== 1) fail(`${slug}/${id}: expected exactly one asset`);
   const asset = matches[0];
-  if (asset.state !== 'uploaded') fail(`guigelei/${id}: asset is not uploaded`);
-  if (!Number.isSafeInteger(asset.size) || asset.size <= 0) fail(`guigelei/${id}: invalid asset size`);
+  if (asset.state !== 'uploaded') fail(`${slug}/${id}: asset is not uploaded`);
+  if (!Number.isSafeInteger(asset.size) || asset.size <= 0) fail(`${slug}/${id}: invalid asset size`);
   const digest = /^sha256:([a-f0-9]{64})$/.exec(asset.digest ?? '');
-  if (!digest) fail(`guigelei/${id}: missing or invalid SHA-256 digest`);
+  if (!digest) fail(`${slug}/${id}: missing or invalid SHA-256 digest`);
   const expectedUrl = `https://github.com/${policy.repository}/releases/download/${release.tag_name}/${encodeURIComponent(name)}`;
-  if (asset.browser_download_url !== expectedUrl) fail(`guigelei/${id}: download URL does not match repository, tag, and asset`);
+  if (asset.browser_download_url !== expectedUrl) fail(`${slug}/${id}: download URL does not match repository, tag, and asset`);
   return { name, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
 }
 
@@ -80,8 +80,8 @@ function validateInheritedAsset(policy, currentTag, nextTag, id, expectedName, i
 async function validateManifestRelease(policy, release, version, fetchImpl) {
   if (!release.assets.some(({ name }) => name === 'release-manifest.json')) fail('guigelei: release-manifest.json is missing');
   if (!release.assets.some(({ name }) => name === 'SHA256SUMS')) fail('guigelei: SHA256SUMS is missing');
-  const manifestAsset = validateAsset(policy, release, 'manifest', 'release-manifest.json');
-  validateAsset(policy, release, 'checksums', 'SHA256SUMS');
+  const manifestAsset = validateAsset('guigelei', policy, release, 'manifest', 'release-manifest.json');
+  validateAsset('guigelei', policy, release, 'checksums', 'SHA256SUMS');
   const manifestResponse = await fetchImpl(manifestAsset.url);
   if (!manifestResponse.ok) fail('guigelei: release-manifest.json is not accessible');
   const manifestBytes = Buffer.from(await manifestResponse.arrayBuffer());
@@ -104,7 +104,7 @@ async function validateManifestRelease(policy, release, version, fetchImpl) {
     if (!pair || item.platform !== pair[0] || item.architecture !== pair[1]) fail('guigelei: manifest platform is unsupported');
     if (assets[item.id] || names.has(item.asset)) fail('guigelei: manifest contains duplicate downloads');
     if (!/^[a-f0-9]{64}$/.test(item.sha256) || !Number.isSafeInteger(item.sizeBytes) || item.sizeBytes <= 0) fail('guigelei: manifest digest or size is invalid');
-    const asset = validateAsset(policy, release, item.id, item.asset);
+    const asset = validateAsset('guigelei', policy, release, item.id, item.asset);
     if (asset.sha256 !== item.sha256 || asset.sizeBytes !== item.sizeBytes) fail(`guigelei/${item.id}: manifest evidence mismatch`);
     if (typeof manifest.minimumSystems[item.platform] !== 'string' || !manifest.minimumSystems[item.platform]) fail(`guigelei: missing system requirement for ${item.platform}`);
     assets[item.id] = asset;
@@ -112,7 +112,7 @@ async function validateManifestRelease(policy, release, version, fetchImpl) {
   }
   if (release.assets.some((asset) => !names.has(asset.name))) fail('guigelei: release contains an undeclared asset');
   const sumsAsset = release.assets.find(({ name }) => name === 'SHA256SUMS');
-  const sumsEvidence = validateAsset(policy, release, 'checksums', 'SHA256SUMS');
+  const sumsEvidence = validateAsset('guigelei', policy, release, 'checksums', 'SHA256SUMS');
   const sumsResponse = await fetchImpl(sumsAsset.browser_download_url);
   if (!sumsResponse.ok) fail('guigelei: SHA256SUMS is not accessible');
   const sumsBytes = Buffer.from(await sumsResponse.arrayBuffer());
@@ -124,6 +124,40 @@ async function validateManifestRelease(policy, release, version, fetchImpl) {
   return { assets, minimumSystems: manifest.minimumSystems };
 }
 
+async function validatePickerWebRelease(policy, release, version, fetchImpl) {
+  const archiveName = `leke-picker-web_${version}.tar.gz`;
+  const manifestName = `leke-picker-web_${version}.manifest.json`;
+  const archive = validateAsset('leke-picker', policy, release, 'web-archive', archiveName);
+  const manifestAsset = validateAsset('leke-picker', policy, release, 'web-manifest', manifestName);
+  const response = await fetchImpl(manifestAsset.url);
+  if (!response.ok) fail('leke-picker: website manifest is not accessible');
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length !== manifestAsset.sizeBytes || createHash('sha256').update(bytes).digest('hex') !== manifestAsset.sha256) {
+    fail('leke-picker: website manifest evidence size or SHA-256 mismatch');
+  }
+  let manifest;
+  try { manifest = JSON.parse(bytes.toString('utf8')); } catch { fail('leke-picker: website manifest is invalid JSON'); }
+  if (manifest?.schemaVersion !== 1 || manifest.product !== 'leke-picker' || manifest.version !== version
+    || manifest.sourceDirty !== false || !/^[a-f0-9]{40}$/.test(manifest.sourceCommit ?? '')
+    || manifest.base !== '/products/leke-picker/app/') {
+    fail('leke-picker: website manifest identity is invalid');
+  }
+  if (manifest.archive?.name !== archive.name || manifest.archive?.sizeBytes !== archive.sizeBytes || manifest.archive?.sha256 !== archive.sha256) {
+    fail('leke-picker: website archive evidence does not match manifest');
+  }
+  if (!Array.isArray(manifest.files) || manifest.files.length === 0) fail('leke-picker: website manifest files are missing');
+  const paths = new Set();
+  for (const item of manifest.files) {
+    if (typeof item?.path !== 'string' || item.path.length === 0 || item.path.includes('\\') || item.path.startsWith('/')
+      || item.path.split('/').includes('..') || paths.has(item.path)
+      || !Number.isSafeInteger(item.sizeBytes) || item.sizeBytes < 0 || !/^[a-f0-9]{64}$/.test(item.sha256 ?? '')) {
+      fail('leke-picker: website manifest file evidence is invalid');
+    }
+    paths.add(item.path);
+  }
+  return { archive, manifest: manifestAsset, sourceCommit: manifest.sourceCommit, base: manifest.base };
+}
+
 async function validateRelease(slug, current, release, fetchImpl) {
   const policy = POLICIES[slug];
   if (!policy || current.repository !== policy.repository) fail(`${slug}: repository is not locked`);
@@ -133,10 +167,23 @@ async function validateRelease(slug, current, release, fetchImpl) {
 
   const next = parseVersion(release.tag_name);
   const previous = parseVersion(current.tag);
-  if (compare(next.parts, previous.parts) <= 0) return null;
+  const versionComparison = compare(next.parts, previous.parts);
+  if (versionComparison < 0) return null;
+  if (versionComparison === 0 && slug !== 'leke-picker') return null;
   const expectedReleaseUrl = `https://github.com/${policy.repository}/releases/tag/${release.tag_name}`;
   if (release.html_url !== expectedReleaseUrl) fail(`${slug}: release URL does not match repository and tag`);
   if (!Array.isArray(release.assets)) fail(`${slug}: assets must be an array`);
+
+  const pickerWebNames = slug === 'leke-picker'
+    ? new Set([`leke-picker-web_${next.version}.tar.gz`, `leke-picker-web_${next.version}.manifest.json`])
+    : new Set();
+  const pickerWebCount = release.assets.filter((asset) => pickerWebNames.has(asset?.name)).length;
+  if (slug === 'leke-picker' && pickerWebCount !== 0 && pickerWebCount !== 2) fail('leke-picker: website distribution assets are incomplete');
+  if (versionComparison === 0) {
+    if (current.web || pickerWebCount === 0) return null;
+    const web = await validatePickerWebRelease(policy, release, next.version, fetchImpl);
+    return { ...current, web };
+  }
 
   if (slug === 'guigelei' && compare(next.parts, [1, 6, 0]) > 0) {
     const validated = await validateManifestRelease(policy, release, next.version, fetchImpl);
@@ -153,7 +200,7 @@ async function validateRelease(slug, current, release, fetchImpl) {
 
   const expectedNames = Object.fromEntries(Object.entries(policy.assets).map(([id, buildName]) => [id, buildName(next.version)]));
   const expectedNameSet = new Set(Object.values(expectedNames));
-  const binaryAssets = release.assets.filter((asset) => !/^SHA256SUMS(?:\.txt)?$/i.test(asset?.name ?? ''));
+  const binaryAssets = release.assets.filter((asset) => !/^SHA256SUMS(?:\.txt)?$/i.test(asset?.name ?? '') && !pickerWebNames.has(asset?.name));
   const requiredIds = slug === 'leke-picker' ? ['windows-modern-x64'] : Object.keys(expectedNames);
   const requiredNames = new Set(requiredIds.map((id) => expectedNames[id]));
   if (binaryAssets.some((asset) => !expectedNameSet.has(asset?.name)) || [...requiredNames].some((name) => !binaryAssets.some((asset) => asset.name === name))) {
@@ -180,6 +227,8 @@ async function validateRelease(slug, current, release, fetchImpl) {
     assets[id] = { name, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
   }
 
+  const web = pickerWebCount === 2 ? await validatePickerWebRelease(policy, release, next.version, fetchImpl) : undefined;
+  if (!web && slug === 'leke-picker' && compare(next.parts, [1, 1, 1]) > 0) fail('leke-picker: website distribution assets are required');
   return {
     repository: policy.repository,
     tag: release.tag_name,
@@ -187,6 +236,7 @@ async function validateRelease(slug, current, release, fetchImpl) {
     publishedAt: release.published_at,
     releaseUrl: expectedReleaseUrl,
     assets,
+    ...(web ? { web } : {}),
   };
 }
 

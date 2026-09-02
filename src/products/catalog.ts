@@ -2,6 +2,8 @@ export type ProductSlug = 'leke-picker' | 'guigelei';
 export type DownloadAvailability = 'available' | 'pending';
 import type { ProductEventName } from '../analytics/productEvents';
 import releaseData from './releases.json';
+import { getMicrosoftStoreChannel, storeStatusForVersion } from './storeChannels';
+import type { ProductStoreChannel } from './storeChannels';
 
 const pickerRelease = releaseData['leke-picker'];
 const guigeleiRelease = releaseData.guigelei;
@@ -23,6 +25,14 @@ export interface ProductDownload {
   fallbackAnalyticsEvent?: ProductEventName;
 }
 
+export interface ProductRelease {
+  repository: string;
+  tag: string;
+  version: string;
+  publishedAt: string;
+  releaseUrl: string;
+}
+
 export interface ProductDefinition {
   slug: ProductSlug;
   name: string;
@@ -35,6 +45,8 @@ export interface ProductDefinition {
   repository?: string;
   releaseNotes: string;
   minimumSystems?: Record<string, string>;
+  store?: ProductStoreChannel;
+  releases?: ProductRelease[];
 }
 
 const guigeleiDownloadDefinitions = {
@@ -82,6 +94,8 @@ export const PRODUCTS: readonly ProductDefinition[] = [
     cover: '/images/products/leke-picker/og.png',
     repository: 'https://github.com/lekeopen/leke-picker',
     releaseNotes: pickerRelease.releaseUrl,
+    store: getMicrosoftStoreChannel(pickerRelease.version),
+    releases: pickerRelease.releases,
     downloads: [
       {
         id: 'windows-modern-x64',
@@ -194,6 +208,25 @@ export function validateProductCatalog(products: readonly ProductDefinition[]): 
       }
       if (!Number.isSafeInteger(download.sizeBytes) || download.sizeBytes <= 0) {
         errors.push(`${prefix}: sizeBytes must be a positive safe integer`);
+      }
+    }
+
+    if (product.store) {
+      if (!/^[A-Z0-9]{12}$/.test(product.store.storeId)) {
+        errors.push(`${product.slug}: Microsoft Store ID must be 12 uppercase letters or digits`);
+      }
+      if (product.store.url !== `https://apps.microsoft.com/detail/${product.store.storeId}`) {
+        errors.push(`${product.slug}: Microsoft Store URL must match its Store ID`);
+      }
+      const storeVersionIsValid = /^\d+\.\d+\.\d+\.\d+$/.test(product.store.verifiedVersion);
+      if (!storeVersionIsValid) {
+        errors.push(`${product.slug}: Microsoft Store version must use four numeric parts`);
+      }
+      if (storeVersionIsValid && /^\d+\.\d+\.\d+$/.test(product.version)) {
+        const expectedStatus = storeStatusForVersion(product.version, product.store.verifiedVersion);
+        if (product.store.status !== expectedStatus) {
+          errors.push(`${product.slug}: Microsoft Store status must be ${expectedStatus} for product v${product.version}`);
+        }
       }
     }
   }

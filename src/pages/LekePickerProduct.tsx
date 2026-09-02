@@ -6,6 +6,7 @@ import ProductFaq from '../components/products/ProductFaq';
 import { getProduct } from '../products/catalog';
 import { trackProductEvent } from '../analytics/productEvents';
 import SupportDialog from '../components/support/SupportDialog';
+import ReleaseHistory from '../components/products/ReleaseHistory';
 
 const product = getProduct('leke-picker');
 
@@ -33,7 +34,7 @@ const LekePickerProduct: React.FC = () => (
           <p className="mt-5 text-2xl font-semibold text-gray-900">{product.tagline}</p>
           <p className="mt-4 max-w-xl leading-7 text-gray-600">{product.summary}</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a href="/products/leke-picker/app/" onClick={() => trackProductEvent('product_leke_picker_online_use')} className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-500">立即在线使用</a>
+            <a href="/products/leke-picker/app/" target="_blank" rel="noopener noreferrer" onClick={() => trackProductEvent('product_leke_picker_online_use')} className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-500">立即在线使用</a>
             <a href="#downloads" onClick={() => trackProductEvent('product_leke_picker_download_section')} className="inline-flex min-h-11 items-center rounded-lg border border-blue-300 bg-white px-6 py-3 font-semibold text-blue-800 hover:border-blue-500">下载 Windows 版</a>
           </div>
         </div>
@@ -105,6 +106,7 @@ const LekePickerProduct: React.FC = () => (
         tag: `v${product.version}`,
         allowedAssets: [product.downloads[0].assetName],
       }}
+      store={product.store}
     />
 
     <section id="windows-install-help" className="border-t border-gray-200 bg-gray-50 py-16" aria-labelledby="install-help-title">
@@ -160,6 +162,8 @@ const LekePickerProduct: React.FC = () => (
       { question: 'Mac、Linux 或平板可以使用吗？', answer: '可以直接使用在线版；目前不提供 Mac、Linux 或平板安装版，在线版需要受支持的现代浏览器。' },
       { question: '遇到使用问题，怎样获得帮助？', answer: '点击本页的“问题反馈与使用帮助”即可提交，无需 GitHub 账号。我们通常会在 1–2 个工作日内回复；如果弹窗无法使用，可打开完整反馈页或发送邮件。' },
     ]} />
+
+    <ReleaseHistory releases={product.releases ?? []} />
 
     <section className="py-12">
       <div className="container mx-auto flex max-w-6xl flex-wrap gap-4 px-4 sm:px-6 lg:px-8">

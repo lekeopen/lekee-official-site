@@ -4,6 +4,7 @@ import type { ProductDownload } from '../../products/catalog';
 import DownloadStats from './DownloadStats';
 import type { ReleaseStatsInput } from '../../products/releaseStats';
 import { trackProductEvent } from '../../analytics/productEvents';
+import type { ProductStoreChannel } from '../../products/storeChannels';
 
 const formatSize = (sizeBytes: number) => `${(sizeBytes / 1024 / 1024).toFixed(1)} MB`;
 
@@ -15,6 +16,7 @@ interface DownloadSectionProps {
   featuredDownloadId?: string;
   legacyDownloadIds?: string[];
   legacyTitle?: string;
+  store?: ProductStoreChannel;
 }
 
 const DownloadSection: React.FC<DownloadSectionProps> = ({
@@ -25,6 +27,7 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
   featuredDownloadId,
   legacyDownloadIds = [],
   legacyTitle = '旧电脑兼容下载',
+  store,
 }) => {
   const legacyIds = new Set(legacyDownloadIds);
   const primaryDownloads = downloads.filter((download) => !legacyIds.has(download.id));
@@ -39,15 +42,32 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
       {featured && <span className="mb-3 w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">推荐</span>}
       <h3 className="text-lg font-bold text-gray-950">{download.label}</h3>
       <p className="mt-1 text-sm text-gray-500">{download.architecture} · {formatSize(download.sizeBytes)}</p>
+      {featured && store?.status !== 'unavailable' && (
+        <div className="mt-5 grid gap-2">
+          <a
+            data-download-store="microsoft"
+            href={store.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackProductEvent('product_leke_picker_download_store')}
+            className="inline-flex min-h-12 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+          >
+            从 Microsoft Store 获取
+          </a>
+          <p className="text-center text-xs font-semibold text-blue-700">
+            {store.status === 'verified' ? '推荐 · 自动更新' : 'Microsoft Store 版本 · 自动更新'}
+          </p>
+        </div>
+      )}
       {download.availability === 'available' && download.url ? (
-        <div className="mt-5 grid gap-3">
+        <div className={`${featured && store?.status !== 'unavailable' ? 'mt-3' : 'mt-5'} grid gap-3`}>
           <a
             href={download.url}
             onClick={() => download.analyticsEvent && trackProductEvent(download.analyticsEvent)}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+            className={`inline-flex min-h-11 items-center justify-center rounded-lg px-4 py-3 font-semibold ${featured && store?.status !== 'unavailable' ? 'border border-blue-300 bg-white text-blue-800 hover:border-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
           >
             <Download className="mr-2" size={18} aria-hidden="true" />
-            {featured ? '国内高速下载 · Windows 10/11 版' : '国内高速下载'}
+            {featured ? '下载安装包 · Windows 10/11 版' : '国内高速下载'}
           </a>
           {download.fallbackUrl && (
             <a

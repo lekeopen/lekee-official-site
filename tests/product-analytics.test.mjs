@@ -6,6 +6,7 @@ test('product analytics uses an allow-list of anonymous Clarity event names', as
   const source = await readFile(new URL('../src/analytics/productEvents.ts', import.meta.url), 'utf8');
   assert.match(source, /product_leke_picker_online_use/);
   assert.match(source, /product_leke_picker_download_modern/);
+  assert.match(source, /product_leke_picker_download_store/);
   assert.match(source, /product_guigelei_release_notes/);
   assert.match(source, /product_guigelei_download_macos/);
   assert.match(source, /product_guigelei_download_windows/);
@@ -22,6 +23,7 @@ test('product calls to action and downloads emit product events', async () => {
   ]);
   assert.match(hero, /trackProductEvent/);
   assert.match(downloads, /download\.analyticsEvent/);
+  assert.match(downloads, /product_leke_picker_download_store/);
   assert.match(picker, /product_leke_picker_online_use/);
   assert.match(guigelei, /product_guigelei_release_notes/);
 });

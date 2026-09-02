@@ -1,35 +1,40 @@
 {
   "schemaVersion": 1,
   "product": "leke-picker",
-  "version": "1.1.0",
-  "base": "/products/leke-picker/app/",
-  "sourceCommit": "c45c7b1db9174cd98386768bc4207092cf1dde36",
+  "version": "1.1.1",
+  "sourceCommit": "e022d29be11aa69fa786f6fc17ec8547043c7dcc",
   "sourceDirty": false,
+  "base": "/products/leke-picker/app/",
+  "archive": {
+    "name": "leke-picker-web_1.1.1.tar.gz",
+    "sizeBytes": 69104,
+    "sha256": "a21ea03dfef75bb9d0ffb7dbb77ceeb2d78bd73ed791a32f78d2b919cbb7b4ee"
+  },
   "files": [
     {
-      "path": "assets/index-CE4gMTN9.css",
-      "size": 8980,
-      "sha256": "e32acc3d372dc4a2b71a42004d02e0c0da392e8e2ce2264a07f8d053207a3b7e"
+      "path": "assets/index-BhOvwNhA.js",
+      "sizeBytes": 206806,
+      "sha256": "28787cd1ce2b87b4f6208317247eaeeffc7e05b395581e3a8b3d24c6348a2bd2"
     },
     {
-      "path": "assets/index-Ckjyn7MV.js",
-      "size": 206652,
-      "sha256": "5c3071d258162723aea8e7e6e7543b25e2087ec0e1a349c3978bcf33d839cfd0"
+      "path": "assets/index-CJJm4tF-.css",
+      "sizeBytes": 10255,
+      "sha256": "2e4d516dbf0d7cf3cdad60c5c13fea3be76dfbd2396c92fbfc3e3baf0389bce1"
     },
     {
       "path": "brand/leke-picker-mark.svg",
-      "size": 818,
+      "sizeBytes": 818,
       "sha256": "e594ac438ebac8d816810bddeba3f706e97333041f29cfbdbb4478adc4588767"
     },
     {
       "path": "favicon.svg",
-      "size": 742,
+      "sizeBytes": 742,
       "sha256": "cbd3f84c1f0395c31b351349331af31cb8698b52fa597798075bd4ea853579e4"
     },
     {
       "path": "index.html",
-      "size": 776,
-      "sha256": "1f90f0a640f59a833c42c0d6006ac8ffa6c1d510894adda184b3b51f215057ed"
+      "sizeBytes": 776,
+      "sha256": "be1d0707fb6182bcc157f019b46cb700c046abcce6806831a4c89033abd60cc5"
     }
   ]
 }

@@ -91,6 +91,9 @@ const validateProducts = async (rootDir) => {
   source = source.replace(
     "import releaseData from './releases.json';",
     `const releaseData = ${releases};`,
+  ).replace(
+    "import { getMicrosoftStoreChannel, storeStatusForVersion } from './storeChannels';",
+    "const MICROSOFT_STORE_CHANNEL = { provider: 'microsoft', storeId: '9P8078B19P1H', url: 'https://apps.microsoft.com/detail/9P8078B19P1H', verifiedVersion: '1.1.1.0' }; const storeStatusForVersion = (productVersion, verifiedVersion) => verifiedVersion.split('.').slice(0, 3).join('.') === productVersion ? 'verified' : 'lagging'; const getMicrosoftStoreChannel = (productVersion) => ({ ...MICROSOFT_STORE_CHANNEL, status: storeStatusForVersion(productVersion, MICROSOFT_STORE_CHANNEL.verifiedVersion) });",
   );
 
   const { outputText } = ts.transpileModule(source, {
