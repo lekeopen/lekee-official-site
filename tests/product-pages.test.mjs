@@ -13,6 +13,8 @@ async function loadPage(route) {
 
 test('乐可点名产品页提供在线使用、下载、隐私和版本信息', async () => {
   const $ = await loadPage('products/leke-picker');
+  const releaseData = JSON.parse(await readFile(path.join(rootDir, 'src', 'products', 'releases.json'), 'utf8'));
+  const visibleReleases = releaseData['leke-picker'].releases.slice(0, 3);
 
   assert.equal($('h1').length, 1);
   assert.match($('h1').text(), /乐可点名/);
@@ -80,9 +82,10 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
 
   const releaseHistory = $('[data-release-history]');
   assert.equal(releaseHistory.length, 1);
-  assert.equal(releaseHistory.find('[data-release]').length, 2);
-  assert.match(releaseHistory.text(), /v1\.1\.1/);
-  assert.match(releaseHistory.text(), /v1\.1\.0/);
+  assert.equal(releaseHistory.find('[data-release]').length, visibleReleases.length);
+  for (const release of visibleReleases) {
+    assert.match(releaseHistory.text(), new RegExp(`v${release.version.replaceAll('.', '\\.')}`));
+  }
 });
 
 test('乐可点名下载统计跟随当前产品版本且只统计本版本安装包', async () => {
