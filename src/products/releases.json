@@ -1,16 +1,16 @@
 {
   "leke-picker": {
     "repository": "lekeopen/leke-picker",
-    "tag": "v1.1.1",
-    "version": "1.1.1",
-    "publishedAt": "2026-09-01T12:28:52Z",
-    "releaseUrl": "https://github.com/lekeopen/leke-picker/releases/tag/v1.1.1",
+    "tag": "v1.1.2",
+    "version": "1.1.2",
+    "publishedAt": "2026-09-03T13:57:06Z",
+    "releaseUrl": "https://github.com/lekeopen/leke-picker/releases/tag/v1.1.2",
     "assets": {
       "windows-modern-x64": {
-        "name": "leke-picker_1.1.1_x64-setup.exe",
-        "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.1/leke-picker_1.1.1_x64-setup.exe",
-        "sha256": "9e5ccd2910dcee4c6ebb623b1c69a3fba325e5cf97c2ad4b4722c3a3102533cb",
-        "sizeBytes": 264107101
+        "name": "leke-picker_1.1.2_x64-setup.exe",
+        "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker_1.1.2_x64-setup.exe",
+        "sha256": "3a40160670278c88ac0cb03272941b78f850076e4ca552766991080ca902db61",
+        "sizeBytes": 264110222
       },
       "windows-7-x64": {
         "name": "leke-picker-Win7-x64-Offline.exe",
@@ -25,7 +25,66 @@
         "sizeBytes": 64752688
       }
     },
+    "web": {
+      "archive": {
+        "name": "leke-picker-web_1.1.2.tar.gz",
+        "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker-web_1.1.2.tar.gz",
+        "sha256": "09aee6656e4f2efa33a1d069a6048c30991f009ebe96bd4cc33691bb204f2274",
+        "sizeBytes": 69358
+      },
+      "manifest": {
+        "name": "leke-picker-web_1.1.2.manifest.json",
+        "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker-web_1.1.2.manifest.json",
+        "sha256": "a5d4461cf50719ed01c345fd93dab9e9473c94e681c8fe4e82a6605f64cc72fe",
+        "sizeBytes": 1178
+      },
+      "sourceCommit": "b67bf978fee7747d5e2a68c61fd360b1f6809145",
+      "base": "/products/leke-picker/app/"
+    },
     "releases": [
+      {
+        "repository": "lekeopen/leke-picker",
+        "tag": "v1.1.2",
+        "version": "1.1.2",
+        "publishedAt": "2026-09-03T13:57:06Z",
+        "releaseUrl": "https://github.com/lekeopen/leke-picker/releases/tag/v1.1.2",
+        "assets": {
+          "windows-modern-x64": {
+            "name": "leke-picker_1.1.2_x64-setup.exe",
+            "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker_1.1.2_x64-setup.exe",
+            "sha256": "3a40160670278c88ac0cb03272941b78f850076e4ca552766991080ca902db61",
+            "sizeBytes": 264110222
+          },
+          "windows-7-x64": {
+            "name": "leke-picker-Win7-x64-Offline.exe",
+            "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker-Win7-x64-Offline.exe",
+            "sha256": "b729fd01a9d2ae8dbb916e787c3a566a9376120e5564938728e6af1b00843319",
+            "sizeBytes": 68383372
+          },
+          "windows-7-x86": {
+            "name": "leke-picker-Win7-x86-Offline.exe",
+            "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.0/leke-picker-Win7-x86-Offline.exe",
+            "sha256": "c14ed8a476457a23ecaf4a1490fb7c3c0373f77494269627814d336e646e1380",
+            "sizeBytes": 64752688
+          }
+        },
+        "web": {
+          "archive": {
+            "name": "leke-picker-web_1.1.2.tar.gz",
+            "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker-web_1.1.2.tar.gz",
+            "sha256": "09aee6656e4f2efa33a1d069a6048c30991f009ebe96bd4cc33691bb204f2274",
+            "sizeBytes": 69358
+          },
+          "manifest": {
+            "name": "leke-picker-web_1.1.2.manifest.json",
+            "url": "https://github.com/lekeopen/leke-picker/releases/download/v1.1.2/leke-picker-web_1.1.2.manifest.json",
+            "sha256": "a5d4461cf50719ed01c345fd93dab9e9473c94e681c8fe4e82a6605f64cc72fe",
+            "sizeBytes": 1178
+          },
+          "sourceCommit": "b67bf978fee7747d5e2a68c61fd360b1f6809145",
+          "base": "/products/leke-picker/app/"
+        }
+      },
       {
         "repository": "lekeopen/leke-picker",
         "tag": "v1.1.1",

@@ -1,25 +1,25 @@
 {
   "schemaVersion": 1,
   "product": "leke-picker",
-  "version": "1.1.1",
-  "sourceCommit": "e022d29be11aa69fa786f6fc17ec8547043c7dcc",
+  "version": "1.1.2",
+  "sourceCommit": "b67bf978fee7747d5e2a68c61fd360b1f6809145",
   "sourceDirty": false,
   "base": "/products/leke-picker/app/",
   "archive": {
-    "name": "leke-picker-web_1.1.1.tar.gz",
-    "sizeBytes": 69104,
-    "sha256": "a21ea03dfef75bb9d0ffb7dbb77ceeb2d78bd73ed791a32f78d2b919cbb7b4ee"
+    "name": "leke-picker-web_1.1.2.tar.gz",
+    "sizeBytes": 69358,
+    "sha256": "09aee6656e4f2efa33a1d069a6048c30991f009ebe96bd4cc33691bb204f2274"
   },
   "files": [
     {
-      "path": "assets/index-BhOvwNhA.js",
-      "sizeBytes": 206806,
-      "sha256": "28787cd1ce2b87b4f6208317247eaeeffc7e05b395581e3a8b3d24c6348a2bd2"
+      "path": "assets/index-CTHmqmcc.css",
+      "sizeBytes": 10708,
+      "sha256": "54801b697edc5841f120fe7b05a049baac203052a42fff2a663326bd1e367dec"
     },
     {
-      "path": "assets/index-CJJm4tF-.css",
-      "sizeBytes": 10255,
-      "sha256": "2e4d516dbf0d7cf3cdad60c5c13fea3be76dfbd2396c92fbfc3e3baf0389bce1"
+      "path": "assets/index-DR3ViJz-.js",
+      "sizeBytes": 207015,
+      "sha256": "ec329bdb20720549eaa25748d78a8d6bb97cfb34f5079491decc12515adee0e5"
     },
     {
       "path": "brand/leke-picker-mark.svg",
@@ -34,7 +34,7 @@
     {
       "path": "index.html",
       "sizeBytes": 776,
-      "sha256": "be1d0707fb6182bcc157f019b46cb700c046abcce6806831a4c89033abd60cc5"
+      "sha256": "2018e9bc4db572d8f220b62c1fa68818287349aee8b1c519a6e16511cdb22c5f"
     }
   ]
 }
