@@ -5,6 +5,14 @@ import ts from 'typescript';
 
 const catalogUrl = new URL('../src/products/catalog.ts', import.meta.url);
 
+async function storeModuleUrl() {
+  const source = await readFile(new URL('../src/products/storeChannels.ts', import.meta.url), 'utf8');
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  });
+  return `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`;
+}
+
 async function loadCatalog() {
   const releases = await readFile(new URL('../src/products/releases.json', import.meta.url), 'utf8');
   const source = (await readFile(catalogUrl, 'utf8')).replace(
@@ -12,7 +20,7 @@ async function loadCatalog() {
     `const releaseData = ${releases};`,
   ).replace(
     "import { getMicrosoftStoreChannel, storeStatusForVersion } from './storeChannels';",
-    "const MICROSOFT_STORE_CHANNEL = { provider: 'microsoft', storeId: '9P8078B19P1H', url: 'https://apps.microsoft.com/detail/9P8078B19P1H', verifiedVersion: '1.1.1.0' }; const storeStatusForVersion = (productVersion, verifiedVersion) => verifiedVersion.split('.').slice(0, 3).join('.') === productVersion ? 'verified' : 'lagging'; const getMicrosoftStoreChannel = (productVersion) => ({ ...MICROSOFT_STORE_CHANNEL, status: storeStatusForVersion(productVersion, MICROSOFT_STORE_CHANNEL.verifiedVersion) });",
+    `import { getMicrosoftStoreChannel, storeStatusForVersion } from '${await storeModuleUrl()}';`,
   );
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
@@ -57,14 +65,29 @@ test('乐可点名 uses only the audited public source and release repository', 
   assert.equal(picker.downloads.every((download) => download.fallbackUrl?.startsWith('https://github.com/lekeopen/leke-picker/releases/download/')), true);
   assert.equal(picker.downloads.every((download) => download.fallbackUrl?.endsWith(`/${download.assetName}`)), true);
   assert.equal(JSON.stringify(picker).includes('classroom-random-picker'), false);
+  const storeProductVersion = picker.store.verifiedVersion.split('.').slice(0, 3).join('.');
   assert.deepEqual(picker.store, {
     provider: 'microsoft',
     storeId: '9P8078B19P1H',
     url: 'https://apps.microsoft.com/detail/9P8078B19P1H',
-    verifiedVersion: '1.1.1.0',
-    status: 'verified',
+    verifiedVersion: picker.store.verifiedVersion,
+    status: storeProductVersion === picker.version ? 'verified' : 'lagging',
   });
-  assert.equal(picker.releases.length, 2);
+  assert.match(picker.store.verifiedVersion, /^\d+\.\d+\.\d+\.\d+$/);
+  assert.equal(picker.releases.length > 0 && picker.releases.length <= 10, true);
+  assert.equal(picker.releases[0].version, picker.version);
+  assert.equal(new Set(picker.releases.map(({ tag }) => tag)).size, picker.releases.length);
+});
+
+test('production Store status handles matching, lagging, and invalid versions', async () => {
+  const { storeStatusForVersion } = await import(await storeModuleUrl());
+  for (const [product, store, expected] of [
+    ['1.1.2', '1.1.2.0', 'verified'],
+    ['1.1.3', '1.1.2.0', 'lagging'],
+    ['2.0.0', '1.9.9.0', 'lagging'],
+    ['1.1.2', '1.1.2', 'unavailable'],
+    ['', '1.1.2.0', 'unavailable'],
+  ]) assert.equal(storeStatusForVersion(product, store), expected);
 });
 
 test('归个类 uses the controlled domestic endpoint with the monitored GitHub asset as fallback', async () => {
@@ -119,9 +142,10 @@ test('catalog validation rejects an invalid or non-Microsoft Store channel', asy
 test('catalog validation prevents a stale Store version from remaining verified', async () => {
   const { PRODUCTS, validateProductCatalog } = await loadCatalog();
   const staleProducts = structuredClone(PRODUCTS);
-  staleProducts[0].version = '1.1.2';
+  staleProducts[0].version = '9.9.9';
+  staleProducts[0].store.status = 'verified';
 
   assert.deepEqual(validateProductCatalog(staleProducts), [
-    'leke-picker: Microsoft Store status must be lagging for product v1.1.2',
+    'leke-picker: Microsoft Store status must be lagging for product v9.9.9',
   ]);
 });
