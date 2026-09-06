@@ -23,7 +23,7 @@ test('leke-picker website demo is a non-empty MP4 asset', async () => {
     'videos',
     'products',
     'leke-picker',
-    'leke-picker-v1.1-horizontal-natural-voice-final.mp4',
+    'leke-picker-v1.1.2-official-website-promo-natural-voice.mp4',
   );
   const info = await stat(asset);
   const handle = await open(asset, 'r');

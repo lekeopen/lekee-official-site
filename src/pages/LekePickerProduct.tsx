@@ -45,14 +45,14 @@ const LekePickerProduct: React.FC = () => (
             playsInline
             preload="metadata"
             poster="/images/products/leke-picker/main.webp"
-            aria-label="乐可点名 v1.1 产品演示视频"
+            aria-label="乐可点名 v1.1.2 产品演示视频"
           >
             <source
-              src="/videos/products/leke-picker/leke-picker-v1.1-horizontal-natural-voice-final.mp4"
+              src="/videos/products/leke-picker/leke-picker-v1.1.2-official-website-promo-natural-voice.mp4"
               type="video/mp4"
             />
             当前浏览器无法播放视频。你可以
-            <a href="/videos/products/leke-picker/leke-picker-v1.1-horizontal-natural-voice-final.mp4">直接打开演示视频</a>。
+            <a href="/videos/products/leke-picker/leke-picker-v1.1.2-official-website-promo-natural-voice.mp4">直接打开演示视频</a>。
           </video>
         </div>
       </div>
