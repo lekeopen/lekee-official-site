@@ -52,7 +52,7 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.match(quickStart.text(), /选择每次抽取人数/);
   assert.match(quickStart.text(), /点击“点名”或按空格键/);
 
-  const video = $('video[aria-label="乐可点名 v1.1 产品演示视频"]');
+  const video = $('video[aria-label="乐可点名 v1.1.2 产品演示视频"]');
   assert.equal(video.length, 1);
   assert.equal(video.is('[controls]'), true);
   assert.equal(video.attr('preload'), 'metadata');
@@ -60,7 +60,7 @@ test('乐可点名产品页提供在线使用、下载、隐私和版本信息',
   assert.equal(video.attr('autoplay'), undefined);
   assert.equal(
     video.find('source[type="video/mp4"]').attr('src'),
-    '/videos/products/leke-picker/leke-picker-v1.1-horizontal-natural-voice-final.mp4',
+    '/videos/products/leke-picker/leke-picker-v1.1.2-official-website-promo-natural-voice.mp4',
   );
   assert.equal(video.closest('[data-product-hero-media]').length, 1);
   assert.equal(quickStart.prev('section').is('[data-product-hero]'), true);
