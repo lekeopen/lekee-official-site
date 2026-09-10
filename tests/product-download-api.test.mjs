@@ -109,12 +109,20 @@ test('download handler source never contains the OSS public origin or secrets', 
   assert.doesNotMatch(source, /0123456789abcdef|separate-log-key/);
 });
 
-test('deployment config keeps domestic downloads disabled until CDN controls exist', async () => {
+test('deployment config enables only production with isolated download rate limiting', async () => {
   const config = JSON.parse(await readFile(new URL('../wrangler.jsonc', import.meta.url), 'utf8'));
-  assert.equal(config.vars.DOMESTIC_DOWNLOADS_ENABLED, 'false');
+  assert.equal(config.vars.DOMESTIC_DOWNLOADS_ENABLED, 'true');
   assert.equal(config.vars.DOWNLOAD_CDN_HOST, 'downloads.lekeopen.com');
   assert.equal(config.vars.DOWNLOAD_URL_TTL_SECONDS, '120');
+  assert.deepEqual(config.kv_namespaces.find(({ binding }) => binding === 'DOWNLOAD_RATE_LIMIT'), {
+    binding: 'DOWNLOAD_RATE_LIMIT',
+    id: '01e4a2197e364c849858e7ee7e1a8cf6',
+  });
   assert.equal(config.env.preview.vars.DOMESTIC_DOWNLOADS_ENABLED, 'false');
+  assert.deepEqual(config.env.preview.kv_namespaces.find(({ binding }) => binding === 'DOWNLOAD_RATE_LIMIT'), {
+    binding: 'DOWNLOAD_RATE_LIMIT',
+    id: '2dd2868bb88a453fbece42ead3e88801',
+  });
   assert.equal(JSON.stringify(config).includes('ALIYUN_CDN_AUTH_KEY'), false);
   assert.equal(JSON.stringify(config).includes('DOWNLOAD_LOG_KEY'), false);
   assert.equal(JSON.stringify(config).includes('lekeopen-downloads.oss-cn-beijing.aliyuncs.com'), false);

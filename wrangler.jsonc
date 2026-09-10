@@ -8,7 +8,7 @@
     "SUPPORT_MAIL_FROM": "乐可开源产品支持 <support@lekeopen.com>",
     "SUPPORT_MAIL_TO": "contact@lekeopen.com",
     "LEZHI_FEEDBACK_URL": "https://lezhi.lekeopen.com/api/v1/product-feedback",
-    "DOMESTIC_DOWNLOADS_ENABLED": "false",
+    "DOMESTIC_DOWNLOADS_ENABLED": "true",
     "DOWNLOAD_CDN_HOST": "downloads.lekeopen.com",
     "DOWNLOAD_URL_TTL_SECONDS": "120"
   },
@@ -16,6 +16,10 @@
     {
       "binding": "SUPPORT_RATE_LIMIT",
       "id": "02d2e0e3045145bd933fddec330f9138"
+    },
+    {
+      "binding": "DOWNLOAD_RATE_LIMIT",
+      "id": "01e4a2197e364c849858e7ee7e1a8cf6"
     }
   ],
   "env": {
@@ -33,6 +37,10 @@
         {
           "binding": "SUPPORT_RATE_LIMIT",
           "id": "433c07ec5a704ab8a72360861fb83f62"
+        },
+        {
+          "binding": "DOWNLOAD_RATE_LIMIT",
+          "id": "2dd2868bb88a453fbece42ead3e88801"
         }
       ]
     }
