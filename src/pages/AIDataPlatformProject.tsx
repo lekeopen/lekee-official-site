@@ -77,19 +77,17 @@ const AIDataPlatformProject: React.FC = () => (
             面向学校历史资料整理与数据治理，把散落的表格、文档、PDF 和图片转化为经过人工审核、能够回到原始依据的可信数据。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              type="button"
-              disabled
-              aria-disabled="true"
-              className="inline-flex min-h-11 cursor-not-allowed items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white opacity-80"
+            <a
+              href="https://demo.lekeopen.com"
+              className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
             >
-              在线体验即将开放
-            </button>
+              在线体验 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
+            </a>
             <a href="#haichuan-demo" className="inline-flex min-h-11 items-center rounded-lg border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-800 transition-colors hover:border-blue-400 hover:text-blue-700">
               了解海川 Demo <ArrowRight className="ml-2" size={18} aria-hidden="true" />
             </a>
           </div>
-          <p className="mt-4 text-sm text-gray-500">当前不开放公网在线 Demo。</p>
+          <p className="mt-4 text-sm text-gray-500">公网 Demo 仅提供虚构数据与只读体验，不支持上传、真实审批或发布。</p>
         </div>
 
         <figure className="overflow-hidden rounded-3xl border border-blue-100 bg-white p-2 shadow-2xl shadow-blue-950/10">
@@ -319,7 +317,9 @@ const AIDataPlatformProject: React.FC = () => (
           <Link to="/contact/" className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-blue-700">
             联系乐可开源 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
           </Link>
-          <span className="inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-white px-5 py-3 font-semibold text-gray-600">在线体验即将开放</span>
+          <a href="https://demo.lekeopen.com" className="inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-white px-5 py-3 font-semibold text-blue-700 transition-colors hover:border-blue-400 hover:bg-white">
+            在线体验 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
+          </a>
         </div>
       </div>
     </section>
