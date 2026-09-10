@@ -26,6 +26,20 @@
 
 在 CDN 返回 CNAME 且域名状态正常后，为 `downloads.lekeopen.com` 添加该 CNAME。切换前确认域名备案接入要求、证书状态和源站权限。不得把 DNS 直接指向 OSS Bucket 域名。
 
+## HTTPS 证书自动续期
+
+`.github/workflows/acme-cdn-renewal.yml` 每月运行一次，也支持人工触发。它使用固定版本的 `acme.sh`，通过 Cloudflare DNS-01 为 `downloads.lekeopen.com` 申请免费的 Let's Encrypt ECDSA 证书，再使用阿里云 CDN API 将证书只部署到该下载域名。每次运行使用临时目录，不上传或缓存账户密钥、证书私钥和证书文件。
+
+GitHub Actions 必须配置以下加密 Secret：
+
+- `CLOUDFLARE_DNS_API_TOKEN`：仅允许编辑 `lekeopen.com` 的 DNS。
+- `ALIYUN_CDN_ACCESS_KEY_ID`：专用 RAM 用户的 AccessKey ID。
+- `ALIYUN_CDN_ACCESS_KEY_SECRET`：上述 RAM 用户的 AccessKey Secret。
+
+阿里云 RAM 权限应只允许查询目标 CDN 域名并调用 `SetCdnDomainSSLCertificate`；不得复用 OSS 镜像写入凭据，也不得授予 OSS 删除、Bucket 公共读、DNS 全局管理或账单管理权限。首次人工运行成功并验证证书链、域名和到期时间以前，必须保持 `DOMESTIC_DOWNLOADS_ENABLED=false`，不得恢复 OSS 公共读。
+
+GitHub 的工作流失败通知是续期失败的第一告警；每月运行后还要只读检查线上证书剩余有效期。连续一次失败即人工跟进，不等待下一月自动重试。
+
 ## Cloudflare Pages 配置门槛
 
 生产和 Preview 分别创建独立 KV，并绑定为 `DOWNLOAD_RATE_LIMIT`。不得复用 `SUPPORT_RATE_LIMIT`。
