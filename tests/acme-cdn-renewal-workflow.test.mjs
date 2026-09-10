@@ -42,7 +42,9 @@ test('certificate renewal uses Cloudflare DNS-01 and a pinned acme.sh release', 
   assert.match(workflow, /CLOUDFLARE_DNS_API_TOKEN:\s*\$\{\{ secrets\.CLOUDFLARE_DNS_API_TOKEN \}\}/);
   assert.match(workflow, /CF_Token:\s*\$\{\{ env\.CLOUDFLARE_DNS_API_TOKEN \}\}/);
   assert.match(workflow, /acmesh-official\/acme\.sh\.git/);
-  assert.match(workflow, /--branch\s+3\.1\.5/);
+  assert.match(workflow, /--branch\s+3\.1\.4/);
+  assert.match(workflow, /ACME_SH_COMMIT:\s*3661fd86b6304115e42f43910e6dd452ab9866d6/);
+  assert.match(workflow, /test\s+"\$actual_commit"\s+=\s+"\$ACME_SH_COMMIT"/);
   assert.match(workflow, /--server\s+letsencrypt/);
   assert.match(workflow, /--dns\s+dns_cf/);
   assert.match(workflow, /ACME_DOMAIN:\s*downloads\.lekeopen\.com/);

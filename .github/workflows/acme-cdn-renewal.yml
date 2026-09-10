@@ -22,6 +22,7 @@ jobs:
       ALIYUN_CDN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_CDN_ACCESS_KEY_SECRET }}
       ACME_DOMAIN: downloads.lekeopen.com
       ACME_EMAIL: contact@lekeopen.com
+      ACME_SH_COMMIT: 3661fd86b6304115e42f43910e6dd452ab9866d6
       DEPLOY_ALI_CDN_DOMAIN: downloads.lekeopen.com
     steps:
       - name: Validate and mask required secrets
@@ -43,9 +44,11 @@ jobs:
           set -euo pipefail
           git clone \
             --depth 1 \
-            --branch 3.1.5 \
+            --branch 3.1.4 \
             https://github.com/acmesh-official/acme.sh.git \
             "$RUNNER_TEMP/acme.sh"
+          actual_commit="$(git -C "$RUNNER_TEMP/acme.sh" rev-parse HEAD)"
+          test "$actual_commit" = "$ACME_SH_COMMIT"
 
       - name: Issue certificate with Cloudflare DNS-01
         shell: bash
