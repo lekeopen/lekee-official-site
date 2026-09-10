@@ -14,7 +14,7 @@ const env = {
   DOMESTIC_DOWNLOADS_ENABLED: 'true',
   DOWNLOAD_CDN_HOST: 'downloads.lekeopen.com',
   DOWNLOAD_URL_TTL_SECONDS: '120',
-  ALIYUN_CDN_AUTH_KEY: '0123456789abcdef',
+  ALIYUN_CDN_AUTH_KEY: '0123456789abcdef'.repeat(4),
   DOWNLOAD_LOG_KEY: 'separate-log-key',
   DOWNLOAD_RATE_LIMIT: { get: async () => null, put: async () => {} },
 };
@@ -36,7 +36,7 @@ test('download catalog returns only canonical committed release assets', () => {
 
 test('type-C CDN signing is deterministic and bounded to the configured host', () => {
   const now = new Date('2026-08-27T12:00:00Z');
-  const key = '0123456789abcdef';
+  const key = '0123456789abcdef'.repeat(4);
   const result = createCdnSignedUrl({ host: 'downloads.lekeopen.com', pathname: '/leke-picker/1.1.0/demo.exe', key, now, ttlSeconds: 120 });
   const expires = Math.floor(now.getTime() / 1000) + 120;
   const timestamp = expires.toString(16).toUpperCase();
@@ -47,7 +47,7 @@ test('type-C CDN signing is deterministic and bounded to the configured host', (
   assert.equal(result.searchParams.get('KEY2'), timestamp);
   assert.throws(() => createCdnSignedUrl({ host: 'https://evil.example', pathname: '/demo.exe', key, now, ttlSeconds: 120 }), /host/);
   assert.throws(() => createCdnSignedUrl({ host: 'downloads.lekeopen.com', pathname: '/demo.exe', key, now, ttlSeconds: 301 }), /TTL/);
-  assert.throws(() => createCdnSignedUrl({ host: 'downloads.lekeopen.com', pathname: '/demo.exe', key: 'x'.repeat(33), now, ttlSeconds: 120 }), /key/);
+  assert.throws(() => createCdnSignedUrl({ host: 'downloads.lekeopen.com', pathname: '/demo.exe', key: 'x'.repeat(129), now, ttlSeconds: 120 }), /key/);
 });
 
 test('download endpoint redirects only to a short-lived configured CDN URL', async () => {
