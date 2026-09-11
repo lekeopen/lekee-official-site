@@ -63,7 +63,10 @@ test('AI Data Platform prerendered page communicates the approved scope and CTA'
   assert.equal($('link[rel="canonical"]').attr('href'), canonical);
   assert.equal($('meta[property="og:image"]').attr('content'), `https://lekeopen.com${ogImage}`);
   assert.equal($('meta[name="twitter:card"]').attr('content'), 'summary_large_image');
-  assert.equal($('a[href="https://demo.lekeopen.com"]').length, 2);
+  const demoLinks = $('a[href="https://demo.lekeopen.com"]');
+  assert.equal(demoLinks.length, 2);
+  assert.equal(demoLinks.filter('[target="_blank"]').length, 2);
+  assert.equal(demoLinks.filter('[rel="noopener noreferrer"]').length, 2);
   assert.match(mainText, /在线体验/);
   assert.doesNotMatch(mainText, /在线体验即将开放/);
   assert.match(mainText, /海川实验学校为虚构演示数据/);

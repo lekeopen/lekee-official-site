@@ -79,6 +79,8 @@ const AIDataPlatformProject: React.FC = () => (
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="https://demo.lekeopen.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
             >
               在线体验 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
@@ -317,7 +319,7 @@ const AIDataPlatformProject: React.FC = () => (
           <Link to="/contact/" className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-blue-700">
             联系乐可开源 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
           </Link>
-          <a href="https://demo.lekeopen.com" className="inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-white px-5 py-3 font-semibold text-blue-700 transition-colors hover:border-blue-400 hover:bg-white">
+          <a href="https://demo.lekeopen.com" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-white px-5 py-3 font-semibold text-blue-700 transition-colors hover:border-blue-400 hover:bg-white">
             在线体验 <ArrowRight className="ml-2" size={18} aria-hidden="true" />
           </a>
         </div>
