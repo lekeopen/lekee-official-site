@@ -8,14 +8,26 @@ export function buildMirrorPlan(releases) {
   for (const [slug, release] of Object.entries(releases)) {
     if (!/^\d+\.\d+\.\d+$/.test(release?.version ?? '')) throw new Error(`${slug}: invalid version`);
     for (const [assetId, asset] of Object.entries(release.assets ?? {})) {
+      const sourceVersion = asset?.version ?? release.version;
+      if (!/^\d+\.\d+\.\d+$/.test(sourceVersion)) throw new Error(`${slug}/${assetId}: invalid source version`);
       if (!/^[a-f0-9]{64}$/.test(asset?.sha256 ?? '') || !Number.isSafeInteger(asset?.sizeBytes) || asset.sizeBytes <= 0) {
         throw new Error(`${slug}/${assetId}: incomplete release evidence`);
       }
       if (path.posix.basename(asset.name) !== asset.name) throw new Error(`${slug}/${assetId}: unsafe asset name`);
-      const objectKey = `${slug}/${release.version}/${asset.name}`;
+      let sourceUrl;
+      try { sourceUrl = new URL(asset.url); } catch { throw new Error(`${slug}/${assetId}: invalid source URL`); }
+      const expectedSuffix = `/releases/download/v${sourceVersion}/${encodeURIComponent(asset.name)}`;
+      if (sourceUrl.protocol !== 'https:' || sourceUrl.hostname !== 'github.com'
+        || !sourceUrl.pathname.endsWith(expectedSuffix) || sourceUrl.search || sourceUrl.hash) {
+        throw new Error(`${slug}/${assetId}: source URL does not match source version`);
+      }
+      if (release.repository && sourceUrl.pathname !== `/${release.repository}${expectedSuffix}`) {
+        throw new Error(`${slug}/${assetId}: source URL does not match repository`);
+      }
+      const objectKey = `${slug}/${sourceVersion}/${asset.name}`;
       plan.push({
         slug,
-        version: release.version,
+        version: sourceVersion,
         assetId,
         name: asset.name,
         sizeBytes: asset.sizeBytes,

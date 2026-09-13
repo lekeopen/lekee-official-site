@@ -6,6 +6,8 @@ export function findDownloadAsset(product, assetId) {
   const asset = release?.assets?.[assetId];
   if (!release || !asset) return null;
   if (!/^\d+\.\d+\.\d+$/.test(release.version)) return null;
+  const sourceVersion = asset.version ?? release.version;
+  if (!/^\d+\.\d+\.\d+$/.test(sourceVersion)) return null;
   if (!/^[a-z0-9][a-z0-9-]*$/.test(product) || !/^[a-z0-9][a-z0-9-]*$/.test(assetId)) return null;
   if (!/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) return null;
   if (asset.name.includes('/') || asset.name.includes('\\')) return null;
@@ -15,10 +17,10 @@ export function findDownloadAsset(product, assetId) {
   } catch {
     return null;
   }
-  const expectedPath = `/${release.repository}/releases/download/${release.tag}/${encodeURIComponent(asset.name)}`;
+  const expectedPath = `/${release.repository}/releases/download/v${sourceVersion}/${encodeURIComponent(asset.name)}`;
   if (fallbackUrl.protocol !== 'https:' || fallbackUrl.hostname !== 'github.com'
       || fallbackUrl.pathname !== expectedPath || fallbackUrl.search || fallbackUrl.hash) return null;
-  const pathname = `/${[product, release.version, asset.name].map(encodeURIComponent).join('/')}`;
-  return { product, assetId, version: release.version, name: asset.name, pathname,
+  const pathname = `/${[product, sourceVersion, asset.name].map(encodeURIComponent).join('/')}`;
+  return { product, assetId, version: sourceVersion, name: asset.name, pathname,
     fallbackUrl: fallbackUrl.href, sha256: asset.sha256, sizeBytes: asset.sizeBytes };
 }
