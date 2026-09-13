@@ -107,6 +107,26 @@ test('mirror plan uses immutable OSS keys and preserves GitHub fallback URLs', (
   assert.ok(plan.every((item) => /^[a-f0-9]{64}$/.test(item.sha256)));
 });
 
+test('mirror plan stores inherited installers under their source release version', () => {
+  const releases = structuredClone(current);
+  releases['leke-picker'].version = '1.1.2';
+  releases['leke-picker'].assets['windows-modern-x64'] = {
+    ...asset('leke-picker_1.1.2_x64-setup.exe', 'lekeopen/leke-picker', 'v1.1.2', '9', 205),
+    version: '1.1.2',
+  };
+  releases['leke-picker'].assets['windows-7-x64'].version = '1.1.0';
+  releases['leke-picker'].assets['windows-7-x86'].version = '1.1.0';
+
+  const plan = buildMirrorPlan(releases);
+
+  assert.equal(plan.find(({ assetId }) => assetId === 'windows-modern-x64').objectKey,
+    'leke-picker/1.1.2/leke-picker_1.1.2_x64-setup.exe');
+  assert.equal(plan.find(({ assetId }) => assetId === 'windows-7-x64').objectKey,
+    'leke-picker/1.1.0/leke-picker-Win7-x64-Offline.exe');
+  assert.equal(plan.find(({ assetId }) => assetId === 'windows-7-x86').objectKey,
+    'leke-picker/1.1.0/leke-picker-Win7-x86-Offline.exe');
+});
+
 test('dry-run reports the complete plan without downloading or writing OSS', async () => {
   let fetched = false;
   let called = false;
@@ -227,7 +247,9 @@ test('compatible newer stable releases update deterministic release data', async
   assert.deepEqual(result, { changed: true, updates: [{ slug: 'guigelei', from: '1.5.0', to: '1.6.0' }] });
   const updated = JSON.parse(await readFile(file, 'utf8'));
   assert.equal(updated.guigelei.version, '1.6.0');
-  assert.deepEqual(updated.guigelei.assets, nextAssets);
+  assert.deepEqual(updated.guigelei.assets, {
+    'macos-arm64': { ...nextAssets['macos-arm64'], version: '1.6.0' },
+  });
   assert.equal(updated.guigelei.releases[0].version, '1.6.0');
   assert.equal(updated.guigelei.releases[1].version, '1.5.0');
   assert.match(await readFile(file, 'utf8'), /\n$/);
@@ -246,9 +268,9 @@ test('leke-picker stable update may replace the modern installer while inheritin
   assert.deepEqual(result, { changed: true, updates: [{ slug: 'leke-picker', from: '1.1.0', to: '1.1.1' }] });
   const updated = JSON.parse(await readFile(file, 'utf8'))['leke-picker'];
   assert.equal(updated.version, '1.1.1');
-  assert.deepEqual(updated.assets['windows-modern-x64'], modern);
-  assert.deepEqual(updated.assets['windows-7-x64'], current['leke-picker'].assets['windows-7-x64']);
-  assert.deepEqual(updated.assets['windows-7-x86'], current['leke-picker'].assets['windows-7-x86']);
+  assert.deepEqual(updated.assets['windows-modern-x64'], { ...modern, version: '1.1.1' });
+  assert.deepEqual(updated.assets['windows-7-x64'], { ...current['leke-picker'].assets['windows-7-x64'], version: '1.1.0' });
+  assert.deepEqual(updated.assets['windows-7-x86'], { ...current['leke-picker'].assets['windows-7-x86'], version: '1.1.0' });
 });
 
 test('leke-picker stable update records verified website archive evidence separately from installer assets', async () => {
@@ -281,8 +303,8 @@ test('leke-picker stable update records verified website archive evidence separa
   assert.deepEqual(result, { changed: true, updates: [{ slug: 'leke-picker', from: '1.1.0', to: '1.1.1' }] });
   const updated = JSON.parse(await readFile(file, 'utf8'))['leke-picker'];
   assert.deepEqual(Object.keys(updated.assets), ['windows-modern-x64', 'windows-7-x64', 'windows-7-x86']);
-  assert.deepEqual(updated.web.archive, archive);
-  assert.deepEqual(updated.web.manifest, manifest);
+  assert.deepEqual(updated.web.archive, { ...archive, version: '1.1.1' });
+  assert.deepEqual(updated.web.manifest, { ...manifest, version: '1.1.1' });
   assert.equal(updated.web.sourceCommit, manifestBody.sourceCommit);
   assert.equal(updated.web.base, manifestBody.base);
 });

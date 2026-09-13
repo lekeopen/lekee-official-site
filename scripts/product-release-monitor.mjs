@@ -47,7 +47,7 @@ function validateAsset(slug, policy, release, id, name) {
   if (!digest) fail(`${slug}/${id}: missing or invalid SHA-256 digest`);
   const expectedUrl = `https://github.com/${policy.repository}/releases/download/${release.tag_name}/${encodeURIComponent(name)}`;
   if (asset.browser_download_url !== expectedUrl) fail(`${slug}/${id}: download URL does not match repository, tag, and asset`);
-  return { name, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
+  return { name, version: parseVersion(release.tag_name).version, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
 }
 
 function validateInheritedAsset(policy, currentTag, nextTag, id, expectedName, inherited) {
@@ -74,7 +74,13 @@ function validateInheritedAsset(policy, currentTag, nextTag, id, expectedName, i
   if (compare(inheritedVersion.parts, currentVersion.parts) > 0 || compare(inheritedVersion.parts, nextVersion.parts) > 0) {
     fail(`leke-picker/${id}: inherited asset tag is newer than the known release`);
   }
-  return { name: expectedName, url: inherited.url, sha256: inherited.sha256, sizeBytes: inherited.sizeBytes };
+  return {
+    name: expectedName,
+    version: inheritedVersion.version,
+    url: inherited.url,
+    sha256: inherited.sha256,
+    sizeBytes: inherited.sizeBytes,
+  };
 }
 
 async function validateManifestRelease(policy, release, version, fetchImpl) {
@@ -224,7 +230,7 @@ async function validateRelease(slug, current, release, fetchImpl) {
     if (!digest) fail(`${slug}/${id}: missing or invalid SHA-256 digest`);
     const expectedUrl = `https://github.com/${policy.repository}/releases/download/${release.tag_name}/${encodeURIComponent(name)}`;
     if (asset.browser_download_url !== expectedUrl) fail(`${slug}/${id}: download URL does not match repository, tag, and asset`);
-    assets[id] = { name, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
+    assets[id] = { name, version: next.version, url: expectedUrl, sha256: digest[1], sizeBytes: asset.size };
   }
 
   const web = pickerWebCount === 2 ? await validatePickerWebRelease(policy, release, next.version, fetchImpl) : undefined;

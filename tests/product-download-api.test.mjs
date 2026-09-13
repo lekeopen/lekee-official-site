@@ -34,6 +34,16 @@ test('download catalog returns only canonical committed release assets', () => {
   assert.equal(findDownloadAsset('unknown', 'windows-modern-x64'), null);
 });
 
+test('download catalog keeps inherited Windows 7 installers on their immutable source version', () => {
+  const x64 = findDownloadAsset('leke-picker', 'windows-7-x64');
+  const x86 = findDownloadAsset('leke-picker', 'windows-7-x86');
+
+  assert.equal(x64.version, '1.1.0');
+  assert.equal(x64.pathname, '/leke-picker/1.1.0/leke-picker-Win7-x64-Offline.exe');
+  assert.equal(x86.version, '1.1.0');
+  assert.equal(x86.pathname, '/leke-picker/1.1.0/leke-picker-Win7-x86-Offline.exe');
+});
+
 test('type-C CDN signing is deterministic and bounded to the configured host', () => {
   const now = new Date('2026-08-27T12:00:00Z');
   const key = '0123456789abcdef'.repeat(4);
@@ -60,6 +70,19 @@ test('download endpoint redirects only to a short-lived configured CDN URL', asy
   assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
   assert.equal(JSON.stringify(logs).includes('203.0.113.10'), false);
   assert.equal(JSON.stringify(logs).includes(env.ALIYUN_CDN_AUTH_KEY), false);
+});
+
+test('download endpoint signs the immutable source path for both inherited Windows 7 installers', async () => {
+  for (const [asset, pathname] of [
+    ['windows-7-x64', '/leke-picker/1.1.0/leke-picker-Win7-x64-Offline.exe'],
+    ['windows-7-x86', '/leke-picker/1.1.0/leke-picker-Win7-x86-Offline.exe'],
+  ]) {
+    const response = await onRequestGet({ request: request('leke-picker', asset), env }, { now: new Date('2026-08-27T12:00:00Z'), logger: { info() {} } });
+    const location = new URL(response.headers.get('location'));
+    assert.equal(response.status, 302);
+    assert.equal(location.hostname, 'downloads.lekeopen.com');
+    assert.equal(location.pathname, pathname);
+  }
 });
 
 test('download endpoint falls back to the canonical GitHub asset when domestic runtime controls are unavailable', async () => {
